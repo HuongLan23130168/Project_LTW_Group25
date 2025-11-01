@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+
     const menuItems = document.querySelectorAll(".menu li");
     const pages = document.querySelectorAll(".page");
 
@@ -18,13 +19,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    /*
     // ========== SỬA HỒ SƠ ==========
     const editBtn = document.getElementById("editProfile");
-    if (editBtn) {
-        editBtn.addEventListener("click", function() {
-            let btnText = this.textContent.trim();
 
-            if (btnText === "Sửa" || btnText === "Sửa") {
+    if (editBtn) {
+        editBtn.addEventListener("click", function () {
+            let current = this.textContent.trim();
+
+            if (current === "Sửa") {
                 this.textContent = "Lưu";
 
                 ["email", "fullName", "phone"].forEach(id => {
@@ -45,42 +48,54 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+
+
     // ========== SỬA ĐỊA CHỈ ==========
-    document.addEventListener("click", function(e) {
+    document.addEventListener("click", function (e) {
         if (e.target.classList.contains("edit-address-btn")) {
             const btn = e.target;
-            const block = btn.closest(".address-row").querySelector(".address");
-            let text = block.textContent.replace("", "").trim();
+            const row = btn.closest(".address-row");
+            const block = row.querySelector(".address");
 
-            if (btn.textContent === "Sửa") {
+            if (btn.textContent.trim() === "Sửa") {
+                const text = block.innerText.replace("()", "").trim();
                 block.innerHTML = `<input class="editing" value="${text}">`;
                 btn.textContent = "Lưu";
             } else {
                 const input = block.querySelector("input");
-                block.innerHTML = `${input.value.trim()} <span class="default">(Mặc định)</span>`;
+                const newText = input.value.trim();
+                block.innerHTML = `${newText} <span class="default">(Mặc định)</span>`;
                 btn.textContent = "Sửa";
             }
         }
     });
 
+
+
     // ========== THÊM ĐỊA CHỈ ==========
-    document.querySelector(".add-btn").addEventListener("click", () => {
-        const addressBox = document.querySelector(".address-box");
+    const addBtn = document.querySelector(".add-btn");
 
-        const newAddress = document.createElement("div");
-        newAddress.className = "address-row";
-        newAddress.innerHTML = `
-            <div class="address">
-                <input class="editing" placeholder="Nhập địa chỉ mới...">
-            </div>
-            <button class="edit-btn edit-address-btn">Lưu</button>
-        `;
+    if (addBtn) {
+        addBtn.addEventListener("click", () => {
+            const addressBox = document.querySelector(".address-list");
 
-        addressBox.appendChild(newAddress);
-    });
+            const newAddress = document.createElement("div");
+            newAddress.className = "address-row";
+            newAddress.innerHTML = `
+                <div class="address">
+                    <input class="editing" placeholder="Nhập địa chỉ mới...">
+                </div>
+                <button class="edit-btn edit-address-btn">Lưu</button>
+            `;
+
+            addressBox.appendChild(newAddress);
+        });
+    }
+    */
 
 });
 
+// ========== LOAD TRANG ĐỔI MẬT KHẨU ==========
 function loadPasswordPage() {
     fetch("changePass.html")
         .then(res => res.text())
@@ -94,4 +109,3 @@ function loadPasswordPage() {
             document.body.appendChild(script);
         });
 }
-
