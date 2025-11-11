@@ -19,7 +19,7 @@ main {
     font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
-    margin-top: 40px;
+    /* margin-top: 40px; */
 }
 
 .container {
