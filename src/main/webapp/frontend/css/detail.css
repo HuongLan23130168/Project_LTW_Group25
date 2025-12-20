@@ -115,7 +115,13 @@ body {
   align-items: center;
   gap: 12px;
   margin-bottom: 20px;
+  width: fit-content;
 }
+
+.hidden {
+  display: none;
+}
+
 
 .price-sale {
   font-size: 30px;
@@ -136,6 +142,7 @@ body {
   background: #d9534f;
   border-radius: 10px;
   padding: 4px;
+  width: fit-content;
 }
 
 /* OPTIONS (Màu sắc / kích thước) */
@@ -201,6 +208,7 @@ body {
   font-weight: 600;
   transition: 0.25s ease;
 }
+
 /* === QUANTITY SELECTOR === */
 .quantity-box {
   display: flex;
@@ -359,7 +367,6 @@ body {
   padding: 20px 20px;
   border-radius: 22px;
   scroll-padding: 40px;
-  /* ✅ giúp scroll bắt đầu sau padding */
 }
 
 .slider::-webkit-scrollbar {
@@ -400,17 +407,13 @@ body {
   top: 50%;
   transform: translateY(-50%);
   width: 50px;
-  /* chiều rộng cố định */
   height: 50px;
-  /* chiều cao bằng chiều rộng */
   background: rgba(255, 255, 255, 0.95);
   border: none;
   cursor: pointer;
   font-size: 22px;
   border-radius: 50%;
-  /* đảm bảo tròn tuyệt đối */
   display: flex;
-  /* căn icon vào giữa */
   justify-content: center;
   align-items: center;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
@@ -425,7 +428,6 @@ body {
   /* phóng to khi hover */
 }
 
-/* vị trí */
 .prev {
   left: 15px;
 }

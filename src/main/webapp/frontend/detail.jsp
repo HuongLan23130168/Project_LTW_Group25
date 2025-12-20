@@ -18,55 +18,55 @@
     <div class="header-top">
       <div class="logo">
         <img src="https://i.postimg.cc/5t4yq9qJ/logo-ltw.jpg" alt="Logo">
-        <span><a href="home.html">Noble Loft Theory</a></span>
+        <span><a href="home.jsp">Noble Loft Theory</a></span>
       </div>
       <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="text" placeholder="Tìm kiếm">
       </div>
       <div class="header-right">
-        <a href="tracking.html">Tra cứu đơn hàng</a>
-        <a href="gioithieu.html">Giới thiệu</a>
-        <a href="contact.html">Liên hệ</a>
+        <a href="tracking.jsp">Tra cứu đơn hàng</a>
+        <a href="gioithieu.jsp">Giới thiệu</a>
+        <a href="contact.jsp">Liên hệ</a>
         <div class="icons">
-          <a href="cart.html" class="circle"><i class="fa-solid fa-cart-shopping"></i></a>
-          <a href="account.html" class="circle"><i class="fa-solid fa-user"></i></a>
+          <a href="cart.jsp" class="circle"><i class="fa-solid fa-cart-shopping"></i></a>
+          <a href="account.jsp" class="circle"><i class="fa-solid fa-user"></i></a>
         </div>
       </div>
     </div>
 
     <nav class="menu">
-      <a href="home.html" class="">Trang chủ</a>
-      <a href="living.html" class="">Phòng khách</a>
-      <a href="kitchen.html" class="">Phòng bếp</a>
-      <a href="bedroom.html" class="">Phòng ngủ</a>
-      <a href="office.html" class="">Phòng làm việc</a>
-      <a href="balcony.html" class="">Ban Công</a>
+      <a href="home.jsp" class="">Trang chủ</a>
+      <a href="living.jsp" class="">Phòng khách</a>
+      <a href="kitchen.jsp" class="">Phòng bếp</a>
+      <a href="bedroom.jsp" class="">Phòng ngủ</a>
+      <a href="office.jsp" class="">Phòng làm việc</a>
+      <a href="balcony.jsp" class="">Ban Công</a>
 
       <div class="dropdown">
-        <a href="decor.html">Decor <i class="fa-solid fa-chevron-down"></i></a>
+        <a href="decor.jsp">Decor <i class="fa-solid fa-chevron-down"></i></a>
         <div class="dropdown-content">
-          <a href="decor.html">Cây</a>
-          <a href="decor.html">Hoa</a>
-          <a href="decor.html">Đèn</a>
-          <a href="decor.html">Tượng & Phụ kiện</a>
-          <a href="decor.html">Đồng hồ</a>
-          <a href="decor.html">Tranh</a>
-          <a href="decor.html">Gương</a>
-          <a href="decor.html">Nến & Tinh dầu</a>
-          <a href="decor.html">Bình & Lọ hoa</a>
-          <a href="decor.html">Chăn & Gối</a>
-          <a href="decor.html">Kệ & Giá đỡ mini</a>
-          <a href="decor.html">Bàn decor</a>
-          <a href="decor.html">Ghế decor</a>
+          <a href="decor.jsp">Cây</a>
+          <a href="decor.jsp">Hoa</a>
+          <a href="decor.jsp">Đèn</a>
+          <a href="decor.jsp">Tượng & Phụ kiện</a>
+          <a href="decor.jsp">Đồng hồ</a>
+          <a href="decor.jsp">Tranh</a>
+          <a href="decor.jsp">Gương</a>
+          <a href="decor.jsp">Nến & Tinh dầu</a>
+          <a href="decor.jsp">Bình & Lọ hoa</a>
+          <a href="decor.jsp">Chăn & Gối</a>
+          <a href="decor.jsp">Kệ & Giá đỡ mini</a>
+          <a href="decor.jsp">Bàn decor</a>
+          <a href="decor.jsp">Ghế decor</a>
         </div>
       </div>
     </nav>
   </header>
   <!-- === BREADCRUMB === -->
   <div class="breadcrumb">
-    <a href="home.html">Trang chủ</a> &#47;
-    <a href="living.html">Sản phẩm</a> &#47;
+    <a href="home.jsp">Trang chủ</a> &#47;
+    <a href="living.jsp">Sản phẩm</a> &#47;
     <span class="current">Đèn chùm pha lê 15 tay LED XANH chao đá đúc màu vàng</span>
   </div>
 
@@ -88,18 +88,25 @@
 
     <div class="right">
       <h1>Đèn chùm pha lê 15 tay LED XANH chao đá đúc màu vàng</h1>
-      <div class="price-wrapper">
+
+      <div class="price-wrapper" data-size="90×65cm">
         <p class="price-sale">1.888.000₫</p>
         <p class="price-old">3.200.000₫</p>
         <p class="discount">-41%</p>
       </div>
 
+      <div class="price-wrapper hidden" data-size="110×75cm">
+        <p class="price-sale">2.688.000₫</p>
+        <p class="price-old">4.200.000₫</p>
+        <p class="discount">-36%</p>
+      </div>
+
+
       <div class="select-group">
         <label>Màu sắc:</label>
         <div class="option-list">
           <div class="option active">Vàng</div>
-          <div class="option">Xanh</div>
-          <div class="option">Trắng</div>
+
         </div>
       </div>
 
@@ -116,8 +123,8 @@
         <button class="qty-btn plus">+</button>
       </div>
       <div class="actions">
-        <a href="cart.html" class="add-cart"><i class="fa fa-cart-plus"></i> Thêm vào giỏ hàng</a>
-        <a href="pay.html" class="buy-now">Mua ngay</a>
+        <a href="cart.jsp" class="add-cart"><i class="fa fa-cart-plus"></i> Thêm vào giỏ hàng</a>
+        <a href="pay.jsp" class="buy-now">Mua ngay</a>
       </div>
     </div>
   </section>

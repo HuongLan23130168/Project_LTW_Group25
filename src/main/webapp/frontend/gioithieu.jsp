@@ -74,19 +74,19 @@
         <div class="header-top">
             <div class="logo">
                 <img src="https://i.postimg.cc/5t4yq9qJ/logo-ltw.jpg" alt="Logo">
-                <span><a href="home.html">Noble Loft Theory</a></span>
+                <span><a href="home.jsp">Noble Loft Theory</a></span>
             </div>
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" placeholder="Tìm kiếm">
             </div>
             <div class="header-right">
-                <a href="tracking.html">Tra cứu đơn hàng</a>
-                <a href="gioithieu.html">Giới thiệu</a>
-                <a href="contact.html">Liên hệ</a>
+                <a href="tracking.jsp">Tra cứu đơn hàng</a>
+                <a href="gioithieu.jsp">Giới thiệu</a>
+                <a href="contact.jsp">Liên hệ</a>
                 <div class="icons">
-                    <a href="cart.html" class="circle"><i class="fa-solid fa-cart-shopping"></i></a>
-                    <a href="account.html" class="circle"><i class="fa-solid fa-user"></i></a>
+                    <a href="cart.jsp" class="circle"><i class="fa-solid fa-cart-shopping"></i></a>
+                    <a href="account.jsp" class="circle"><i class="fa-solid fa-user"></i></a>
                 </div>
             </div>
         </div>
@@ -94,8 +94,8 @@
 
     <!-- ===== BREADCRUMB / TIẾN TRÌNH ===== -->
     <div class="breadcrumb">
-        <a href="home.html">Trang chủ</a> &#47;
-        <span class="current">Giới thiệu </t></span>
+        <a href="home.jsp">Trang chủ</a> &#47;
+        <span class="current">Giới thiệu </span>
     </div>
 
     <div class="content">
@@ -288,7 +288,6 @@
 
                         <div class="social-box">
                             <div class="social-icons">
-                                <!-- mấy cái # này là chưa có link liên kết nào có gắn v -->
                                 <a href="https://www.facebook.com/share/1HP5fZGNqb/?mibextid=wwXIfr">
                                     <i class="fa-brands fa-facebook"></i></a>
                                 <a href="https://www.instagram.com/nltnoblelofttheory/">
@@ -308,24 +307,7 @@
         </div>
     </footer>
 
-    <script src="js/header.js"></script>
-    <script>// Nút quay lại đầu trang
-        const backToTopBtn = document.getElementById("backToTop");
 
-        window.addEventListener("scroll", () => {
-            if (window.scrollY > 300) {
-                backToTopBtn.classList.add("show");
-            } else {
-                backToTopBtn.classList.remove("show");
-            }
-        });
-
-        backToTopBtn.addEventListener("click", () => {
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth",
-            });
-        });</script>
 </body>
 
 </html>

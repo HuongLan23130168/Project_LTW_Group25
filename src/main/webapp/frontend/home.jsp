@@ -17,47 +17,47 @@
         <div class="header-top">
             <div class="logo">
                 <img src="https://i.postimg.cc/5t4yq9qJ/logo-ltw.jpg" alt="Logo">
-                <span><a href="home.html">Noble Loft Theory</a></span>
+                <span><a href="home.jsp">Noble Loft Theory</a></span>
             </div>
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" placeholder="Tìm kiếm">
             </div>
             <div class="header-right">
-                <a href="tracking.html">Tra cứu đơn hàng</a>
-                <a href="gioithieu.html">Giới thiệu</a>
-                <a href="contact.html">Liên hệ</a>
+                <a href="tracking.jsp">Tra cứu đơn hàng</a>
+                <a href="gioithieu.jsp">Giới thiệu</a>
+                <a href="contact.jsp">Liên hệ</a>
                 <div class="icons">
-                    <a href="cart.html" class="circle"><i class="fa-solid fa-cart-shopping"></i></a>
-                    <a href="account.html" class="circle"><i class="fa-solid fa-user"></i></a>
+                    <a href="cart.jsp" class="circle"><i class="fa-solid fa-cart-shopping"></i></a>
+                    <a href="account.jsp" class="circle"><i class="fa-solid fa-user"></i></a>
                 </div>
             </div>
         </div>
 
         <nav class="menu">
-            <a href="home.html" class="active">Trang chủ</a>
-            <a href="living.html" class="">Phòng khách</a>
-            <a href="kitchen.html" class="">Phòng bếp</a>
-            <a href="bedroom.html" class="">Phòng ngủ</a>
-            <a href="office.html" class="">Phòng làm việc</a>
-            <a href="balcony.html" class="">Ban Công</a>
+            <a href="home.jsp" class="active">Trang chủ</a>
+            <a href="living.jsp" class="">Phòng khách</a>
+            <a href="kitchen.jsp" class="">Phòng bếp</a>
+            <a href="bedroom.jsp" class="">Phòng ngủ</a>
+            <a href="office.jsp" class="">Phòng làm việc</a>
+            <a href="balcony.jsp" class="">Ban Công</a>
 
             <div class="dropdown">
-                <a href="decor.html">Decor <i class="fa-solid fa-chevron-down"></i></a>
+                <a href="decor.jsp">Decor <i class="fa-solid fa-chevron-down"></i></a>
                 <div class="dropdown-content">
-                    <a href="decor.html">Cây</a>
-                    <a href="decor.html">Hoa</a>
-                    <a href="decor.html">Đèn</a>
-                    <a href="decor.html">Tượng & Phụ kiện</a>
-                    <a href="decor.html">Đồng hồ</a>
-                    <a href="decor.html">Tranh</a>
-                    <a href="decor.html">Gương</a>
-                    <a href="decor.html">Nến & Tinh dầu</a>
-                    <a href="decor.html">Bình & Lọ hoa</a>
-                    <a href="decor.html">Chăn & Gối</a>
-                    <a href="decor.html">Kệ & Giá đỡ mini</a>
-                    <a href="decor.html">Bàn decor</a>
-                    <a href="decor.html">Ghế decor</a>
+                    <a href="decor.jsp">Cây</a>
+                    <a href="decor.jsp">Hoa</a>
+                    <a href="decor.jsp">Đèn</a>
+                    <a href="decor.jsp">Tượng & Phụ kiện</a>
+                    <a href="decor.jsp">Đồng hồ</a>
+                    <a href="decor.jsp">Tranh</a>
+                    <a href="decor.jsp">Gương</a>
+                    <a href="decor.jsp">Nến & Tinh dầu</a>
+                    <a href="decor.jsp">Bình & Lọ hoa</a>
+                    <a href="decor.jsp">Chăn & Gối</a>
+                    <a href="decor.jsp">Kệ & Giá đỡ mini</a>
+                    <a href="decor.jsp">Bàn decor</a>
+                    <a href="decor.jsp">Ghế decor</a>
                 </div>
             </div>
         </nav>
@@ -71,7 +71,7 @@
                 <img src="https://i.pinimg.com/1200x/93/86/51/938651d21341d4d0ea6e5e91474487ef.jpg" alt="Background mờ">
             </div>
 
-            <div class="hero-blur"></div> <!-- thêm lớp mờ phía sau ảnh -->
+            <div class="hero-blur"></div>
 
             <div class="hero-img">
                 <img src="https://i.pinimg.com/1200x/f6/44/d5/f644d5876131e9a18d6a0c6d52af523e.jpg"
@@ -219,7 +219,7 @@
                 <h2 class="section-title">Sản phẩm mới</h2>
 
                 <div class="product-grid">
-                    <a href="decor.html" class="product-card">
+                    <a href="decor.jsp" class="product-card">
                         <div class="badge-new">NEW</div>
                         <div class="product-img">
                             <img src="https://i.pinimg.com/1200x/5d/8c/e9/5d8ce97e4cd9c1a5e95bee4f54e5e545.jpg"
@@ -232,7 +232,7 @@
                         </div>
                     </a>
 
-                    <a href="decor.html" class="product-card">
+                    <a href="decor.jsp" class="product-card">
                         <div class="badge-new">NEW</div>
                         <div class="product-img">
                             <img src="https://i.pinimg.com/736x/87/3e/8f/873e8fe9f7b60dadec96991745ca8b30.jpg"
@@ -245,7 +245,7 @@
                         </div>
                     </a>
 
-                    <a href="decor.html" class="product-card">
+                    <a href="decor.jsp" class="product-card">
                         <div class="badge-new">NEW</div>
                         <div class="product-img">
                             <img src="https://i.pinimg.com/1200x/e8/0f/50/e80f50e56adbc55c040158dc32f31026.jpg"
@@ -258,7 +258,7 @@
                         </div>
                     </a>
 
-                    <a href="decor.html" class="product-card">
+                    <a href="decor.jsp" class="product-card">
                         <div class="badge-new">NEW</div>
                         <div class="product-img">
                             <img src="https://i.pinimg.com/1200x/f9/3c/8e/f93c8e2f5aafeb92760dc5db7bfb573e.jpg"
@@ -277,7 +277,7 @@
                 <h2 class="section-title">Sản phẩm bán chạy</h2>
 
                 <div class="product-grid">
-                    <a href="decor.html" class="product-card">
+                    <a href="decor.jsp" class="product-card">
                         <div class="badge-new">HOT</div>
                         <div class="product-img">
                             <img src="https://i.pinimg.com/1200x/5d/8c/e9/5d8ce97e4cd9c1a5e95bee4f54e5e545.jpg"
@@ -290,7 +290,7 @@
                         </div>
                     </a>
 
-                    <a href="decor.html" class="product-card">
+                    <a href="decor.jsp" class="product-card">
                         <div class="badge-new">HOT</div>
                         <div class="product-img">
                             <img src="https://i.pinimg.com/736x/87/3e/8f/873e8fe9f7b60dadec96991745ca8b30.jpg"
@@ -303,7 +303,7 @@
                         </div>
                     </a>
 
-                    <a href="decor.html" class="product-card">
+                    <a href="decor.jsp" class="product-card">
                         <div class="badge-new">HOT</div>
                         <div class="product-img">
                             <img src="https://i.pinimg.com/1200x/e8/0f/50/e80f50e56adbc55c040158dc32f31026.jpg"
@@ -316,7 +316,7 @@
                         </div>
                     </a>
 
-                    <a href="decor.html" class="product-card">
+                    <a href="decor.jsp" class="product-card">
                         <div class="badge-new">HOT</div>
                         <div class="product-img">
                             <img src="https://i.pinimg.com/1200x/f9/3c/8e/f93c8e2f5aafeb92760dc5db7bfb573e.jpg"
@@ -335,59 +335,9 @@
 
 
             <!-- WHY CHOOSE US -->
-            <section class="why-us">
-                <h2 class="section-title center">Vì sao chọn Noble Loft Theory</h2>
 
-                <div class="why-content">
-                    <!-- Ảnh minh họa -->
-                    <div class="why-images">
-                        <img src="https://i.pinimg.com/1200x/33/17/88/33178856c14da121dc71f527597d4805.jpg"
-                            alt="Không gian 1" class="img-1">
-                        <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=700&q=60"
-                            alt="Không gian 2" class="img-2">
-                    </div>
-
-                    <!-- Lý do chọn -->
-                    <div class="why-features">
-                        <div class="feature">
-                            <div class="icon"><i class="fa-solid fa-gem"></i></div>
-                            <div class="text">
-                                <h3>Thiết kế sang trọng, tinh tế</h3>
-                                <p>Phong cách hiện đại kết hợp vật liệu tự nhiên mang lại không gian sống đẳng cấp và
-                                    hài hòa.</p>
-                            </div>
-                        </div>
-
-                        <div class="feature">
-                            <div class="icon"><i class="fa-solid fa-crown"></i></div>
-                            <div class="text">
-                                <h3>Chất liệu cao cấp, bền bỉ</h3>
-                                <p>Nguyên vật liệu được nhập khẩu từ châu Âu, đảm bảo tiêu chuẩn chất lượng và độ bền
-                                    lâu dài.</p>
-                            </div>
-                        </div>
-
-                        <div class="feature">
-                            <div class="icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
-                            <div class="text">
-                                <h3>Dịch vụ tận tâm & chuyên nghiệp</h3>
-                                <p>Đội ngũ tư vấn thiết kế sẵn sàng đồng hành cùng bạn từ khâu ý tưởng đến hoàn thiện.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="feature">
-                            <div class="icon"><i class="fa-solid fa-lightbulb"></i></div>
-                            <div class="text">
-                                <h3>Giải pháp sáng tạo, độc đáo</h3>
-                                <p>Tối ưu không gian và phong cách theo gu thẩm mỹ riêng, tạo điểm nhấn cho ngôi nhà của
-                                    bạn.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
     </main>
+
 
     <!-- NÚT LÊN ĐẦU TRANG -->
     <button id="backToTop" title="Lên đầu trang">
@@ -464,8 +414,6 @@
         </div>
     </footer>
 
-    <script src="js/main.js"></script>
-    <script src="js/header.js"></script>
 
 </body>
 
