@@ -80,15 +80,17 @@
 
     <main class="contact-main">
 
-        <% if ("true".equals(request.getParameter("success"))) { %>
-        <div id="toast-success" class="toast-success show">
-            <i class="fa-solid fa-circle-check"></i>
-            Gửi liên hệ thành công!
-        </div>
-        <% } %>
+
 
 
         <h1>Liên hệ với chúng tôi</h1>
+
+        <% if ("true".equals(request.getParameter("success"))) { %>
+        <div id="toast-success" class="toast-success show">
+            <i>Gửi liên hệ thành công!</i>
+
+        </div>
+        <% } %>
         <p>Hãy để lại lời nhắn hoặc liên hệ trực tiếp nếu bạn có bất kỳ thắc mắc nào.
             Chúng tôi rất hân hạnh được hỗ trợ bạn!</p>
 
@@ -110,27 +112,55 @@
             </div>
 
 
-
-            <!-- FORM GỬI LIÊN HỆ -->
             <form class="contact-form"
                   action="${pageContext.request.contextPath}/contact"
                   method="post">
 
-
-
-            <h2>Gửi lời nhắn cho chúng tôi</h2>
-                <label for="name">Họ và tên</label>
-                <input type="text" id="name" name="name" placeholder="Nhập họ và tên của bạn" required>
+                <h2>Gửi lời nhắn cho chúng tôi</h2>
+                <label for="full_name">Họ và tên</label>
+                <input type="text"
+                       id="full_name"
+                       name="full_name"
+                       placeholder="Nhập họ và tên của bạn"
+                       required>
 
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="Nhập email của bạn" required>
+                <input type="email"
+                       id="email"
+                       name="email"
+                       placeholder="Nhập email của bạn"
+                       required>
 
                 <label for="message">Nội dung</label>
-                <textarea id="message" name="message" rows="5" placeholder="Nhập nội dung liên hệ..."
-                    required></textarea>
+                <textarea id="message"
+                          name="message"
+                          rows="5"
+                          placeholder="Nhập nội dung liên hệ..."
+                          required></textarea>
 
                 <button type="submit">Gửi liên hệ</button>
             </form>
+
+            <!-- FORM GỬI LIÊN HỆ -->
+<%--            <form class="contact-form"--%>
+<%--                  action="${pageContext.request.contextPath}/contact"--%>
+<%--                  method="post">--%>
+<%--            <h2>Gửi lời nhắn cho chúng tôi</h2>--%>
+<%--                <label for="name">Họ và tên</label>--%>
+<%--                <input type="text" id="name" name="name" placeholder="Nhập họ và tên của bạn" required>--%>
+
+<%--                <label for="email">Email</label>--%>
+<%--                <input type="email" id="email" name="email" placeholder="Nhập email của bạn" required>--%>
+
+<%--                <label for="message">Nội dung</label>--%>
+<%--                <textarea id="message" name="message" rows="5" placeholder="Nhập nội dung liên hệ..."--%>
+<%--                    required></textarea>--%>
+
+<%--                <button type="submit">Gửi liên hệ</button>--%>
+<%--            </form>--%>
+
+
+
         </div>
     </main>
 
@@ -211,7 +241,6 @@
             // Ẩn sau 5s
             setTimeout(() => {
                 toast.classList.remove("show");
-
                 // xoá hẳn khỏi DOM sau animation
                 setTimeout(() => toast.remove(), 400);
             }, 2000);
