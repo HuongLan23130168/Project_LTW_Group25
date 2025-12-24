@@ -1,32 +1,24 @@
 package com.example.demoweb1.dao;
 
-import com.example.demoweb1.util.DBConnection;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
+import com.example.demoweb1.model.Contact;
+import org.jdbi.v3.core.Jdbi;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+public class ContactDAO {
 
-@WebServlet(name = "ContactDAO ", value = "/ContactDAO ")
-public class ContactDAO extends HttpServlet {
+    public static void insert(Contact contact) {
 
-        public static void save(String name, String email, String message) {
-            try {
-                Connection conn = DBConnection.getConnection();
+        Jdbi jdbi = DBDAO.get();
 
-                String sql = "INSERT INTO contact(name, email, message) VALUES (?, ?, ?)";
-                PreparedStatement ps = conn.prepareStatement(sql);
-
-                ps.setString(1, name);
-                ps.setString(2, email);
-                ps.setString(3, message);
-
-                ps.executeUpdate();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        jdbi.useHandle(handle ->
+                handle.createUpdate(
+                                "INSERT INTO contacts(full_name, email, message, status) " +
+                                        "VALUES (:fullName, :email, :message, :status)"
+                        )
+                        .bind("fullName", contact.getFullName())
+                        .bind("email", contact.getEmail())
+                        .bind("message", contact.getMessage())
+                        .bind("status", contact.getStatus())
+                        .execute()
+        );
     }
+}
