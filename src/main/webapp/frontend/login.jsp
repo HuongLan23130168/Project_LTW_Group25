@@ -1,107 +1,123 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Đăng ký / Đăng nhập</title>
-    <link rel="stylesheet" href="css/login.css" />
+    <link rel="stylesheet" href="css/login.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
 
 <body>
-    <style>
-        @import url("https://fonts.googleapis.com/css?family=Fira+Sans");
+<style>
+    @import url("https://fonts.googleapis.com/css?family=Fira+Sans");
 
-        html,
-        body {
-            height: 100%;
-            margin: 0;
-            background-color: #E1E8EE;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: "Fira Sans", Helvetica, Arial, sans-serif;
-            font-size: 14px;
-        }
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        background-color: #E1E8EE;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Fira Sans", Helvetica, Arial, sans-serif;
+        font-size: 14px;
+    }
 
-        .form-structor {
-            background-color: #222;
-            border-radius: 15px;
-            height: 600px;
-            width: 400px;
-            position: relative;
-            overflow: hidden;
-        }
+    .form-structor {
+        background-color: #222;
+        border-radius: 15px;
+        height: 600px;
+        width: 400px;
+        position: relative;
+        overflow: hidden;
+    }
 
-        .form-structor::after {
-            content: "";
-            opacity: 0.8;
-            position: absolute;
-            inset: 0;
-            background: url("https://i.postimg.cc/ncBkxWWJ/bgr-login.jpg") no-repeat left bottom / 500px;
-        }
+    .form-structor::after {
+        content: "";
+        opacity: 0.8;
+        position: absolute;
+        inset: 0;
+        background: url("https://i.postimg.cc/ncBkxWWJ/bgr-login.jpg") no-repeat left bottom / 500px;
+    }
 
-        .switch-text {
-            text-align: center;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.8);
-        }
+    .switch-text {
+        text-align: center;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.8);
+    }
 
-        .switch-text .switch-btn {
-            margin-top: 10px;
-            color: #74512D;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
+    .switch-text .switch-btn {
+        margin-top: 10px;
+        color: #74512D;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
 
-        .switch-text .switch-btn:hover {
-            color: #A79277;
-            text-decoration: underline;
-        }
-    </style>
+    .switch-text .switch-btn:hover {
+        color: #A79277;
+        text-decoration: underline;
+    }
+</style>
 
-    <div class="form-structor">
-        <!-- FORM ĐĂNG KÝ -->
-        <div class="signup">
-            <h2 class="form-title">Đăng ký</h2>
+<div class="form-structor">
+    <!-- FORM ĐĂNG KÝ -->
+    <div class="signup">
+        <h2 class="form-title">Đăng ký</h2>
 
-            <div class="form-holder">
-                <input type="text" class="input" placeholder="Họ và tên" required />
-                <input type="email" class="input" placeholder="Email" required />
-                <input type="password" class="input" id="signupPassword" placeholder="Mật khẩu" required />
-                <input type="password" class="input" id="confirmPassword" placeholder="Xác nhận mật khẩu" required />
-            </div>
-
-            <a href="#" class="submit-btn">Đăng ký</a>
-
-            <p class="switch-text">Đã có tài khoản?
-                <span id="signin" class="switch-btn">Đăng nhập</span>
-            </p>
+        <div class="form-holder">
+            <input type="text" class="input" placeholder="Họ và tên" required />
+            <input type="email" class="input" placeholder="Email" required />
+            <input type="password" class="input" id="signupPassword" placeholder="Mật khẩu" required />
+            <input type="password" class="input" id="confirmPassword" placeholder="Xác nhận mật khẩu" required />
         </div>
 
-        <!-- FORM ĐĂNG NHẬP -->
-        <div class="signin slide-up">
-            <div class="center">
-                <h2 class="form-title">Đăng nhập</h2>
+        <a href="#" class="submit-btn">Đăng ký</a>
 
-                <div class="form-holder">
-                    <input type="email" class="input" placeholder="Email" required />
-                    <input type="password" class="input" id="signinPassword" placeholder="Mật khẩu" required />
-                </div>
+        <p class="switch-text">Đã có tài khoản?
+            <span id="signin" class="switch-btn">Đăng nhập</span>
+        </p>
 
-                <a href="forgot.jsp" class="forgot-password">Quên mật khẩu?</a>
-                <a href="home.jsp" class="submit-btn">Đăng nhập</a>
 
-                <p class="switch-text">Chưa có tài khoản?
-                    <span id="signup" class="switch-btn">Đăng ký</span>
-                </p>
+    </div>
+
+    <!-- FORM ĐĂNG NHẬP -->
+    <div class="signin slide-up">
+        <div class="center">
+            <h2 class="form-title">Đăng nhập</h2>
+
+            <div class="form-holder">
+                <input type="email" class="input" placeholder="Email" required />
+                <input type="password" class="input" id="signinPassword" placeholder="Mật khẩu" required />
+            </div>
+
+            <a href="forgot.jsp" class="forgot-password">Quên mật khẩu?</a>
+            <a href="home.jsp" class="submit-btn">Đăng nhập</a>
+
+            <p class="switch-text">Chưa có tài khoản?
+                <span id="signup" class="switch-btn">Đăng ký</span>
+            </p>
+
+            <p class="divider">Or</p>
+
+            <div class="social">
+                <a href="#" class="btn-social gg">
+                    <i class="fab fa-google"></i>Đăng nhập bằng Google
+                </a>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="js/login.js"></script>
+<script src="js/login.js"></script>
 </body>
 
 </html>
