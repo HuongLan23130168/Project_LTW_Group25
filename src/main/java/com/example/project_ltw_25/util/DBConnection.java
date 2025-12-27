@@ -1,10 +1,7 @@
 package com.example.demoweb1.util;
 
-import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-
-import java.io.IOException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,13 +9,19 @@ import java.sql.DriverManager;
 @WebServlet(name = "DBConnection", value = "/DBConnection")
 public class DBConnection extends HttpServlet {
 
+        public static Connection getConnection() {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                return DriverManager.getConnection(
+                        "jdbc:mysql://localhost:3306/ltw_group25?useUnicode=true&characterEncoding=UTF-8",
+                        "root",
+                        ""
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
 
-    private static final String URL = "jdbc:mysql://localhost:3306/ten_database";
-    private static final String USER = "root";
-    private static final String PASS = "";
-
-    public static Connection getConnection() throws Exception {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        return DriverManager.getConnection(URL, USER, PASS);
     }
+
 }
