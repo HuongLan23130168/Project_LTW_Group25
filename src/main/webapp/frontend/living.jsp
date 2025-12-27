@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -80,74 +81,92 @@
                     <span class="filter-icon"><i class="fa-solid fa-chevron-down"></i></span>
                 </label>
                 <div class="options" style="display: none;">
-                    <div><input type="radio" name="price" value="all" checked> Tất cả</div>
-                    <div><input type="radio" name="price" value="1"> Dưới 500.000₫</div>
-                    <div><input type="radio" name="price" value="2"> 500.000₫ - 1.000.000₫</div>
-                    <div><input type="radio" name="price" value="3"> 1.000.000₫ - 3.000.000₫</div>
-                    <div><input type="radio" name="price" value="4"> Trên 3.000.000₫</div>
+                    <div><input type="radio" name="priceRange"
+                                value="all"${empty param.priceRange || param.priceRange=='all'?'checked':''}>Tất cả
+                    </div>
+                    <div><input type="radio" name="priceRange" value="1" ${param.priceRange=='1'?'checked':''}> Dưới
+                        500.000₫
+                    </div>
+                    <div><input type="radio" name="priceRange" value="2" ${param.priceRange=='2'?'checked':''}> 500.000₫
+                        - 1.000.000₫
+                    </div>
+                    <div><input type="radio" name="priceRange" value="3" ${param.priceRange=='3'?'checked':''}>
+                        1.000.000₫ - 3.000.000₫
+                    </div>
+                    <div><input type="radio" name="priceRange" value="4" ${param.priceRange=='4'?'checked':''}> Trên
+                        3.000.000₫
+                    </div>
                 </div>
             </div>
 
             <!-- === DANH MỤC === -->
+            <c:set var="cats" value="${fn:join(paramValues.category, ',')}"/>
             <div class="filter-group">
                 <label class="filter-label" style="cursor: pointer;">
                     <span>Danh mục</span>
                     <span class="filter-icon"><i class="fa-solid fa-chevron-down"></i></span>
                 </label>
                 <div class="options" style="display: none;">
-                    <div><input type="checkbox" name="category" value="cay"> Cây</div>
-                    <div><input type="checkbox" name="category" value="hoa"> Hoa</div>
-                    <div><input type="checkbox" name="category" value="den"> Đèn</div>
-                    <div><input type="checkbox" name="category" value="phukien"> Tượng & Phụ kiện</div>
-                    <div><input type="checkbox" name="category" value="dongho"> Đồng hồ</div>
-                    <div><input type="checkbox" name="category" value="tranh"> Tranh</div>
-                    <div><input type="checkbox" name="category" value="guong"> Gương</div>
-                    <div><input type="checkbox" name="category" value="nen"> Nến & Tinh dầu</div>
-                    <div><input type="checkbox" name="category" value="lo"> Bình & Lọ hoa</div>
-                    <div><input type="checkbox" name="category" value="changoi"> Chăn & Gối</div>
-                    <div><input type="checkbox" name="category" value="ke"> Kệ & Giá đỡ mini</div>
-                    <div><input type="checkbox" name="category" value="ban"> Bàn decor</div>
-                    <div><input type="checkbox" name="category" value="ghe"> Ghế decor</div>
+                    <%--                    <div><input type="checkbox" name="category" value="cay"> Cây</div>--%>
+                    <%--                    <div><input type="checkbox" name="category" value="hoa"> Hoa</div>--%>
+                    <%--                    <div><input type="checkbox" name="category" value="den"> Đèn</div>--%>
+                    <%--                    <div><input type="checkbox" name="category" value="phukien"> Tượng & Phụ kiện</div>--%>
+                    <%--                    <div><input type="checkbox" name="category" value="dongho"> Đồng hồ</div>--%>
+                    <%--                    <div><input type="checkbox" name="category" value="tranh"> Tranh</div>--%>
+                    <%--                    <div><input type="checkbox" name="category" value="guong"> Gương</div>--%>
+                    <%--                    <div><input type="checkbox" name="category" value="nen"> Nến & Tinh dầu</div>--%>
+                    <%--                    <div><input type="checkbox" name="category" value="lo"> Bình & Lọ hoa</div>--%>
+                    <%--                    <div><input type="checkbox" name="category" value="changoi"> Chăn & Gối</div>--%>
+                    <%--                    <div><input type="checkbox" name="category" value="ke"> Kệ & Giá đỡ mini</div>--%>
+                    <%--                    <div><input type="checkbox" name="category" value="ban"> Bàn decor</div>--%>
+                    <%--                    <div><input type="checkbox" name="category" value="ghe"> Ghế decor</div>--%>
+                    <div><input type="checkbox" name="category" value="CAY" ${fn:contains(cats,'CAY')?'checked':''}> Cây
+                    </div>
+                    <div><input type="checkbox" name="category" value="HOA" ${fn:contains(cats,'HOA')?'checked':''}> Hoa
+                    </div>
+                    <div><input type="checkbox" name="category" value="DEN" ${fn:contains(cats,'DEN')?'checked':''}> Đèn
+                    </div>
+                    <div><input type="checkbox" name="category" value="TRANH" ${fn:contains(cats,'TRANH')?'checked':''}>Tranh</div>
                 </div>
             </div>
 
             <!-- === PHÒNG === -->
+            <c:set var="rooms" value="${fn:join(paramValues.room, ',')}"/>
             <div class="filter-group">
                 <label class="filter-label" style="cursor: pointer;">
-                    <span>Phòng</span>
+                    <span>Danh mục</span>
                     <span class="filter-icon"><i class="fa-solid fa-chevron-down"></i></span>
                 </label>
                 <div class="options" style="display: none;">
-                    <div><input type="checkbox" name="room" value="livingroom"> Phòng khách</div>
-                    <div><input type="checkbox" name="room" value="bedroom"> Phòng ngủ</div>
-                    <div><input type="checkbox" name="room" value="kitchen"> Phòng bếp</div>
-                    <div><input type="checkbox" name="room" value="balcony"> Ban công</div>
+                    <div>
+                        <input type="checkbox" name="room" value="1"
+                        ${fn:contains(rooms,'1')?'checked':''}>
+                        Phòng khách
+                    </div>
+                    <div>
+                        <input type="checkbox" name="room" value="2"
+                        ${fn:contains(rooms,'2')?'checked':''}>
+                        Phòng bếp
+                    </div>
+                    <div>
+                        <input type="checkbox" name="room" value="3"
+                        ${fn:contains(rooms,'3')?'checked':''}>
+                        Phòng ngủ
+                    </div>
+                    <div>
+                        <input type="checkbox" name="room" value="4"
+                        ${fn:contains(rooms,'4')?'checked':''}>
+                        Phòng làm việc
+                    </div>
+                    <div>
+                        <input type="checkbox" name="room" value="5"
+                        ${fn:contains(rooms,'5')?'checked':''}>
+                        Ban công
+                    </div>
                 </div>
             </div>
 
-            <!-- === MỨC SẮC === -->
-            <div class="filter-group">
-                <label class="filter-label" style="cursor: pointer;">
-                    <span>Màu sắc</span>
-                    <span class="filter-icon"><i class="fa-solid fa-chevron-down"></i></span>
-                </label>
-                <div class="options" style="display: none;">
-                    <div><input type="checkbox" name="color" value="white"> Trắng</div>
-                    <div><input type="checkbox" name="color" value="beige"> Be</div>
-                    <div><input type="checkbox" name="color" value="black"> Đen</div>
-                    <div><input type="checkbox" name="color" value="pink"> Hồng</div>
-                    <div><input type="checkbox" name="color" value="brown"> Nâu</div>
-                    <div><input type="checkbox" name="color" value="grey"> Xám</div>
-                    <div><input type="checkbox" name="color" value="green"> Xanh lá</div>
-                    <div><input type="checkbox" name="color" value="blue"> Xanh dương</div>
-                    <div><input type="checkbox" name="color" value="yellow"> Vàng</div>
-                    <div><input type="checkbox" name="color" value="red"> Đỏ</div>
-                    <div><input type="checkbox" name="color" value="orange"> Cam</div>
-                    <div><input type="checkbox" name="color" value="sliver"> Bạc</div>
-                    <div><input type="checkbox" name="color" value="purple"> Tím</div>
-                </div>
-            </div>
-
+            <input type="hidden" name="sort" value="${param.sort}">
             <button type="submit" class="filter-btn">Áp dụng</button>
         </aside>
     </form>
@@ -157,18 +176,39 @@
     <main>
         <div class="sort">
             <div class="category-header">
-                <h2 id="categoryName">Danh mục: Tất cả sản phẩm</h2>
+                <h2 id="categoryName">Sản phẩm</h2>
             </div>
             <div class="sortProducts">
                 <label for="sortProducts">Sắp xếp: </label>
-                <select id="sortProducts">
-                    <option value="default">Mặc định</option>
-                    <option value="price-asc">Giá tăng dần</option>
-                    <option value="price-desc">Giá giảm dần</option>
-                    <option value="stock-asc">Tồn kho ít → nhiều</option>
-                    <option value="stock-desc">Tồn kho nhiều → ít</option>
-                </select>
+
+                <%--                <select name="sort">--%>
+                <%--                    <option value="default">Mặc định</option>--%>
+                <%--                    <option value="price-asc" ${param.sort=='price-asc'?'selected':''}>Giá tăng dần</option>--%>
+                <%--                    <option value="price-desc" ${param.sort=='price-desc'?'selected':''}>Giá giảm dần</option>--%>
+                <%--                    <option value="stock-asc" ${param.sort=='stock-asc'?'selected':''}>Tồn kho ít → nhiều</option>--%>
+                <%--                    <option value="stock-desc" ${param.sort=='stock-desc'?'selected':''}>Tồn kho nhiều → ít</option>--%>
+                <%--                </select>--%>
+                <%--            </div>--%>
+                <form method="get" action="${pageContext.request.contextPath}/list-product">
+                    <select name="sort" onchange="this.form.submit()">
+                        <option value="">Mặc định</option>
+                        <option value="price-asc" ${param.sort=='price-asc'?'selected':''}>Giá ↑</option>
+                        <option value="price-desc" ${param.sort=='price-desc'?'selected':''}>Giá ↓</option>
+                    </select>
+
+                    <input type="hidden" name="priceRange" value="${param.priceRange}">
+                    <c:forEach var="c" items="${paramValues.category}">
+                        <input type="hidden" name="category" value="${c}">
+                    </c:forEach>
+                    <c:forEach var="r" items="${paramValues.room}">
+                        <input type="hidden" name="room" value="${r}">
+                    </c:forEach>
+                    <c:forEach var="cl" items="${paramValues.color}">
+                        <input type="hidden" name="color" value="${cl}">
+                    </c:forEach>
+                </form>
             </div>
+
         </div>
 
         <!-- === DANH SÁCH SẢN PHẨM === -->
@@ -199,9 +239,27 @@
         </div>
         <!-- PHÂN TRANG -->
         <div id="pagination">
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
+            <%--            <button class="page-btn active">1</button>--%>
+            <%--            <button class="page-btn">2</button>--%>
+            <%--            <button class="page-btn">3</button>--%>
+            <c:forEach var="i" begin="1" end="${totalPages}">
+                <c:url var="pageUrl" value="/list-product">
+                    <c:param name="page" value="${i}"/>
+                    <c:param name="sort" value="${param.sort}"/>
+                    <c:param name="priceRange" value="${param.priceRange}"/>
+                    <c:forEach var="c" items="${paramValues.category}">
+                        <c:param name="category" value="${c}"/>
+                    </c:forEach>
+                    <c:forEach var="r" items="${paramValues.room}">
+                        <c:param name="room" value="${r}"/>
+                    </c:forEach>
+                    <c:forEach var="cl" items="${paramValues.color}">
+                        <c:param name="color" value="${cl}"/>
+                    </c:forEach>
+                </c:url>
+
+                <a class="page-btn ${i==page?'active':''}" href="${pageUrl}">${i}</a>
+            </c:forEach>
         </div>
     </main>
 </div>
