@@ -7,7 +7,7 @@ import org.jdbi.v3.core.statement.StatementException;
 public class DBDAO {
     // Thông tin kết nối
     private static final String HOST = "localhost";
-    private static final String PORT = "3307";
+    private static final String PORT = "3306";
     private static final String DATABASE = "ltw_group25";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "";
