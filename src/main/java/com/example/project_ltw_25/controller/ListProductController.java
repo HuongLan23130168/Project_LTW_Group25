@@ -15,19 +15,36 @@ public class ListProductController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String priceRange = request.getParameter("priceRange");
-        String[] categories = request.getParameterValues("category");
-        String[] colors = request.getParameterValues("color");
+        String[] rooms = request.getParameterValues("room"); // PHÒNG
+        String[] categories = request.getParameterValues("category");         // CÂY / HOA / ĐÈN
         String sort = request.getParameter("sort");
 
+        int page = 1;
+        int size = 9;
+
+        try {
+            if (request.getParameter("page") != null)
+                page = Integer.parseInt(request.getParameter("page"));
+        } catch (Exception ignored) {}
+
+        System.out.println("priceRange = " + priceRange);
+        System.out.println("sort = " + sort);
+        System.out.println("rooms = " + java.util.Arrays.toString(rooms));
+        System.out.println("categories = " + java.util.Arrays.toString(categories));
         ProductDao dao = new ProductDao();
+
         List<Product> products = dao.filterProducts(
-                priceRange, categories, colors, sort
+                priceRange, rooms, categories, sort, page, size
         );
 
+        int total = dao.countProducts(priceRange, rooms, categories);
+        int totalPages = (int) Math.ceil((double) total / size);
 
         request.setAttribute("products", products);
-        request.getRequestDispatcher("/frontend/living.jsp")
-                .forward(request, response);
+        request.setAttribute("page", page);
+        request.setAttribute("totalPages", totalPages);
+
+        request.getRequestDispatcher("/frontend/living.jsp").forward(request, response);
     }
 
     @Override
