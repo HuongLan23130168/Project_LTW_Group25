@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -61,7 +62,7 @@
                 </button>
 
                 <div class="dropdown-menu">
-                    <a href="account.html"><i class="fas fa-user"></i> Tài khoản</a>
+                    <a href="account.jsp"><i class="fas fa-user"></i> Tài khoản</a>
                     <a href="index.jsp"><i class="fas fa-right-from-bracket"></i> Đăng xuất</a>
                 </div>
             </div>
@@ -90,6 +91,7 @@
                         <th>Email</th>
                         <th>SĐT</th>
                         <th>Lịch sử</th>
+                        <th>Ngày tạo</th>
                         <th>Chi tiết</th>
                     </tr>
                 </thead>
@@ -101,8 +103,9 @@
                             <td>${c.email}</td>
                             <td>${c.phone}</td>
                             <td>${c.totalOrders} đơn</td>
+                            <td><fmt:formatDate value="${c.createdAt}" pattern="dd/MM/yyyy HH:mm" /></td>
                             <td>
-                                <a href="customer-detail?id=${c.id}" class="view-btn">Xem</a>
+                                <a href="${pageContext.request.contextPath}/customer-detail?id=${c.id}" class="view-btn">Xem</a>
                             </td>
                         </tr>
                     </c:forEach>
