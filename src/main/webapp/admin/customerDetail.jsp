@@ -1,212 +1,119 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Noble Loft Theory - Admin</title>
-    <link rel="stylesheet" href="css/style.css"/>
-    <link rel="stylesheet" href="css/customerDetail.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết khách hàng - ${customer.fullName}</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/style.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/customerDetail.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 </head>
 
 <body>
-<!-- === SIDEBAR === -->
-<div class="sidebar" id="sidebar">
-    <div class="logo">
-        <a href="dashboard.jsp">Noble Loft Theory</a>
-    </div>
-    <ul>
-        <li>
-            <a href="dashboard.jsp"><i class="fas fa-chart-line"></i> Dashboard</a>
-        </li>
-        <li>
-            <a href="products.jsp"><i class="fas fa-box"></i> Sản phẩm</a>
-        </li>
-        <li>
-            <a href="orders.jsp"><i class="fas fa-cart-shopping"></i> Đơn hàng</a>
-        </li>
-        <li class="active">
-            <a href="customers.jsp"><i class="fas fa-users"></i> Khách hàng</a>
-        </li>
-        <li>
-            <a href="notifi.jsp"><i class="fas fa-bell"></i> Thông báo</a>
-        </li>
-        <li>
-            <a href="account.jsp"><i class="fas fa-gear"></i> Tài khoản</a>
-        </li>
-    </ul>
-</div>
-
-<!-- === HEADER === -->
-<header class="header">
-    <div class="header-left">
-        <div class="search-container">
-            <i class="fa-solid fa-magnifying-glass" style="color: #74512d;"></i>
-            <input type="text" placeholder="Tìm kiếm" class="search-input"/>
-        </div>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <!-- Sidebar content -->
     </div>
 
-    <div class="header-right">
-        <!-- Nút thông báo -->
-        <div class="notify-wrapper">
-            <a href="notifi.jsp" class="icon-button">
-                <i class="fa-solid fa-bell"></i>
-                <span id="notifyCount" class="notify-badge">3</span>
-            </a>
+    <!-- Header -->
+    <header class="header">
+        <!-- Header content -->
+    </header>
+
+    <main class="main-content">
+        <div class="breadcrumb">
+            <a href="${pageContext.request.contextPath}/customers">Khách hàng</a> /
+            <span class="current">${customer.fullName}</span>
         </div>
 
-        <!-- Hồ sơ người dùng -->
-        <div class="profile-dropdown">
-            <button class="icon-button user-btn">
-                <i class="fa-solid fa-user"></i>
-            </button>
-
-            <div class="dropdown-menu">
-                <a href="account.jsp"><i class="fas fa-user"></i> Tài khoản</a>
-                <a href="index.jsp"><i class="fas fa-right-from-bracket"></i> Đăng xuất</a>
-            </div>
-        </div>
-    </div>
-</header>
-
-<!-- === DASHBOARD === -->
-<main class="main-content">
-    <!-- ===== BREADCRUMB / TIẾN TRÌNH ===== -->
-    <div class="breadcrumb">
-        <a href="customers.jsp">Khách hàng</a> &#47;
-        <span class="current">Chi tiết khách hàng</span>
-
-    </div>
-    <div class="title-cus">
-        <h2>Chi tiết khách hàng</h2>
-    </div>
-    <div class="customer-detail-container">
-
-        <div class="left-card">
+        <div class="customer-detail-container">
+            <!-- Left Card for Personal Info -->
             <div class="detail-card-left">
-                <div class="customer-info">
-
-                    <h3>Thông tin khách hàng</h3>
-                    <table>
-                        <tr>
-                            <td>Tên</td>
-                            <td>Nguyễn Qua Môn</td>
-                        </tr>
-                        <tr>
-                            <td>Giới tính</td>
-                            <td>Nam</td>
-                        </tr>
-                        <tr>
-                            <td>Ngày sinh</td>
-                            <td>12/04/1998</td>
-                        </tr>
-                        <tr>
-                            <td>Email</td>
-                            <td>quamon@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>SDT</td>
-                            <td>09356286432</td>
-                        </tr>
-                        <tr>
-                            <td>Địa chỉ</td>
-                            <td>khu phố 35, Phường Tiên Tiến,Thành Phố Biên Hòa, Đồng Nai</td>
-                        </tr>
-
-                    </table>
+                <div class="title-cus">
+                    <h2>Thông tin cá nhân</h2>
                 </div>
-                <div class="back-to-customers">
-                    <a href="customers.jsp">Quay lại</a>
+                <div class="customer-info">
+                    <p><strong>Họ và tên:</strong> ${customer.fullName}</p>
+                    <p><strong>Email:</strong> ${customer.email}</p>
+                    <p><strong>Số điện thoại:</strong> ${customer.phone}</p>
+                    <p><strong>Giới tính:</strong> ${not empty customer.gender ? customer.gender : 'Chưa cập nhật'}</p>
+                    <p><strong>Ngày sinh:</strong> ${not empty customer.birth ? customer.birth : 'Chưa cập nhật'}</p>
+                    <p><strong>Địa chỉ:</strong> ${not empty customer.address ? customer.address : 'Chưa cập nhật'}</p>
                 </div>
             </div>
-        </div>
 
-
-        <div class="right-card">
+            <!-- Right Card for Stats -->
             <div class="detail-card-right">
+                <div class="title-cus">
+                    <h2>Thống kê</h2>
+                </div>
                 <div class="customer-stats">
                     <div class="stat-card">
                         <h3>Tổng đơn hàng</h3>
-                        <p>12</p>
+                        <p>${orderList.size()}</p>
                     </div>
                     <div class="stat-card">
                         <h3>Tổng tiền đã mua</h3>
-                        <p>25,400,000 ₫</p>
+                        <p><fmt:formatNumber value="${totalSpent}" type="currency" currencySymbol="₫" /></p>
                     </div>
                     <div class="stat-card">
                         <h3>Đơn hàng gần nhất</h3>
-                        <p>#DH1025 - 05/11/2025</p>
+                        <c:if test="${not empty latestOrder}">
+                            <p>#${latestOrder.id} - <fmt:formatDate value="${latestOrder.orderDate}" pattern="dd/MM/yyyy" /></p>
+                        </c:if>
+                        <c:if test="${empty latestOrder}">
+                            <p>Chưa có</p>
+                        </c:if>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="recent-orders">
-                    <h3>Lịch sử mua hàng</h3>
-                    <table>
-                        <thead>
+        <!-- Order History Section -->
+        <div class="order-history-card">
+            <div class="title-cus">
+                <h2>Lịch sử mua hàng</h2>
+            </div>
+            <div class="recent-orders">
+                <table>
+                    <thead>
                         <tr>
                             <th>Mã đơn</th>
                             <th>Ngày đặt</th>
                             <th>Tổng tiền</th>
                             <th>Trạng thái</th>
                         </tr>
-                        </thead>
-                        <div>
+                    </thead>
+                    <tbody>
+                        <c:if test="${empty orderList}">
                             <tr>
-                                <td>#DH1025</td>
-                                <td>05/11/2025</td>
-                                <td>2,500,000₫</td>
-                                <td><span class="status completed"> Hoàn tất</span></td>
+                                <td colspan="4" style="text-align: center; padding: 20px;">Chưa có đơn hàng nào.</td>
                             </tr>
+                        </c:if>
+                        <c:forEach items="${orderList}" var="order">
                             <tr>
-                                <td>#DH1012</td>
-                                <td>28/10/2025</td>
-                                <td>1,800,000₫</td>
-                                <td><span class="status completed"> Hoàn tất</span></td>
+                                <td>#${order.id}</td>
+                                <td><fmt:formatDate value="${order.orderDate}" pattern="dd/MM/yyyy" /></td>
+                                <td><fmt:formatNumber value="${order.totalAmount}" type="currency" currencySymbol="₫" /></td>
+                                <td>
+                                    <span class="status ${order.status.toLowerCase()}">${order.status}</span>
+                                </td>
                             </tr>
-
-                            <tr>
-                                <td>#DH1013</td>
-                                <td>30/10/2025</td>
-                                <td>11,800,000₫</td>
-                                <td><span class="status completed"> Hoàn tất</span></td>
-                            </tr>
-                            <tr>
-                                <td>#DH1013</td>
-                                <td>11/11/2025</td>
-                                <td>10,000,000₫</td>
-                                <td><span class="status completed"> Hoàn tất</span></td>
-                            </tr>
-
-                            <tr>
-                                <td>#DH1016</td>
-                                <td>30/10/2025</td>
-                                <td>6,100,000₫</td>
-                                <td><span class="status completed"> Hoàn tất</span></td>
-
-                            <tr>
-                                <td>#DH1012</td>
-                                <td>3/12/2025</td>
-                                <td>400,000₫</td>
-                                <td><span class="status completed"> Hoàn tất</span></td>
-                            </tr>
-                            <tr>
-                                <td>#DH1012</td>
-                                <td>30/10/2025</td>
-                                <td>11,800,000₫</td>
-                                <td><span class="status failed">Thất bại</span></td>
-                            </tr>
-                            </tbody>
-                        </div>
-                    </table>
-                </div>
+                        </c:forEach>
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
-</main>
 
-<script src="js/main.js"></script>
+        <div class="back-to-customers">
+            <a href="${pageContext.request.contextPath}/customers">Quay lại</a>
+        </div>
+    </main>
+
+    <script src="${pageContext.request.contextPath}/admin/js/main.js"></script>
 </body>
-
 </html>
