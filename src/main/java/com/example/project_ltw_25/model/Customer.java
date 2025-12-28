@@ -1,23 +1,20 @@
 package com.example.demoweb1.model;
 
+import java.sql.Timestamp;
 
 public class Customer {
     private int id;
     private String fullName;
-    private String birth;
-    private String gender;
     private String email;
-    private String password;
     private String phone;
+    private int totalOrders;
+    private Timestamp createdAt;
+    private String gender;
+    private String birth;
     private String role;
     private String address;
-    private int totalOrders;
-    private String created_at;
-    private String updated_at;
 
-    public Customer() {
-    }
-
+    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -34,12 +31,36 @@ public class Customer {
         this.fullName = fullName;
     }
 
-    public String getBirth() {
-        return birth;
+    public String getEmail() {
+        return email;
     }
 
-    public void setBirth(String birth) {
-        this.birth = birth;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public int getTotalOrders() {
+        return totalOrders;
+    }
+
+    public void setTotalOrders(int totalOrders) {
+        this.totalOrders = totalOrders;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getGender() {
@@ -50,28 +71,12 @@ public class Customer {
         this.gender = gender;
     }
 
-    public String getEmail() {
-        return email;
+    public String getBirth() {
+        return birth;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setBirth(String birth) {
+        this.birth = birth;
     }
 
     public String getRole() {
@@ -88,29 +93,5 @@ public class Customer {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public int getTotalOrders() {
-        return totalOrders;
-    }
-
-    public void setTotalOrders(int totalOrders) {
-        this.totalOrders = totalOrders;
-    }
-
-    public String getCreated_at() {
-        return created_at;
-    }
-
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
-    }
-
-    public String getUpdated_at() {
-        return updated_at;
-    }
-
-    public void setUpdated_at(String updated_at) {
-        this.updated_at = updated_at;
     }
 }
