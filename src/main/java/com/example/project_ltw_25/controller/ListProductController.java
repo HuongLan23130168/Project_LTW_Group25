@@ -27,6 +27,19 @@ public class ListProductController extends HttpServlet {
                 page = Integer.parseInt(request.getParameter("page"));
         } catch (Exception ignored) {}
 
+        String roomName = "Tất cả sản phẩm";
+        if (rooms != null && rooms.length == 1) {
+            switch (rooms[0]) {
+                case "1" -> roomName = "Phòng khách";
+                case "2" -> roomName = "Phòng bếp";
+                case "3" -> roomName = "Phòng ngủ";
+                case "4" -> roomName = "Phòng làm việc";
+                case "5" -> roomName = "Ban công";
+            }
+        }
+        request.setAttribute("roomName", roomName);
+
+
         System.out.println("priceRange = " + priceRange);
         System.out.println("sort = " + sort);
         System.out.println("rooms = " + java.util.Arrays.toString(rooms));

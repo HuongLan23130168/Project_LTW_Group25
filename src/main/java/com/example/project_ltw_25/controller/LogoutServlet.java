@@ -10,12 +10,15 @@ import java.io.IOException;
 public class LogoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getSession().invalidate();
-        response.sendRedirect("/frontend/login.jsp");
-    }
+        HttpSession session = request.getSession();
+        session.invalidate(); // Xóa sạch session
+
+        // Tạo một request mới quay về login kèm thông báo
+        request.setAttribute("successMessage", "Bạn đã đăng xuất thành công!");
+        response.sendRedirect(request.getContextPath() + "/home");    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        doGet(request, response);
     }
 }
