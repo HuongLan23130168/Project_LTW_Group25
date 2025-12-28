@@ -6,20 +6,17 @@ public class User {
     private int id;
     private String fullName;
     private Date birth;
-    private String gender;
+    private String gender; //1_male, 2_female
     private String email;
-    private byte[] password;
+    private String password;
     private String phone;
-    private String role;
+    private String role;   //1_user, 2_admin
     private String address;
 
-    public User(int id, String fullname, String email) {
-        this.id = id;
-        this.fullName = fullName;
-        this.email = email;
+    public User() {
     }
 
-    public User(int id, String fullName, Date birth, String gender, String email, byte[] password, String phone, String role, String address) {
+    public User(int id, String fullName, Date birth, String gender, String email, String password, String phone, String role, String address) {
         this.id = id;
         this.fullName = fullName;
         this.birth = birth;
@@ -71,11 +68,11 @@ public class User {
         this.email = email;
     }
 
-    public byte[] getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(byte[] password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 

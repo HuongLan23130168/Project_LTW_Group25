@@ -18,54 +18,14 @@
 
 <body>
 <!-- === HEADER === -->
-<header class="header">
-    <div class="header-top">
-        <div class="logo">
-            <img src="https://i.postimg.cc/5t4yq9qJ/logo-ltw.jpg" alt="Logo">
-            <span>
-                <a href="${pageContext.request.contextPath}/home.jsp">
-                    Noble Loft Theory
-                </a>
-            </span>
-        </div>
+<jsp:include page="/frontend/header.jsp"/>
 
-        <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Tìm kiếm">
-        </div>
-
-        <div class="header-right">
-            <a href="${pageContext.request.contextPath}/tracking.jsp">Tra cứu đơn hàng</a>
-            <a href="${pageContext.request.contextPath}/gioithieu.jsp">Giới thiệu</a>
-            <a href="${pageContext.request.contextPath}/contact.jsp">Liên hệ</a>
-            <div class="icons">
-                <a href="${pageContext.request.contextPath}/cart.jsp" class="circle">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                </a>
-                <a href="${pageContext.request.contextPath}/account.jsp" class="circle">
-                    <i class="fa-solid fa-user"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <nav class="menu">
-        <a href="${pageContext.request.contextPath}/home.jsp">Trang chủ</a>
-
-        <a href="${pageContext.request.contextPath}/list-product"
-           class="active">Phòng khách</a>
-
-        <a href="${pageContext.request.contextPath}/kitchen.jsp">Phòng bếp</a>
-        <a href="${pageContext.request.contextPath}/bedroom.jsp">Phòng ngủ</a>
-        <a href="${pageContext.request.contextPath}/office.jsp">Phòng làm việc</a>
-        <a href="${pageContext.request.contextPath}/balcony.jsp">Ban Công</a>
-    </nav>
-</header>
 
 <!-- === BREADCRUMB === -->
 <nav class="breadcrumb">
-    <a href="${pageContext.request.contextPath}/home.jsp">Trang chủ</a> &#47;
-    <span class="current">Phòng khách</span>
+    <a href="${pageContext.request.contextPath}/home">Trang chủ</a> &#47;
+    <span class="current">${roomName}</span>
+
 </nav>
 
 <div class="container">
@@ -107,26 +67,34 @@
                     <span class="filter-icon"><i class="fa-solid fa-chevron-down"></i></span>
                 </label>
                 <div class="options" style="display: none;">
-                    <%--                    <div><input type="checkbox" name="category" value="cay"> Cây</div>--%>
-                    <%--                    <div><input type="checkbox" name="category" value="hoa"> Hoa</div>--%>
-                    <%--                    <div><input type="checkbox" name="category" value="den"> Đèn</div>--%>
-                    <%--                    <div><input type="checkbox" name="category" value="phukien"> Tượng & Phụ kiện</div>--%>
-                    <%--                    <div><input type="checkbox" name="category" value="dongho"> Đồng hồ</div>--%>
-                    <%--                    <div><input type="checkbox" name="category" value="tranh"> Tranh</div>--%>
-                    <%--                    <div><input type="checkbox" name="category" value="guong"> Gương</div>--%>
-                    <%--                    <div><input type="checkbox" name="category" value="nen"> Nến & Tinh dầu</div>--%>
-                    <%--                    <div><input type="checkbox" name="category" value="lo"> Bình & Lọ hoa</div>--%>
-                    <%--                    <div><input type="checkbox" name="category" value="changoi"> Chăn & Gối</div>--%>
-                    <%--                    <div><input type="checkbox" name="category" value="ke"> Kệ & Giá đỡ mini</div>--%>
-                    <%--                    <div><input type="checkbox" name="category" value="ban"> Bàn decor</div>--%>
-                    <%--                    <div><input type="checkbox" name="category" value="ghe"> Ghế decor</div>--%>
                     <div><input type="checkbox" name="category" value="CAY" ${fn:contains(cats,'CAY')?'checked':''}> Cây
                     </div>
                     <div><input type="checkbox" name="category" value="HOA" ${fn:contains(cats,'HOA')?'checked':''}> Hoa
                     </div>
                     <div><input type="checkbox" name="category" value="DEN" ${fn:contains(cats,'DEN')?'checked':''}> Đèn
                     </div>
-                    <div><input type="checkbox" name="category" value="TRANH" ${fn:contains(cats,'TRANH')?'checked':''}>Tranh</div>
+                    <div><input type="checkbox" name="category" value="PHUKIEN" ${fn:contains(cats,'PHUKIEN')?'checked':''}>Phụ kiện
+                    </div>
+                    <div><input type="checkbox" name="category" value="DONGHO" ${fn:contains(cats,'DONGHO')?'checked':''}>Đồng hồ
+                    </div>
+                    <div><input type="checkbox" name="category" value="TRANH" ${fn:contains(cats,'TRANH')?'checked':''}>Tranh
+                    </div>
+                    <div><input type="checkbox" name="category" value="GUONG" ${fn:contains(cats,'GUONG')?'checked':''}>Gương
+                    </div>
+                    <div><input type="checkbox" name="category" value="NEN" ${fn:contains(cats,'NEN')?'checked':''}>Nến & Tinh dầu
+                    </div>
+                    <div><input type="checkbox" name="category" value="BINH" ${fn:contains(cats,'BINH')?'checked':''}>Bình & Lọ hoa
+                    </div>
+                    <div><input type="checkbox" name="category" value="CHAN" ${fn:contains(cats,'CHAN')?'checked':''}>Chăn
+                    </div>
+                    <div><input type="checkbox" name="category" value="GOI" ${fn:contains(cats,'GOI')?'checked':''}>Gối
+                    </div>
+                    <div><input type="checkbox" name="category" value="KE" ${fn:contains(cats,'KE')?'checked':''}>Kệ & Giá đỡ mini
+                    </div>
+                    <div><input type="checkbox" name="category" value="BAN" ${fn:contains(cats,'BAN')?'checked':''}>Bàn decor
+                    </div>
+                    <div><input type="checkbox" name="category" value="GHE" ${fn:contains(cats,'GHE')?'checked':''}>Ghế decor
+                    </div>
                 </div>
             </div>
 
@@ -174,21 +142,13 @@
 
     <!-- === MAIN === -->
     <main>
+        <!-- === SẮP XẾP === -->
         <div class="sort">
             <div class="category-header">
                 <h2 id="categoryName">Sản phẩm</h2>
             </div>
             <div class="sortProducts">
                 <label for="sortProducts">Sắp xếp: </label>
-
-                <%--                <select name="sort">--%>
-                <%--                    <option value="default">Mặc định</option>--%>
-                <%--                    <option value="price-asc" ${param.sort=='price-asc'?'selected':''}>Giá tăng dần</option>--%>
-                <%--                    <option value="price-desc" ${param.sort=='price-desc'?'selected':''}>Giá giảm dần</option>--%>
-                <%--                    <option value="stock-asc" ${param.sort=='stock-asc'?'selected':''}>Tồn kho ít → nhiều</option>--%>
-                <%--                    <option value="stock-desc" ${param.sort=='stock-desc'?'selected':''}>Tồn kho nhiều → ít</option>--%>
-                <%--                </select>--%>
-                <%--            </div>--%>
                 <form method="get" action="${pageContext.request.contextPath}/list-product">
                     <select name="sort" onchange="this.form.submit()">
                         <option value="">Mặc định</option>
@@ -218,7 +178,7 @@
             </c:if>
 
             <c:forEach var="p" items="${products}">
-                <a href="${pageContext.request.contextPath}/frontend/products?id=${p.id}" class="product">
+                <a href="${pageContext.request.contextPath}/products?id=${p.id}" class="product">
                     <div class="img"
                          style="background-image: url('${p.imageUrl}');">
                     </div>
@@ -237,12 +197,13 @@
                 </a>
             </c:forEach>
         </div>
+
         <!-- PHÂN TRANG -->
         <div id="pagination">
             <%--            <button class="page-btn active">1</button>--%>
             <%--            <button class="page-btn">2</button>--%>
             <%--            <button class="page-btn">3</button>--%>
-            <c:forEach var="i" begin="1" end="${totalPages}">
+            <c:forEach var="i" begin="1" end="${totalPages}" >
                 <c:url var="pageUrl" value="/list-product">
                     <c:param name="page" value="${i}"/>
                     <c:param name="sort" value="${param.sort}"/>

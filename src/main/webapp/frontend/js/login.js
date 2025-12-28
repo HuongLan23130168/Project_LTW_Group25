@@ -1,36 +1,24 @@
-// Xóa log trong console mỗi khi tải lại page
 console.clear();
 
-// Chờ nội dung HTML tải xong -> chạy script
 document.addEventListener("DOMContentLoaded", () => {
-  // Lấy 2 form: signup và signin
-  const signup = document.querySelector(".signup");
-  const signin = document.querySelector(".signin");
+  const signupContainer = document.querySelector(".signup");
+  const signinContainer = document.querySelector(".signin");
 
-  const signinBtn = document.getElementById("signin");
-  const signupBtn = document.getElementById("signup");
+  // Nút "Đăng nhập" (ở form Signup) để trượt xuống
+  const goToSigninBtn = document.getElementById("signin");
+  // Nút "Đăng ký ngay" (ở form Signin) để trượt lên
+  const goToSignupBtn = document.getElementById("signup-btn");
 
-  // === CHUYỂN GIỮA 2 FORM ===
-  // Khi nhấn "Đăng nhập" → ẩn signup, hiện signin
-  signinBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    signup.classList.add("slide-up");
-    signin.classList.remove("slide-up");
+  // 1. Chuyển từ Signup sang Signin
+  goToSigninBtn.addEventListener("click", () => {
+    signupContainer.classList.add("slide-up");
+    signinContainer.classList.remove("slide-up");
   });
 
-  // Khi nhấn "Đăng ký" → ẩn signin, hiện signup
-  signupBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    signin.classList.add("slide-up");
-    signup.classList.remove("slide-up");
+  // 2. Chuyển từ Signin sang Signup
+  goToSignupBtn.addEventListener("click", () => {
+    signinContainer.classList.add("slide-up");
+    signupContainer.classList.remove("slide-up");
   });
 
-  // === NÚT ĐĂNG KÝ ===
-  document
-    .querySelector(".signup .submit-btn")
-    .addEventListener("click", (e) => {
-      e.preventDefault();
-      signup.classList.add("slide-up");
-      signin.classList.remove("slide-up");
-    });
 });
