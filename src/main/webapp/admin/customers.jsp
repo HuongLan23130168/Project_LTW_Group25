@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-    <!-- (Phần sidebar và header của bạn giữ nguyên) -->
     <div class="sidebar" id="sidebar">
         <div class="logo">
             <a href="dashboard.jsp">Noble Loft Theory</a>
@@ -99,11 +98,11 @@
                     <c:forEach items="${customers}" var="c" varStatus="loop">
                         <tr>
                             <td>${loop.count}</td>
-                            <td>${c.fullName}</td>
+                            <td>${c.full_name}</td>
                             <td>${c.email}</td>
                             <td>${c.phone}</td>
-                            <td>${c.totalOrders} đơn</td>
-                            <td><fmt:formatDate value="${c.createdAt}" pattern="dd/MM/yyyy HH:mm" /></td>
+                            <td>${c.total_orders} đơn</td>
+                            <td>${c.created_at}</td>
                             <td>
                                 <a href="${pageContext.request.contextPath}/customer-detail?id=${c.id}" class="view-btn">Xem</a>
                             </td>
