@@ -32,31 +32,29 @@ public class CustomerDetailServlet extends HttpServlet {
             OrderDAO orderDAO = new OrderDAO();
 
             Customer customer = customerDAO.getCustomerById(customerId);
-            List<Order> orderList = orderDAO.getOrdersByCustomerId(customerId);
 
             if (customer == null) {
-                resp.sendRedirect(req.getContextPath() + "/customers");
+                req.setAttribute("error", "Không tìm thấy khách hàng với ID: " + customerId);
+                req.getRequestDispatcher("/admin/customers.jsp").forward(req, resp);
                 return;
             }
 
-            // Tính tổng tiền đã mua
+            List<Order> orderList = orderDAO.getOrdersByCustomerId(customerId);
+
             double totalSpent = 0;
             for (Order order : orderList) {
-                totalSpent += order.getTotalAmount();
+                totalSpent += order.getTotal_price(); // Sửa lại để gọi đúng phương thức
             }
 
-            // Lấy đơn hàng gần nhất (danh sách đã được sắp xếp theo ngày giảm dần)
             Order latestOrder = null;
             if (orderList != null && !orderList.isEmpty()) {
                 latestOrder = orderList.get(0);
             }
 
-            // Đặt các thuộc tính vào request
             req.setAttribute("customer", customer);
             req.setAttribute("orderList", orderList);
             req.setAttribute("totalSpent", totalSpent);
-
-            req.setAttribute("latestOrder", latestOrder); // Gửi đơn hàng gần nhất
+            req.setAttribute("latestOrder", latestOrder);
 
             req.getRequestDispatcher("/admin/customerDetail.jsp").forward(req, resp);
 
