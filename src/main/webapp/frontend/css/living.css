@@ -35,8 +35,10 @@
 
 /* === SIDEBAR === */
 .sidebar {
-    flex: 0 0 260px;
-    max-width: 100%;
+    width: 260px;
+    min-width: 260px;
+    max-width: 260px;
+    box-sizing: border-box;
     background: #fff;
     border-radius: 12px;
     padding: 20px 25px;
@@ -86,6 +88,19 @@
 .filter-group:last-child {
     border-bottom: none;
     padding-bottom: 0;
+}
+.filter-group .options div {
+    white-space: normal;
+    word-break: break-word;
+}
+.filter-btn {
+    display: block;
+    margin: 15px auto 0;
+    background-color: #EAD8C0;
+    border: 2px solid #c9a97a;
+    border-radius: 8px;
+    padding: 8px 20px;
+    cursor: pointer;
 }
 
 /* === DANH SÁCH SẢN PHẨM === */
@@ -249,6 +264,9 @@
     cursor: pointer;
     transition: 0.2s;
     font-weight: 500;
+    color: #6F4E37;
+    text-decoration: none;
+
 }
 
 .page-btn:hover {
