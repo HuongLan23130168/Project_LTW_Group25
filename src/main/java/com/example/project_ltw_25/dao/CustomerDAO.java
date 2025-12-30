@@ -1,7 +1,7 @@
 package com.example.demoweb1.dao;
 
 import com.example.demoweb1.model.Customer;
-import com.example.demoweb1.util.DBConnection; // Giả sử bạn có lớp này để kết nối DB
+import com.example.demoweb1.util.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,46 +11,65 @@ public class CustomerDAO {
 
     public List<Customer> getAllCustomers(String sortBy) {
         List<Customer> list = new ArrayList<>();
-
-        // Mặc định sắp xếp theo tài khoản mới nhất
         String orderByClause = "ORDER BY u.id DESC";
         if ("oldest".equals(sortBy)) {
-            orderByClause = "ORDER BY u.id ASC"; // Sắp xếp theo tài khoản cũ nhất
+            orderByClause = "ORDER BY u.id ASC";
         }
 
-        // Câu lệnh SQL để lấy thông tin khách hàng và đếm tổng số đơn hàng
         String sql = """
-                SELECT 
-                    u.id,
-                    u.full_name,
-                    u.email,
-                    u.phone,
-                    COUNT(o.id) AS total_orders
-                FROM users u
-                LEFT JOIN orders o ON u.id = o.user_id
-                WHERE u.role = 'user'
-                GROUP BY u.id, u.full_name, u.email, u.phone
-            """ + orderByClause;
+            SELECT 
+                u.id,
+                u.full_name,
+                u.email,
+                u.phone,
+                u.created_at,
+                COUNT(o.id) AS total_orders
+            FROM users u
+            LEFT JOIN orders o ON u.id = o.user_id
+            WHERE u.role = 'user'
+            GROUP BY u.id, u.full_name, u.email, u.phone, u.created_at
+        """ + orderByClause;
 
-        try (
-                Connection conn = DBConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()
-        ) {
-            // Lặp qua từng dòng kết quả từ database
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Customer c = new Customer();
                 c.setId(rs.getInt("id"));
-                c.setFullName(rs.getString("full_name"));
+                c.setFull_name(rs.getString("full_name"));
                 c.setEmail(rs.getString("email"));
                 c.setPhone(rs.getString("phone"));
-                c.setTotalOrders(rs.getInt("total_orders"));
-                list.add(c); // Thêm khách hàng vào danh sách
+                c.setTotal_orders(rs.getInt("total_orders"));
+                c.setCreated_at(rs.getString("created_at"));
+                list.add(c);
             }
         } catch (Exception e) {
-            e.printStackTrace(); // In lỗi ra console nếu có sự cố
+            e.printStackTrace();
         }
-        return list; // Trả về danh sách khách hàng
+        return list;
+    }
+
+    public Customer getCustomerById(int id) {
+        String sql = "SELECT id, full_name, email, phone, gender, birth, address, role FROM users WHERE id = ? AND role = 'user'";
+        Customer c = null;
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                c = new Customer();
+                c.setId(rs.getInt("id"));
+                c.setFull_name(rs.getString("full_name"));
+                c.setEmail(rs.getString("email"));
+                c.setPhone(rs.getString("phone"));
+                c.setGender(rs.getString("gender"));
+                c.setBirth(rs.getString("birth"));
+                c.setAddress(rs.getString("address"));
+                c.setRole(rs.getString("role"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return c;
     }
 }
-    
