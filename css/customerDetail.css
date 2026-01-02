@@ -1,0 +1,177 @@
+/* General Layout */
+.main-content {
+    padding-top: 100px;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    margin-bottom: 24px;
+    font-size: 16px;
+}
+.breadcrumb a {
+    color: #74512d;
+    text-decoration: none;
+}
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+.breadcrumb .current {
+    color: #333;
+    font-weight: 600;
+}
+
+/* Main Container for top cards */
+.customer-detail-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+/* Left and Right Cards */
+.detail-card-left,
+.detail-card-right {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+}
+
+.detail-card-left {
+    flex: 1;
+    min-width: 320px;
+}
+
+.detail-card-right {
+    flex: 2;
+    min-width: 400px;
+}
+
+/* Title inside cards */
+.title-cus h2 {
+    font-size: 20px;
+    color: #5a3e2b;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0e9e1;
+}
+
+/* Customer Info Section */
+.customer-info p {
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 14px;
+    line-height: 1.6;
+}
+.customer-info p strong {
+    color: #6c584c;
+    min-width: 120px;
+    display: inline-block;
+}
+
+/* Customer Stats Section */
+.customer-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+}
+
+.stat-card {
+    background: #fdf8f2;
+    border: 1px solid #f0e9e1;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 13px;
+    color: #74512d;
+    margin-top: 0;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.stat-card p {
+    font-size: 18px;
+    font-weight: 700;
+    color: #5a3e2b;
+    margin: 0;
+}
+
+/* Order History Card */
+.order-history-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+}
+
+.recent-orders table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.recent-orders th,
+.recent-orders td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.recent-orders th {
+    background-color: #fcfaf7;
+    font-weight: 600;
+    color: #74512d;
+    font-size: 14px;
+}
+
+.recent-orders tr:hover {
+    background-color: #fdf8f1;
+}
+
+/* Status Badge */
+.status {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: capitalize;
+    display: inline-block;
+}
+.status.completed, .status.delivered {
+    background-color: #e6f4ea;
+    color: #3d8b58;
+}
+.status.pending {
+    background-color: #fff8e1;
+    color: #e88f00;
+}
+.status.cancelled, .status.failed {
+    background-color: #fde2e2;
+    color: #c94a4a;
+}
+
+/* Back Button */
+.back-to-customers {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.back-to-customers a {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #74512d;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.back-to-customers a:hover {
+    background-color: #5a3e2b;
+}
