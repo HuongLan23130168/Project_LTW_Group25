@@ -1,14 +1,17 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Noble Loft Theory - Admin</title>
-    <link rel="stylesheet" href="css/style.css"/>
-    <link rel="stylesheet" href="css/customerDetail.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết khách hàng - ${customer.full_name}</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/style.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/customerDetail.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 </head>
 
 <body>
@@ -21,13 +24,13 @@
         <li>
             <a href="dashboard.jsp"><i class="fas fa-chart-line"></i> Dashboard</a>
         </li>
-        <li>
+        <li class="active">
             <a href="products.jsp"><i class="fas fa-box"></i> Sản phẩm</a>
         </li>
         <li>
             <a href="orders.jsp"><i class="fas fa-cart-shopping"></i> Đơn hàng</a>
         </li>
-        <li class="active">
+        <li>
             <a href="customers.jsp"><i class="fas fa-users"></i> Khách hàng</a>
         </li>
         <li>
@@ -44,7 +47,7 @@
     <div class="header-left">
         <div class="search-container">
             <i class="fa-solid fa-magnifying-glass" style="color: #74512d;"></i>
-            <input type="text" placeholder="Tìm kiếm" class="search-input"/>
+            <input type="text" placeholder="Tìm kiếm" class="search-input" />
         </div>
     </div>
 
@@ -71,142 +74,125 @@
     </div>
 </header>
 
-<!-- === DASHBOARD === -->
-<main class="main-content">
-    <!-- ===== BREADCRUMB / TIẾN TRÌNH ===== -->
-    <div class="breadcrumb">
-        <a href="customers.jsp">Khách hàng</a> &#47;
-        <span class="current">Chi tiết khách hàng</span>
-
-    </div>
-    <div class="title-cus">
-        <h2>Chi tiết khách hàng</h2>
-    </div>
-    <div class="customer-detail-container">
-
-        <div class="left-card">
-            <div class="detail-card-left">
-                <div class="customer-info">
-
-                    <h3>Thông tin khách hàng</h3>
-                    <table>
-                        <tr>
-                            <td>Tên</td>
-                            <td>Nguyễn Qua Môn</td>
-                        </tr>
-                        <tr>
-                            <td>Giới tính</td>
-                            <td>Nam</td>
-                        </tr>
-                        <tr>
-                            <td>Ngày sinh</td>
-                            <td>12/04/1998</td>
-                        </tr>
-                        <tr>
-                            <td>Email</td>
-                            <td>quamon@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>SDT</td>
-                            <td>09356286432</td>
-                        </tr>
-                        <tr>
-                            <td>Địa chỉ</td>
-                            <td>khu phố 35, Phường Tiên Tiến,Thành Phố Biên Hòa, Đồng Nai</td>
-                        </tr>
-
-                    </table>
-                </div>
-                <div class="back-to-customers">
-                    <a href="customers.jsp">Quay lại</a>
-                </div>
-            </div>
+    <main class="main-content">
+        <div class="breadcrumb">
+            <a href="${pageContext.request.contextPath}/customers">Khách hàng</a> /
+            <span class="current">${customer.full_name}</span>
         </div>
 
-
-        <div class="right-card">
-            <div class="detail-card-right">
-                <div class="customer-stats">
-                    <div class="stat-card">
-                        <h3>Tổng đơn hàng</h3>
-                        <p>12</p>
+        <c:if test="${not empty customer}">
+            <div class="customer-detail-container">
+                <div class="detail-card-left">
+                    <div class="title-cus">
+                        <h2>Thông tin cá nhân</h2>
                     </div>
-                    <div class="stat-card">
-                        <h3>Tổng tiền đã mua</h3>
-                        <p>25,400,000 ₫</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Đơn hàng gần nhất</h3>
-                        <p>#DH1025 - 05/11/2025</p>
+                    <div class="customer-info">
+                        <p><strong>Họ và tên:</strong> ${customer.full_name}</p>
+                        <p><strong>Email:</strong> ${customer.email}</p>
+                        <p><strong>Số điện thoại:</strong> ${customer.phone}</p>
+                        <p><strong>Giới tính:</strong> ${not empty customer.gender ? customer.gender : 'Chưa cập nhật'}</p>
+                        <p><strong>Ngày sinh:</strong> ${not empty customer.birth ? customer.birth : 'Chưa cập nhật'}</p>
+                        <p><strong>Địa chỉ:</strong> ${not empty customer.address ? customer.address : 'Chưa cập nhật'}</p>
                     </div>
                 </div>
 
+                <div class="detail-card-right">
+                    <div class="title-cus">
+                        <h2>Thống kê</h2>
+                    </div>
+                    <div class="customer-stats">
+                        <div class="stat-card">
+                            <h3>Tổng đơn hàng</h3>
+                            <p>${orderList.size()}</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Tổng tiền đã mua</h3>
+                            <p><fmt:formatNumber value="${totalSpent}" type="currency" currencySymbol="₫" /></p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Đơn hàng gần nhất</h3>
+                            <c:if test="${not empty latestOrder}">
+                                <p>#${latestOrder.id} - <fmt:formatDate value="${latestOrder.order_date}" pattern="dd/MM/yyyy" /></p>
+                            </c:if>
+                            <c:if test="${empty latestOrder}">
+                                <p>Chưa có</p>
+                            </c:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-history-card">
+                <div class="title-cus">
+                    <h2>Lịch sử mua hàng</h2>
+                </div>
                 <div class="recent-orders">
-                    <h3>Lịch sử mua hàng</h3>
                     <table>
                         <thead>
-                        <tr>
-                            <th>Mã đơn</th>
-                            <th>Ngày đặt</th>
-                            <th>Tổng tiền</th>
-                            <th>Trạng thái</th>
-                        </tr>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Ngày đặt</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                            </tr>
                         </thead>
-                        <div>
-                            <tr>
-                                <td>#DH1025</td>
-                                <td>05/11/2025</td>
-                                <td>2,500,000₫</td>
-                                <td><span class="status completed"> Hoàn tất</span></td>
-                            </tr>
-                            <tr>
-                                <td>#DH1012</td>
-                                <td>28/10/2025</td>
-                                <td>1,800,000₫</td>
-                                <td><span class="status completed"> Hoàn tất</span></td>
-                            </tr>
+                        <tbody>
+                            <c:if test="${empty orderList}">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 20px;">Chưa có đơn hàng nào.</td>
+                                </tr>
+                            </c:if>
+                            <c:forEach items="${orderList}" var="order">
+                                <tr>
+                                    <td>#${order.id}</td>
+                                    <td><fmt:formatDate value="${order.order_date}" pattern="dd/MM/yyyy HH:mm" /></td>
+                                    <td>
+                                        <fmt:formatNumber value="${order.total_price}" type="currency" currencySymbol="₫" />
+                                    </td>
+                                    <td>
+                                            <%-- 1. Đặt mặc định là màu xám (secondary) cho mỗi vòng lặp --%>
+                                        <c:set var="statusClass" value="secondary" />
 
-                            <tr>
-                                <td>#DH1013</td>
-                                <td>30/10/2025</td>
-                                <td>11,800,000₫</td>
-                                <td><span class="status completed"> Hoàn tất</span></td>
-                            </tr>
-                            <tr>
-                                <td>#DH1013</td>
-                                <td>11/11/2025</td>
-                                <td>10,000,000₫</td>
-                                <td><span class="status completed"> Hoàn tất</span></td>
-                            </tr>
+                                            <%-- 2. Chuyển status về chữ thường để so sánh chính xác --%>
+                                        <c:set var="statusLower" value="${fn:toLowerCase(order.status)}" />
 
-                            <tr>
-                                <td>#DH1016</td>
-                                <td>30/10/2025</td>
-                                <td>6,100,000₫</td>
-                                <td><span class="status completed"> Hoàn tất</span></td>
+                                            <%-- 3. Kiểm tra logic --%>
+                                        <c:choose>
+                                            <%-- contains: dùng để kiểm tra chứa chuỗi, an toàn hơn so với so sánh bằng tuyệt đối --%>
+                                            <c:when test="${fn:contains(statusLower, 'đã giao') || fn:contains(statusLower, 'thành công')}">
+                                                <c:set var="statusClass" value="success" />
+                                            </c:when>
 
-                            <tr>
-                                <td>#DH1012</td>
-                                <td>3/12/2025</td>
-                                <td>400,000₫</td>
-                                <td><span class="status completed"> Hoàn tất</span></td>
-                            </tr>
-                            <tr>
-                                <td>#DH1012</td>
-                                <td>30/10/2025</td>
-                                <td>11,800,000₫</td>
-                                <td><span class="status failed">Thất bại</span></td>
-                            </tr>
-                            </tbody>
-                        </div>
+                                            <c:when test="${fn:contains(statusLower, 'đang xử lý') || fn:contains(statusLower, 'chờ')}">
+                                                <c:set var="statusClass" value="warning" />
+                                            </c:when>
+
+                                            <c:when test="${fn:contains(statusLower, 'đã hủy') || fn:contains(statusLower, 'thất bại')}">
+                                                <c:set var="statusClass" value="danger" />
+                                            </c:when>
+                                        </c:choose>
+
+                                            <%-- 4. Hiển thị --%>
+                                        <span class="status ${statusClass}">
+                                                ${order.status}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
                     </table>
                 </div>
             </div>
+        </c:if>
+        <c:if test="${empty customer}">
+             <p>Không tìm thấy thông tin khách hàng với ID được cung cấp.</p>
+        </c:if>
+
+        <div class="back-to-customers">
+            <a href="${pageContext.request.contextPath}/customers">Quay lại</a>
         </div>
-    </div>
-</main>
+    </main>
 
-<script src="js/main.js"></script>
+    <script src="${pageContext.request.contextPath}/admin/js/main.js"></script>
 </body>
-
 </html>

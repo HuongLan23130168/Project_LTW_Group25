@@ -382,10 +382,19 @@ body {
   padding: 12px;
   transition: 0.25s;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .product:hover {
   transform: translateY(-6px);
+}
+
+/* Thêm đoạn này vào file detail.css hoặc nơi bạn định nghĩa style */
+
+.product a {
+  text-decoration: none; /* Tắt gạch chân cho thẻ a */
+  color: inherit; /* Giữ nguyên màu sắc chữ kế thừa từ cha */
+  display: block; /* Đảm bảo thẻ a bao trọn khối */
 }
 
 .product img {

@@ -152,4 +152,47 @@ body {
     .contact-main h1 {
         font-size: 42px;
     }
+
+    /* ==== TOAST SUCCESS ==== */
+    .toast-success {
+        position: fixed;
+        top: 70px;
+        right: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        background: #fffdfa;
+        color: #ECB176;
+
+        padding: 14px 22px;
+        border: 2px solid #e6a47e;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.4;
+
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        z-index: 9999;
+
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.4s ease;
+    }
+
+    .toast-success.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .toast-success i {
+        font-size: 13px;
+        color: #ECB176;
+    }
+
+    .toast-success span {
+        white-space: nowrap;
+    }
 }

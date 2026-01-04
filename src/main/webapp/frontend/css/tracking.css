@@ -1,172 +1,224 @@
-/* .body {
-    font-family: Arial, sans-serif;
-    background-color: white ;
-    color: #6F4E37;
-
+/* General Layout */
+.tracking-main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  //  padding-top: 100px; /* Space for fixed header */
 }
 
-.main{
-    background: white;
-    padding: 0;
-} */
+/* Breadcrumb */
+.breadcrumb {
+    margin-bottom: 24px;
+    font-size: 16px;
+}
+.breadcrumb a {
+    color: #74512d;
+    text-decoration: none;
+}
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+.breadcrumb .current {
+    color: #333;
+    font-weight: 600;
+}
 
-/*TIM KIeM SAN PHAM ORDER CHECKING SEARCH BOX*/
+/* Search Section */
+.search-section {
+    /*background: #fff;*/
+    /*padding: 30px;*/
+    border-radius: 12px;
+    /*box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);*/
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.page-title {
+    font-size: 24px;
+    color: #5a3e2b;
+    margin-bottom: 20px;
+}
+
 .order-tracking-search-box {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin-bottom: 25px;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .order-tracking-search-box input {
+    flex-grow: 1;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.order-tracking-search-box input:focus {
     outline: none;
-    width: 400px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    border-color: #bca77d;
+    box-shadow: 0 0 0 3px rgba(188, 167, 125, 0.2);
 }
 
 .order-tracking-search-box button {
-    padding: 10px 18px;
-    border: none;
-    background: #c79c77;
+    padding: 12px 20px;
+    background-color: #74512d;
     color: #fff;
-    font-size: 13px;
-    border-radius: 6px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
-    font-weight: bold;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .order-tracking-search-box button:hover {
-    background: #ECB176;
-    color: #fff;
-    font-weight: bold;
+    background-color: #5a3e2b;
 }
 
-/*TIEU DE TRA CUU DON HANG*/
-.page-title {
-    margin-top: 10px;
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 22px;
-    color: #6F4E37;
-}
-
-/* Container KHUNG BAO GOM CA ORDER-l VA R*/
-.order-detail-container {
+/* Result Section */
+.tracking-result-container {
     display: flex;
-    margin: 40px;
-    gap: 20px;
-    flex-direction: row;
     flex-wrap: wrap;
-    align-content: space-around;
-    justify-content: space-around;
-}
-
-/* Left */
-.order-left {
-    width: 70%;
+    gap: 24px;
     background: #fff;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
 }
 
-
-/*RIGHT*/
-.order-right {
-    width: 30%;
-    background: #fff;
-    padding: 20px;
-    height: fit-content;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.error-message {
+    justify-content: center;
+    text-align: center;
+    color: #c94a4a;
+    font-size: 16px;
+    width: 100%;
 }
-
-
 
 .order-left {
     flex: 2;
+    min-width: 400px;
 }
 
 .order-right {
     flex: 1;
+    min-width: 300px;
 }
 
-.order-right p {
-    font-size: 14px;
-    display: flex;
-    justify-content: space-between;
-}
-
-/*TIEU DE CUA 2 CAI L VA R*/
 .block-title {
-    margin-top: 10px;
-    text-align: center;
-    color: #AF8F6F;
-    margin-bottom: 30px;
-    font-weight: bold;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #ddd;
-
+    font-size: 18px;
+    color: #5a3e2b;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0e9e1;
 }
 
-
-/*--THONG TIN DON HANG--*/
-
-
-
-.order-summary {
-    margin-top: 20px;
+.section-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
 }
 
+/* Cart Item in Tracking */
+.cart-item {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f5f5f5;
+}
+.cart-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.cart-item img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+.item-info h4 {
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+.item-info .price {
+    font-size: 14px;
+    font-weight: 600;
+    color: #e67e22;
+}
+.item-info p {
+    font-size: 13px;
+    color: #666;
+}
+
+/* Order Summary Table */
 .order-summary table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    font-size: 15px;
 }
-
 .order-summary td {
     padding: 10px 0;
     vertical-align: top;
-    border: none;
 }
-
 .order-summary td:first-child {
-    width: 45%;
-    color: #555;
-    font-size: 15px;
+    color: #666;
+    width: 150px;
 }
-
 .order-summary td:last-child {
-    text-align: right;
-    font-weight: 500;
-    color: #1a1a1a;
+    font-weight: 600;
+    color: #333;
 }
-
-.order-summary tr.divider td {
-    border-bottom: 2px solid #dfdfdf;
-    padding: 5px;
+.order-summary .divider td {
+    padding: 8px 0;
+    border-bottom: 1px dashed #eee;
 }
-
-/*THANH TOAN */
-.total {
+.order-summary .total {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-size: 18px;
     font-weight: 700;
-    color: #74512D;
-    /* border-top: 2px solid #dfdfdf; */
-    padding-top: 15px;
-    margin-top: 10px;
-}
-
-.total .price {
     color: #e67e22;
+    margin-top: 15px;
+}
+.order-summary .total .price {
+    font-size: 22px;
 }
 
-/* Footer text */
+/* Status Badge */
+.status {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: capitalize;
+    display: inline-block;
+}
+.status.completed, .status.delivered {
+    background-color: #e6f4ea;
+    color: #3d8b58;
+}
+.status.pending {
+    background-color: #fff8e1;
+    color: #e88f00;
+}
+.status.cancelled, .status.failed {
+    background-color: #fde2e2;
+    color: #c94a4a;
+}
+
+/* Footer Text */
 .footer-text {
     text-align: center;
-    margin-top: 25px;
+    margin-top: 30px;
+    color: #888;
+}
+.footer-text strong {
+    color: #5a3e2b;
 }
