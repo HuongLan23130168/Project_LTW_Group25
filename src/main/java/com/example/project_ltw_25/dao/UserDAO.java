@@ -1,49 +1,92 @@
-package com.example.project_ltw_25.dao;
+package com.example.project_ltw_25.user.dao;
 
-import com.example.project_ltw_25.model.User;
+import com.example.project_ltw_25.user.model.User;
 import org.jdbi.v3.core.Jdbi;
+
+import java.util.List;
 
 public class UserDAO {
     private Jdbi jdbi = DBDAO.get();
 
-    // Hàm xử lý Đăng nhập
-    public User login(String email, String pass) {
-        // Sử dụng MD5(?) để băm mật khẩu trước khi so sánh với UNHEX trong DB
-        String query = "SELECT * FROM users WHERE email = :email AND password = UNHEX(MD5(:pass))";
+    // Đăng ký: Lưu mật khẩu đã băm MD5 từ Java
+    public boolean register(String name, String email, String hashedPass) {
+        try {
+            return jdbi.withHandle(handle ->
+                    handle.createUpdate("INSERT INTO users (full_name, email, password, role) VALUES (:name, :email, :pass, :role)")
+                            .bind("name", name)
+                            .bind("email", email)
+                            .bind("pass", hashedPass)
+                            .bind("role", "2") // Truyền role từ controller vào
+                            .execute() > 0
+            );
+        } catch (Exception e) { e.printStackTrace(); return false; }
+    }
 
+    // Đăng nhập truyền thống: Kiểm tra email và pass MD5
+    public User login(String email, String hashedPass) {
         return jdbi.withHandle(handle ->
-                handle.createQuery(query)
+                handle.createQuery("SELECT * FROM users WHERE email = :email AND password = :pass")
                         .bind("email", email)
-                        .bind("pass", pass)
-                        .map((rs, ctx) -> new User(
-                                rs.getInt("id"),
-                                rs.getString("full_name"),
-                                rs.getDate("birth"),
-                                rs.getString("gender"),
-                                rs.getString("email"),
-                                "********", // Không nên lấy mật khẩu binary ra object User để bảo mật
-                                rs.getString("phone"),
-                                rs.getString("role"),
-                                rs.getString("address")
-                        ))
+                        .bind("pass", hashedPass)
+                        .mapToBean(User.class).findFirst().orElse(null)
+        );
+    }
+
+    // Cập nhật Token duy nhất cho Magic Link
+    public void updateToken(String email, String token) {
+        jdbi.useHandle(handle ->
+                handle.createUpdate("UPDATE users SET token = :token, token_expiry = DATE_ADD(NOW(), INTERVAL 15 MINUTE) WHERE email = :email")
+                        .bind("token", token).bind("email", email).execute()
+        );
+    }
+
+    // Xác thực token duy nhất
+    // Sửa trong UserDAO.java
+    public User getUserByToken(String token) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("SELECT * FROM users WHERE token = :token")
+                        .bind("token", token)
+                        .mapToBean(User.class)
                         .findFirst()
                         .orElse(null)
         );
     }
 
-    // Hàm xử lý Đăng ký
-    public boolean register(String name, String email, String pass) {
+    // Xóa token sau khi dùng (Đảm bảo dùng 1 lần)
+    public void clearToken(String email) {
+        jdbi.useHandle(handle -> handle.createUpdate("UPDATE users SET token = NULL WHERE email = :email").bind("email", email).execute());
+    }
+
+    // Kiểm tra email có tồn tại trong hệ thống hay không
+    public boolean checkEmailExists(String email) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("SELECT COUNT(*) FROM users WHERE email = :email")
+                        .bind("email", email)
+                        .mapTo(Integer.class)
+                        .one() > 0
+        );
+    }
+
+    // Cập nhật mật khẩu mới (nhận vào chuỗi đã băm MD5 từ Controller)
+    public boolean updatePassword(String email, String hashedPass) {
         try {
             return jdbi.withHandle(handle ->
-                    handle.createUpdate("INSERT INTO users (full_name, email, password, role) " +
-                                    "VALUES (:name, :email, UNHEX(MD5(:pass)), 'user')")
-                            .bind("name", name)
+                    handle.createUpdate("UPDATE users SET password = :pass WHERE email = :email")
+                            .bind("pass", hashedPass)
                             .bind("email", email)
-                            .bind("pass", pass)
                             .execute() > 0
             );
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
+    }
+
+    public List<User> getAllUsers() {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("SELECT * FROM users")
+                        .mapToBean(User.class)
+                        .list()
+        );
     }
 }

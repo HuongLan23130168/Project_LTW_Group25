@@ -1,22 +1,23 @@
-package com.example.project_ltw_25.model;
+package com.example.project_ltw_25.user.model;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class User {
     private int id;
     private String fullName;
-    private Date birth;
+    private String birth;
     private String gender; //1_male, 2_female
     private String email;
     private String password;
     private String phone;
     private String role;   //1_user, 2_admin
     private String address;
+    private Timestamp created_at;
 
     public User() {
     }
 
-    public User(int id, String fullName, Date birth, String gender, String email, String password, String phone, String role, String address) {
+    public User(int id, String fullName, String birth, String gender, String email, String password, String phone, String role, String address, Timestamp created_at) {
         this.id = id;
         this.fullName = fullName;
         this.birth = birth;
@@ -26,6 +27,7 @@ public class User {
         this.phone = phone;
         this.role = role;
         this.address = address;
+        this.created_at = created_at;
     }
 
     public int getId() {
@@ -44,11 +46,11 @@ public class User {
         this.fullName = fullName;
     }
 
-    public Date getBirth() {
+    public String getBirth() {
         return birth;
     }
 
-    public void setBirth(Date birth) {
+    public void setBirth(String birth) {
         this.birth = birth;
     }
 
@@ -98,5 +100,11 @@ public class User {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Timestamp getCreated_at() {  return created_at;  }
+
+    public void setCreated_at(Timestamp created_at) {
+        this.created_at = created_at;
     }
 }
