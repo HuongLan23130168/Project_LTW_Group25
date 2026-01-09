@@ -1,4 +1,4 @@
-package com.example.demoweb1.model;
+package com.example.project_ltw_25.admin.model;
 
 import java.sql.Timestamp;
 
@@ -13,6 +13,13 @@ public class Order {
     private String recipient_phone;
     private String shipping_address;
     private String note;
+    private String customerName;
+    private String customerEmail;
+    private String customerPhone;
+    private String customerAddress;
+    private String paymentMethod;
+    private double shippingFee;
+    private double grandTotal;
 
     public Order() {
     }
@@ -96,5 +103,61 @@ public class Order {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
+
+    public String getCustomerPhone() {
+        return customerPhone;
+    }
+
+    public void setCustomerPhone(String customerPhone) {
+        this.customerPhone = customerPhone;
+    }
+
+    public String getCustomerAddress() {
+        return customerAddress;
+    }
+
+    public void setCustomerAddress(String customerAddress) {
+        this.customerAddress = customerAddress;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public double getShippingFee() {
+        return shippingFee;
+    }
+
+    public void setShippingFee(double shippingFee) {
+        this.shippingFee = shippingFee;
+    }
+
+    public double getGrandTotal() {
+        return grandTotal;
+    }
+
+    public void setGrandTotal(double grandTotal) {
+        this.grandTotal = grandTotal;
     }
 }
