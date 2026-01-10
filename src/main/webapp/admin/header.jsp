@@ -34,19 +34,24 @@
             <div class="dropdown-menu">
                 <c:choose>
                     <c:when test="${not empty sessionScope.acc}">
-                        <%-- Hiển thị tên và Role --%>
-                        <a href="#"><i class="fas fa-user-shield"></i> Admin: ${sessionScope.acc.fullName}</a>
+                        <a href="${pageContext.request.contextPath}/admin/account">
+                            <i class="fas fa-user-shield"></i> ${sessionScope.acc.fullName}
+                        </a>
 
-                        <%-- Nếu đang ở trang user mà là admin, có thể hiện link quay lại Dashboard --%>
                         <c:if test="${sessionScope.acc.role == '2'}">
-                            <a href="${pageContext.request.contextPath}/admin/dashboard.jsp"><i class="fas fa-chart-line"></i> Bảng điều khiển</a>
+                            <a href="${pageContext.request.contextPath}/admin/admin-dashboard">
+                                <i class="fas fa-chart-line"></i> Thống kê
+                            </a>
                         </c:if>
 
-                        <a href="account.jsp"><i class="fas fa-gear"></i> Cài đặt</a>
-                        <a href="${pageContext.request.contextPath}/logout"><i class="fas fa-right-from-bracket"></i> Đăng xuất</a>
+                        <a href="${pageContext.request.contextPath}/logout">
+                            <i class="fas fa-right-from-bracket"></i> Đăng xuất
+                        </a>
                     </c:when>
                     <c:otherwise>
-                        <a href="${pageContext.request.contextPath}/login"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>
+                        <a href="${pageContext.request.contextPath}/login">
+                            <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                        </a>
                     </c:otherwise>
                 </c:choose>
             </div>

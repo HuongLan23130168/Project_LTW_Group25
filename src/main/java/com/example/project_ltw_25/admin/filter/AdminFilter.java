@@ -23,18 +23,22 @@ public class AdminFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
         HttpSession session = req.getSession(false);
 
-        // Lấy đối tượng user từ session
         User user = (session != null) ? (User) session.getAttribute("acc") : null;
 
-        // KIỂM TRA QUYỀN
-        // Nếu đã đăng nhập VÀ có role là "2" (Admin)
-        if (user != null && "2".equals(user.getRole())) {
-            // Cho phép đi tiếp vào trang admin
-            chain.doFilter(request, response);
+        // THÊM DÒNG NÀY ĐỂ KIỂM TRA TRẠNG THÁI
+        if (user == null) {
+            System.out.println("Filter: No user found in session. Redirecting to login.");
         } else {
-            // Nếu không phải admin, đẩy về trang login bên ngoài thư mục admin
-            // CỰC KỲ QUAN TRỌNG: Trang đích của redirect KHÔNG ĐƯỢC nằm trong vùng bị Filter chặn (/admin/*)
-            res.sendRedirect(req.getContextPath() + "/login?error=denied");
+            System.out.println("Filter: User " + user.getEmail() + " has Role: " + user.getRole());
+        }
+
+        if (user != null) {
+            System.out.println("Filter Check - User: " + user.getEmail() + " | Role: " + user.getRole());
+            if ("2".equals(String.valueOf(user.getRole()))) {
+                chain.doFilter(request, response);
+            } else {
+                res.sendRedirect(req.getContextPath() + "/login?error=denied");
+            }
         }
     }
 
