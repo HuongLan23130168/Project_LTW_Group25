@@ -1,249 +1,109 @@
-.orders-container {
-    margin-left: 260px;
-    padding: 10px;
-    background: none;
-    min-height: 100vh;
-    margin-top: 40px;
-}
-
-.orders-container h1 {
-    margin-bottom: 20px;
-    margin-top: 40px;
-    color: #5a3e2b;
-    text-align: center;
-}
-
-.orders-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-}
-
-.orders-table th,
-.orders-table td {
-    text-align: left;
-    padding: 14px 20px;
-    border-bottom: 1px solid #eee;
-}
-
-.orders-table th {
-    background: #f1e6d1;
-    color: #5a3e2b;
-    font-weight: 600;
-}
-
-.status {
-    padding: 5px 10px;
-    border-radius: 10px;
-    font-size: 14px;
-}
-
-.status.completed {
-    background-color: #d1f0d1;
-    color: #256029;
-}
-
-.status.pending {
-    background-color: #ffecc7;
-    color: #9a6b00;
-}
-
-.status.failed {
-    background: #ffa9a9;
-    color: #9c0303;
-
-}
-
-.btn-view {
-    color: #fff;
-    background: #e8dcd1;
-    padding: 8px 14px;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: 0.3s;
-}
-
-.btn-view:hover {
-    background: #d8b99c;
-}
-
-
-/* === MENU HÀNH ĐỘNG === */
-.orders-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    border-radius: 12px;
-    overflow: visible;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-}
-
-.action-cell {
-    position: relative;
-    overflow: visible;
-}
-
-.action-menu {
-    position: absolute;
-    top: 35px;
-    right: 0;
-    background: #f1e6d1;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-    border-radius: 8px;
-    display: none;
-    flex-direction: column;
-    min-width: 120px;
-    z-index: 9999;
-}
-
-
-.action-toggle {
-    display: inline-block;
-    background: #e8dcd1;
-    color: #5a3e2b;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-weight: bold;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.action-toggle:hover {
-    background: #d8b99c;
-    color: #fff;
-}
-
-
-.action-menu a {
-    padding: 10px 4px;
-    color: #5a3e2b;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: center;
-
-}
-
-.action-menu a:hover {
-    background: #d8b99c;
-    color: #fff;
-    border-radius: 8px;
-}
-
-.action-menu.show {
-    display: flex;
-}
-
-/* === THANH CÔNG CỤ === */
-.orders-toolbar {
+/* General Header for pages like Customers and Orders */
+.customers-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #fff;
-    padding: 12px 20px;
     margin-bottom: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-.toolbar-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.customers-header h1 {
+    text-align: center;
     color: #5a3e2b;
-    font-weight: 500;
+    font-size: 32px;
 }
 
-.toolbar-right {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.orders-header {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    line-height: 1.5;
-}
-
-.orders-header .title-orders {
-    color: #5a3e2b;
-
-}
-
-.orders-header p {
-    color: #7a5b3a;
-    font-size: 14px;
-    text-decoration: none;
-}
-
-.title-orders {
-    display: flex;
-    padding-left: 5px;
-    font-weight: bold;
-}
-
-
-.search-box {
-    display: flex;
-    align-items: center;
-    background: #f8f5f2;
-    border-radius: 16px;
-    padding: 10px 14px;
-    border: 0.3px #f8f5f2;
-    width: 370px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-.search-box:hover {
-    border: 0.3px #d8b99c solid;
-}
-
-.search-box i {
-    color: rgba(116, 81, 45, 0.89);
-    margin-right: 8px;
-
-}
-
-.search-box input {
-    border: none;
-    outline: none;
-    background: none;
-    width: 370px;
-    font-size: 14px;
-    color: #5a3e2b;
-}
-
-
-#filterTime {
-    padding: 8px 14px;
-    border-radius: 10px;
-    border: 0.3px solid #dddddd;
-    background-color: #f8f5f2;
-    font-size: 16px;
-    cursor: pointer;
-    outline: none;
-    transition: all 0.2s ease;
-}
-
-
-#filterTime:focus {
-    border-color: #bca77d;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-}
-
-#filterTime option {
+/* Dropdown Filter */
+.filter-container select {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
     background-color: #fff;
-    color: #333;
+    font-size: 15px;
+    color: #5a3e2b;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2374512D%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 10px;
+    padding-right: 36px;
 }
 
-#filterTime option:hover {
-    background-color: #f5f0e6;
-    border: 0.3px #d8b99c;
+.filter-container select:focus {
+    outline: none;
+    border-color: #bca77d;
+    box-shadow: 0 0 0 3px rgba(188, 167, 125, 0.2);
+}
+
+/* Table Styles */
+.table-container {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.customers-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.customers-table th,
+.customers-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.customers-table th {
+    background-color: #f1e6d1;
+    color: #74512d;
+    font-weight: 600;
+}
+
+.customers-table tr:hover {
+    background-color: #faf6f1;
+}
+
+.view-btn {
+    background: #bca77d;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.view-btn:hover {
+    background: #a68a63;
+}
+
+/* Status Styles */
+.status {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    /*font-weight: 600;*/
+    text-align: center;
+    display: inline-block;
+}
+
+.status-completed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-cancelled {
+    background-color: #f8d7da;
+    color: #721c24;
 }

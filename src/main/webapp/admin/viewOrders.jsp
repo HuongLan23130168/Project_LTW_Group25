@@ -1,189 +1,151 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Noble Loft Theory - View Orders</title>
-    <link rel="stylesheet" href="css/style.css"/>
-    <link rel="stylesheet" href="css/viewOrders.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/style.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/viewOrders.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/orders.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 </head>
 
 <body>
-<!-- === SIDEBAR === -->
-<div class="sidebar" id="sidebar">
-    <div class="logo">
-        <a href="dashboard.jsp">Noble Loft Theory</a>
-    </div>
-    <ul>
-        <li>
-            <a href="dashboard.jsp"><i class="fas fa-chart-line"></i> Dashboard</a>
-        </li>
-        <li>
-            <a href="products.jsp"><i class="fas fa-box"></i> Sản phẩm</a>
-        </li>
-        <li class="active">
-            <a href="orders.jsp"><i class="fas fa-cart-shopping"></i> Đơn hàng</a>
-        </li>
-        <li>
-            <a href="customers.jsp"><i class="fas fa-users"></i> Khách hàng</a>
-        </li>
-        <li>
-            <a href="notifi.jsp"><i class="fas fa-bell"></i> Thông báo</a>
-        </li>
-        <li>
-            <a href="account.jsp"><i class="fas fa-gear"></i> Tài khoản</a>
-        </li>
-    </ul>
-</div>
+    <!-- === SIDEBAR === -->
+    <%@ include file="common/admin_sidebar.jspf" %>
+    <!-- === HEADER === -->
+    <%@ include file="common/admin_header.jspf" %>
 
-<!-- === HEADER === -->
-<header class="header">
-    <div class="header-left">
-        <div class="search-container">
-            <i class="fa-solid fa-magnifying-glass" style="color: #74512d;"></i>
-            <input type="text" placeholder="Tìm kiếm" class="search-input"/>
-        </div>
-    </div>
-
-    <div class="header-right">
-        <!-- Nút thông báo -->
-        <div class="notify-wrapper">
-            <a href="notifi.jsp" class="icon-button">
-                <i class="fa-solid fa-bell"></i>
-                <span id="notifyCount" class="notify-badge">3</span>
-            </a>
-        </div>
-
-        <!-- Hồ sơ người dùng -->
-        <div class="profile-dropdown">
-            <button class="icon-button user-btn">
-                <i class="fa-solid fa-user"></i>
-            </button>
-
-            <div class="dropdown-menu">
-                <a href="account.jsp"><i class="fas fa-user"></i> Tài khoản</a>
-                <a href="index.jsp"><i class="fas fa-right-from-bracket"></i> Đăng xuất</a>
+    <!-- === VIEW ORDERS === -->
+    <main class="main-content">
+        <c:if test="${empty orderId}">
+            <div class="customers-header">
+                <h1>Không tìm thấy đơn hàng</h1>
+                <p>Đơn hàng bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
             </div>
-        </div>
-    </div>
-</header>
+            <div class="back-to-orders" style="margin-top: 20px;">
+                <a href="${pageContext.request.contextPath}/admin/orders">Quay lại danh sách</a>
+            </div>
+        </c:if>
 
-<!-- === VIEW ORDERS === -->
-<main class="main-content">
-    <!-- ===== BREADCRUMB / TIẾN TRÌNH ===== -->
-    <div class="breadcrumb">
-        <a href="orders.jsp">Đơn hàng</a> &#47;
-        <span class="current">Chi tiết đơn hàng</span>
-    </div>
-
-
-    <div class="transaction-wrapper">
-        <div class="left-card">
-
-            <div class="orders-id">
-                <a>Mã đơn: #34834
-                    <span class="status completed">Hoàn thành</span>
-                    <span> | 25/08/2025 </span>
-                </a>
+        <c:if test="${not empty orderId}">
+            <div class="breadcrumb">
+                <a href="${pageContext.request.contextPath}/admin/orders">Đơn hàng</a> &#47;
+                <span class="current">Chi tiết đơn hàng</span>
             </div>
 
-            <div class="detail-card">
-                <h3>Thông tin khách hàng</h3>
-                <table>
-                    <tr>
-                        <td>Tên</td>
-                        <td>Nguyễn Qua Môn</td>
-                    </tr>
-                    <tr>
-                        <td>Email</td>
-                        <td>quamon@example.com</td>
-                    </tr>
-                    <tr>
-                        <td>SDT</td>
-                        <td>09356286432</td>
-                    </tr>
-                    <tr>
-                        <td>Địa chỉ</td>
-                        <td>khu phố 5, Phường Tân Tiến,Thành Phố Biên Hòa, Đồng Nai</td>
-                    </tr>
-                    <tr>
-                        <td>PT thanh toán</td>
-                        <td> COD thanh toán khi nhận hàng</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+            <div class="transaction-wrapper">
+                <div class="left-card">
+                    <div class="orders-id">
+                        <a>Mã đơn: #${orderId}
+                            <c:set var="lowerStatus" value="${fn:toLowerCase(orderStatus)}" />
+                            <c:choose>
+                                <c:when test="${fn:contains(lowerStatus, 'hoàn thành') or fn:contains(lowerStatus, 'đã giao')}">
+                                    <span class="status status-completed">${orderStatus}</span>
+                                </c:when>
+                                <c:when test="${fn:contains(lowerStatus, 'hủy')}">
+                                    <span class="status status-cancelled">${orderStatus}</span>
+                                </c:when>
+                                <c:when test="${fn:contains(lowerStatus, 'xử lý') or fn:contains(lowerStatus, 'chờ')}">
+                                    <span class="status status-pending">${orderStatus}</span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="status">${orderStatus}</span>
+                                </c:otherwise>
+                            </c:choose>
+                            <c:if test="${not empty orderDate}">
+                                <span> | <fmt:formatDate value="${orderDate}" pattern="dd/MM/yyyy HH:mm"/></span>
+                            </c:if>
+                        </a>
+                    </div>
 
+                    <div class="detail-card">
+                        <h3>Thông tin khách hàng</h3>
+                        <table>
+                            <tr>
+                                <td>Tên</td>
+                                <td>${customerName}</td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td>${customerEmail}</td>
+                            </tr>
+                            <tr>
+                                <td>SDT</td>
+                                <td>${customerPhone}</td>
+                            </tr>
+                            <tr>
+                                <td>Địa chỉ</td>
+                                <td>${customerAddress}</td>
+                            </tr>
+                            <tr>
+                                <td>PT thanh toán</td>
+                                <td> ${paymentMethod} </td>
+                            </tr>
+                        </table>
+                    </div>
 
-        <div class="right-card">
-            <div class="detail-card">
+                    <div class="detail-card">
+                        <h3>Lịch sử trạng thái</h3>
+                        <table>
+                            <tr>
+                                <th>Trạng thái</th>
+                                <th>Thời gian</th>
+                            </tr>
+                            <c:forEach var="history" items="${statusHistory}">
+                                <tr>
+                                    <td>${history.status}</td>
+                                    <td><fmt:formatDate value="${history.createdAt}" pattern="dd/MM/yyyy HH:mm"/></td>
+                                </tr>
+                            </c:forEach>
+                        </table>
+                    </div>
+                </div>
 
-                <h3>Danh sách sản phẩm</h3>
-                <table>
-                    <tr>
-                        <th>STT</th>
-                        <th>Sản phẩm</th>
-                        <th>SL</th>
-                        <th>Giá</th>
-                        <th>Giảm</th>
-                        <th>Tổng</th>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>Đèn thả chùm hoa bồ công anh pha lê hiện đại , trang trí sang trọng , tặng kèm bóng led
-                        </td>
-                        <td>1</td>
-                        <td>787,000₫</td>
-                        <td>0%</td>
-                        <td>787,000₫</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Sách Giả mô hình cao cấp hiện đại cổ điển trang trí decor</td>
-                        <td>2</td>
-                        <td>296,000₫</td>
-                        <td>0%</td>
-                        <td>296,000₫</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Tranh gỗ vẽ tay trang trí nhà cửa , sân vườn, quà tặng mộc mạc</td>
-                        <td>1</td>
-                        <td>230,000₫</td>
-                        <td>0%</td>
-                        <td>230,000₫</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Hoa Decor - Hoa Cẩm Tú Cầu Camelia Decor, Cành 67cm Gồm 15 Bông Lớn, Chất Liệu Lụa Cao
-                            Cấp Màu Sắc Tự Nhiên
-                        </td>
-                        <td>1</td>
-                        <td>430,000₫</td>
-                        <td>0%</td>
-                        <td>430,000₫</td>
-                    </tr>
-                </table>
+                <div class="right-card">
+                    <div class="detail-card">
+                        <h3>Danh sách sản phẩm</h3>
+                        <table>
+                            <tr>
+                                <th>STT</th>
+                                <th>Sản phẩm</th>
+                                <th>SL</th>
+                                <th>Giá</th>
+                                <th>Giảm</th>
+                                <th>Tổng</th>
+                            </tr>
+                            <c:forEach var="item" items="${orderItems}" varStatus="stt">
+                                <tr>
+                                    <td>${stt.index + 1}</td>
+                                    <td>${item.name}</td>
+                                    <td>${item.quantity}</td>
+                                    <td><fmt:formatNumber value="${item.price}" type="number"/>₫</td>
+                                    <td>${item.discount}%</td>
+                                    <td><fmt:formatNumber value="${item.total}" type="number"/>₫</td>
+                                </tr>
+                            </c:forEach>
+                        </table>
 
-                <div class="total">
-                    <p>Phí ship: 35,000₫</p>
-                    <h4>Tổng cộng: 1,743,000₫</h4>
+                        <div class="total">
+                            <p>Phí ship: <fmt:formatNumber value="${shippingFee}" type="number"/>₫</p>
+                            <h4>Tổng cộng: <fmt:formatNumber value="${grandTotal}" type="number"/>₫</h4>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    </div>
 
-    <div class="back-to-orders">
-        <a href="orders.jsp">Quay lại</a>
-    </div>
+            <div class="back-to-orders">
+                <a href="${pageContext.request.contextPath}/admin/orders">Quay lại</a>
+            </div>
+        </c:if>
+    </main>
 
-</main>
-
-<script src="js/main.js"></script>
+    <script src="${pageContext.request.contextPath}/admin/js/main.js"></script>
 </body>
-
 </html>
