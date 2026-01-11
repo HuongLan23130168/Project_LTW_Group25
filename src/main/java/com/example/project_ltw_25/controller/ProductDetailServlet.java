@@ -1,5 +1,6 @@
 package com.example.project_ltw_25.controller;
 
+import com.example.project_ltw_25.dao.ProductDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -10,36 +11,35 @@ import java.util.List;
 
 @WebServlet("/detail")
 public class ProductDetailServlet extends HttpServlet {
-    private final ProductService service = new ProductService();
+    private final ProductDAO productDAO = new ProductDAO(); // Dùng trực tiếp DAO hoặc qua Service tùy cấu trúc bạn
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String idRaw = request.getParameter("id");
-        if (idRaw == null || idRaw.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing Product ID");
+        if (idRaw == null) {
+            response.sendRedirect("home");
             return;
         }
 
         try {
             int id = Integer.parseInt(idRaw);
-            Product product = service.getById(id);
+            Product product = productDAO.getById(id); // Hàm này bạn đã có (load product + variants + images)
 
             if (product != null) {
-                request.setAttribute("product", product);
+                // Lấy sản phẩm tương tự cùng Category
+                List<Product> relatedProducts = productDAO.getRelatedProducts(product.getCategory_id(), id);
 
-                // Lấy danh sách sản phẩm tương tự
-                List<Product> relatedProducts = service.getRelatedProducts(product);
+                request.setAttribute("product", product);
                 request.setAttribute("relatedProducts", relatedProducts);
 
-                // Đảm bảo đường dẫn này khớp với thư mục chứa file jsp của bạn
                 request.getRequestDispatcher("/frontend/detail.jsp").forward(request, response);
             } else {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Product Not Found");
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Không tìm thấy sản phẩm");
             }
         } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid ID Format");
+            response.sendRedirect("home");
         }
     }
 }

@@ -10,7 +10,7 @@ public class Product_variant {
     private String material;
     private double price;
     private String image_url;
-
+    private double price_old;
     public Product_variant() {
     }
 
@@ -84,5 +84,19 @@ public class Product_variant {
 
     public void setImage_url(String image_url) {
         this.image_url = image_url;
+    }
+    public double getPrice_old() {
+        return price_old;
+    }
+
+    public void setPrice_old(double price_old) {
+        this.price_old = price_old;
+    }
+    // Hàm tiện ích tính % giảm giá (để dùng trong JSP)
+    public int getDiscountPercent() {
+        if (price_old > price) {
+            return (int) Math.round(((price_old - price) / price_old) * 100);
+        }
+        return 0;
     }
 }
