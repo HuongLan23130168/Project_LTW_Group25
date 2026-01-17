@@ -12,7 +12,6 @@
     <title>Noble Loft Theory - View Orders</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/style.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/viewOrders.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/orders.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
@@ -111,31 +110,40 @@
                 <div class="right-card">
                     <div class="detail-card">
                         <h3>Danh sách sản phẩm</h3>
-                        <table>
-                            <tr>
-                                <th>STT</th>
-                                <th>Sản phẩm</th>
-                                <th>SL</th>
-                                <th>Giá</th>
-                                <th>Giảm</th>
-                                <th>Tổng</th>
-                            </tr>
-                            <c:forEach var="item" items="${orderItems}" varStatus="stt">
-                                <tr>
-                                    <td>${stt.index + 1}</td>
-                                    <td>${item.name}</td>
-                                    <td>${item.quantity}</td>
-                                    <td><fmt:formatNumber value="${item.price}" type="number"/>₫</td>
-                                    <td>${item.discount}%</td>
-                                    <td><fmt:formatNumber value="${item.total}" type="number"/>₫</td>
-                                </tr>
-                            </c:forEach>
-                        </table>
+                        <c:if test="${empty orderItems}">
+                            <p>Không có sản phẩm nào trong đơn hàng này.</p>
+                        </c:if>
+                        <c:if test="${not empty orderItems}">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Sản phẩm</th>
+                                        <th>SL</th>
+                                        <th>Giá</th>
+                                        <th>Giảm</th>
+                                        <th>Tổng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="item" items="${orderItems}" varStatus="stt">
+                                        <tr>
+                                            <td>${stt.count}</td>
+                                            <td>${item.name}</td>
+                                            <td>${item.quantity}</td>
+                                            <td><fmt:formatNumber value="${item.price}" type="number"/>₫</td>
+                                            <td>${item.discount}%</td>
+                                            <td><fmt:formatNumber value="${item.total}" type="number"/>₫</td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
 
-                        <div class="total">
-                            <p>Phí ship: <fmt:formatNumber value="${shippingFee}" type="number"/>₫</p>
-                            <h4>Tổng cộng: <fmt:formatNumber value="${grandTotal}" type="number"/>₫</h4>
-                        </div>
+                            <div class="total">
+                                <p>Phí ship: <fmt:formatNumber value="${shippingFee}" type="number"/>₫</p>
+                                <h4>Tổng cộng: <fmt:formatNumber value="${grandTotal}" type="number"/>₫</h4>
+                            </div>
+                        </c:if>
                     </div>
                 </div>
             </div>
