@@ -5,25 +5,23 @@
 
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Noble Loft Theory - View Orders</title>
+    <title>Noble Loft Theory - Chi tiết đơn hàng</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/style.css" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/viewOrders.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/viewOrders.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-
 <body>
-    <!-- === SIDEBAR === -->
+    <!-- Sidebar -->
     <%@ include file="common/admin_sidebar.jspf" %>
-    <!-- === HEADER === -->
+
+    <!-- Header -->
     <%@ include file="common/admin_header.jspf" %>
 
-    <!-- === VIEW ORDERS === -->
     <main class="main-content">
-        <c:if test="${empty orderId}">
+        <c:if test="${empty order}">
             <div class="customers-header">
                 <h1>Không tìm thấy đơn hàng</h1>
                 <p>Đơn hàng bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
@@ -33,33 +31,34 @@
             </div>
         </c:if>
 
-        <c:if test="${not empty orderId}">
+        <c:if test="${not empty order}">
             <div class="breadcrumb">
                 <a href="${pageContext.request.contextPath}/admin/orders">Đơn hàng</a> &#47;
                 <span class="current">Chi tiết đơn hàng</span>
             </div>
 
             <div class="transaction-wrapper">
+                <!-- ===== CỘT BÊN TRÁI ===== -->
                 <div class="left-card">
                     <div class="orders-id">
-                        <a>Mã đơn: #${orderId}
-                            <c:set var="lowerStatus" value="${fn:toLowerCase(orderStatus)}" />
+                        <a>Mã đơn: #${order.order_code}
+                            <c:set var="lowerStatus" value="${fn:toLowerCase(order.status)}" />
                             <c:choose>
                                 <c:when test="${fn:contains(lowerStatus, 'hoàn thành') or fn:contains(lowerStatus, 'đã giao')}">
-                                    <span class="status status-completed">${orderStatus}</span>
+                                    <span class="status status-completed">${order.status}</span>
                                 </c:when>
                                 <c:when test="${fn:contains(lowerStatus, 'hủy')}">
-                                    <span class="status status-cancelled">${orderStatus}</span>
+                                    <span class="status status-cancelled">${order.status}</span>
                                 </c:when>
                                 <c:when test="${fn:contains(lowerStatus, 'xử lý') or fn:contains(lowerStatus, 'chờ')}">
-                                    <span class="status status-pending">${orderStatus}</span>
+                                    <span class="status status-pending">${order.status}</span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="status">${orderStatus}</span>
+                                    <span class="status">${order.status}</span>
                                 </c:otherwise>
                             </c:choose>
-                            <c:if test="${not empty orderDate}">
-                                <span> | <fmt:formatDate value="${orderDate}" pattern="dd/MM/yyyy HH:mm"/></span>
+                            <c:if test="${not empty order.order_date}">
+                                <span> | <fmt:formatDate value="${order.order_date}" pattern="dd/MM/yyyy HH:mm"/></span>
                             </c:if>
                         </a>
                     </div>
@@ -69,44 +68,31 @@
                         <table>
                             <tr>
                                 <td>Tên</td>
-                                <td>${customerName}</td>
+                                <td>${order.customerName}</td>
                             </tr>
                             <tr>
                                 <td>Email</td>
-                                <td>${customerEmail}</td>
+                                <td>${order.customerEmail}</td>
                             </tr>
                             <tr>
                                 <td>SDT</td>
-                                <td>${customerPhone}</td>
+                                <td>${order.customerPhone}</td>
                             </tr>
                             <tr>
                                 <td>Địa chỉ</td>
-                                <td>${customerAddress}</td>
+                                <td>${order.customerAddress}</td>
                             </tr>
                             <tr>
                                 <td>PT thanh toán</td>
-                                <td> ${paymentMethod} </td>
+                                <td>${order.paymentMethod}</td>
                             </tr>
                         </table>
                     </div>
 
-                    <div class="detail-card">
-                        <h3>Lịch sử trạng thái</h3>
-                        <table>
-                            <tr>
-                                <th>Trạng thái</th>
-                                <th>Thời gian</th>
-                            </tr>
-                            <c:forEach var="history" items="${statusHistory}">
-                                <tr>
-                                    <td>${history.status}</td>
-                                    <td><fmt:formatDate value="${history.createdAt}" pattern="dd/MM/yyyy HH:mm"/></td>
-                                </tr>
-                            </c:forEach>
-                        </table>
-                    </div>
+
                 </div>
 
+                <!-- ===== CỘT BÊN PHẢI ===== -->
                 <div class="right-card">
                     <div class="detail-card">
                         <h3>Danh sách sản phẩm</h3>
@@ -138,10 +124,9 @@
                                     </c:forEach>
                                 </tbody>
                             </table>
-
                             <div class="total">
-                                <p>Phí ship: <fmt:formatNumber value="${shippingFee}" type="number"/>₫</p>
-                                <h4>Tổng cộng: <fmt:formatNumber value="${grandTotal}" type="number"/>₫</h4>
+                                <p>Phí ship: <fmt:formatNumber value="${order.shippingFee}" type="number"/>₫</p>
+                                <h4>Tổng cộng: <fmt:formatNumber value="${order.grandTotal}" type="number"/>₫</h4>
                             </div>
                         </c:if>
                     </div>
