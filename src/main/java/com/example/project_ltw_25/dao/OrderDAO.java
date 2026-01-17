@@ -1,3 +1,4 @@
+// Re-saving file to remove BOM
 package com.example.project_ltw_25.admin.dao;
 
 import com.example.project_ltw_25.admin.model.Order;
@@ -8,6 +9,7 @@ import com.example.project_ltw_25.admin.util.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,11 +34,7 @@ public class OrderDAO {
                 Order order = new Order();
                 order.setId(rs.getInt("id"));
                 order.setUser_id(rs.getInt("user_id"));
-                try {
-                    order.setOrder_code(rs.getString("order_code"));
-                } catch (Exception e) {
-                    // Ignore if column does not exist
-                }
+                order.setOrder_code(rs.getString("order_code"));
                 order.setOrder_date(rs.getTimestamp("order_date"));
                 order.setTotal_price(rs.getDouble("total_price"));
                 String status = rs.getString("current_status");
@@ -76,11 +74,7 @@ public class OrderDAO {
                 Order order = new Order();
                 order.setId(rs.getInt("id"));
                 order.setUser_id(rs.getInt("user_id"));
-                try {
-                    order.setOrder_code(rs.getString("order_code"));
-                } catch (Exception e) {
-                    // Ignore if column does not exist
-                }
+                order.setOrder_code(rs.getString("order_code"));
                 order.setOrder_date(rs.getTimestamp("order_date"));
                 order.setTotal_price(rs.getDouble("total_price"));
                 String status = rs.getString("current_status");
@@ -97,13 +91,10 @@ public class OrderDAO {
         return orderList;
     }
 
+    // ================== PHIÊN BẢN ĐƠN GIẢN ==================
     public Order getOrderById(int orderId) {
         Order order = null;
-        String sql = "SELECT o.*, u.fullName, u.email, u.phone, pm.name AS paymentMethod, (SELECT h.status FROM order_status_history h WHERE h.order_id = o.id ORDER BY h.created_at DESC LIMIT 1) AS current_status " +
-                     "FROM orders o " +
-                     "LEFT JOIN users u ON o.user_id = u.id " +
-                     "LEFT JOIN payment_methods pm ON o.payment_method_id = pm.id " +
-                     "WHERE o.id = ?";
+        String sql = "SELECT * FROM orders WHERE id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -113,19 +104,18 @@ public class OrderDAO {
             if (rs.next()) {
                 order = new Order();
                 order.setId(rs.getInt("id"));
+                order.setUser_id(rs.getInt("user_id"));
                 order.setOrder_code(rs.getString("order_code"));
                 order.setOrder_date(rs.getTimestamp("order_date"));
-                String status = rs.getString("current_status");
-                order.setStatus(status != null ? status : "Chờ xử lý");
-                order.setCustomerName(rs.getString("fullName"));
-                order.setCustomerEmail(rs.getString("email"));
-                order.setCustomerPhone(rs.getString("phone"));
-                order.setCustomerAddress(rs.getString("shipping_address"));
-                order.setPaymentMethod(rs.getString("paymentMethod"));
-                order.setShippingFee(rs.getDouble("shipping_fee"));
-                order.setGrandTotal(rs.getDouble("total_price"));
+                order.setTotal_price(rs.getDouble("total_price"));
+                order.setRecipient_name(rs.getString("recipient_name"));
+                order.setRecipient_phone(rs.getString("recipient_phone"));
+                order.setShipping_address(rs.getString("shipping_address"));
+                order.setNote(rs.getString("note"));
+                // Lấy cả payment_method_id để servlet xử lý
+                order.setPayment_method_id(rs.getInt("payment_method_id"));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return order;
@@ -181,4 +171,53 @@ public class OrderDAO {
         }
         return statusHistory;
     }
+    // THÊM HÀM NÀY VÀO CUỐI CLASS OrderDAO
+    public boolean updateOrderStatus(int orderId, String newStatus) {
+        String sql = "UPDATE orders SET status = ? WHERE id = ?";
+        String historySql = "INSERT INTO order_status_history (order_id, status, created_at) VALUES (?, ?, NOW())";
+
+        Connection conn = null;
+        PreparedStatement ps = null;
+        PreparedStatement psHistory = null;
+
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false); // Bắt đầu transaction
+
+            // 1. Cập nhật bảng orders
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, newStatus);
+            ps.setInt(2, orderId);
+            int rows = ps.executeUpdate();
+
+            if (rows > 0) {
+                // 2. Ghi lịch sử
+                try {
+                    psHistory = conn.prepareStatement(historySql);
+                    psHistory.setInt(1, orderId);
+                    psHistory.setString(2, newStatus);
+                    psHistory.executeUpdate();
+                } catch (Exception ex) {
+                    // Lờ đi lỗi lịch sử nếu bảng chưa tạo
+                    ex.printStackTrace();
+                }
+
+                conn.commit(); // Xác nhận thành công
+                return true;
+            } else {
+                conn.rollback();
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            try { if (conn != null) conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            return false;
+        } finally {
+            // Đóng kết nối thủ công vì JDBC thuần
+            try { if (ps != null) ps.close(); } catch (Exception e) {}
+            try { if (psHistory != null) psHistory.close(); } catch (Exception e) {}
+            try { if (conn != null) conn.close(); } catch (Exception e) {}
+        }
+    }
+
 }
