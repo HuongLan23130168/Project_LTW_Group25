@@ -8,7 +8,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giỏ hàng</title>
+    <title>Giỏ hàng của bạn</title>
+
     <link rel="stylesheet" href="${pageContext.request.contextPath}/frontend/css/header.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/frontend/css/footer.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/frontend/css/cart.css">
@@ -185,16 +186,17 @@
     .checkout-btn:hover {
         background: #74512D;
     }
+    .qty-btn.disabled {
+        pointer-events: none;
+        background-color: #eee;
+        color: #999;
+        border-color: #ddd;
+    }
 </style>
-
-<!-- === HEADER === -->
 <jsp:include page="/frontend/header.jsp"/>
 
-
-<!-- ===== BREADCRUMB / TIẾN TRÌNH ===== -->
 <div class="breadcrumb">
     <a href="${pageContext.request.contextPath}/home">Trang chủ</a> &#47;
-    <a href="detail.jsp">Chi tiết sản phẩm</a> &#47;
     <span class="current">Giỏ hàng</span>
 </div>
 
@@ -204,141 +206,84 @@
     <div class="step"><i class="fa fa-check-circle"></i> Hoàn tất</div>
 </div>
 
-<!-- ===== KHUNG CHÍNH ===== -->
-<%--<div class="cart-container">--%>
-<%--    <!-- CỘT TRÁI -->--%>
-<%--    <div class="cart-left">--%>
-<%--        <div class="select-all">--%>
-<%--            <input type="checkbox" id="selectAll">--%>
-<%--            <label for="selectAll">Chọn tất cả <span>(0 sản phẩm)</span></label>--%>
-<%--        </div>--%>
-
-<%--        <!-- === SẢN PHẨM GIỎ HÀNG === -->--%>
-<%--        <div class="cart-list">--%>
-<%--            <!-- === SẢN PHẨM 1 === -->--%>
-<%--            <div class="cart-item">--%>
-<%--                <input type="checkbox" class="item-check">--%>
-<%--                <img src="https://product.hstatic.net/200000486527/product/img_4118_3465223127a34592a0671827a04680e8_master.jpg"--%>
-<%--                     alt="sp">--%>
-
-<%--                <div class="item-info">--%>
-<%--                    <h4>Thảm trải sàn cao cấp Arcus phong cách Bắc Âu</h4>--%>
-
-<%--                    <div class="price">--%>
-<%--                        <span class="current-price">1.125.000₫</span>--%>
-<%--                        <span class="old-price">1.500.000₫</span>--%>
-<%--                        <span class="discount">-25%</span>--%>
-<%--                    </div>--%>
-<%--                </div>--%>
-
-<%--                <div class="quantity">--%>
-<%--                    <button>-</button>--%>
-<%--                    <span>1</span>--%>
-<%--                    <button>+</button>--%>
-<%--                </div>--%>
-<%--                <button class="delete-btn"><i class="fa fa-trash"></i></button>--%>
-<%--            </div>--%>
-
-<%--            <!-- === SẢN PHẨM 2 === -->--%>
-<%--            <div class="cart-item">--%>
-<%--                <input type="checkbox" class="item-check">--%>
-<%--                <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m14zw7atgqred4" alt="sp">--%>
-
-<%--                <div class="item-info">--%>
-<%--                    <h4>Đồ chơi sang trọng dài tay ngôi sao dễ thương</h4>--%>
-
-<%--                    <div class="color">Màu sắc:--%>
-<%--                        <span class="color-box" style="background-color: #000;"></span>--%>
-<%--                        <span class="color-name">Đen</span>--%>
-<%--                    </div>--%>
-
-<%--                    <div class="price">--%>
-<%--                        <span class="current-price">159.000₫</span>--%>
-<%--                    </div>--%>
-<%--                </div>--%>
-
-<%--                <div class="quantity">--%>
-<%--                    <button>-</button>--%>
-<%--                    <span>1</span>--%>
-<%--                    <button>+</button>--%>
-<%--                </div>--%>
-<%--                <button class="delete-btn"><i class="fa fa-trash"></i></button>--%>
-<%--            </div>--%>
-<%--        </div>--%>
-<%--    </div>--%>
-
-<%--    <!-- CỘT PHẢI -->--%>
-<%--    <div class="cart-right">--%>
-<%--        <h3>THÔNG TIN THANH TOÁN</h3>--%>
-<%--        <hr class="divider">--%>
-
-<%--        <div class="quantity-total">--%>
-<%--            <p>Số lượng sản phẩm: </p>--%>
-<%--            <span>2</span>--%>
-<%--        </div>--%>
-
-<%--        <div class="total">--%>
-<%--            <p>Tổng tiền: </p>--%>
-<%--            <span>1.284.000₫</span>--%>
-<%--        </div>--%>
-<%--        <hr class="divider">--%>
-
-<%--        <div class="final-total">--%>
-<%--            <p>Tổng thanh toán: </p>--%>
-<%--            <span>285.000₫</span>--%>
-<%--        </div>--%>
-
-<%--        <a href="pay.jsp" class="checkout-btn">ĐI ĐẾN THANH TOÁN</a>--%>
-<%--        --%>
-<%--    </div>--%>
-<%--</div>--%>
 <div class="cart-container">
+
+    <c:if test="${not empty sessionScope.error}">
+        <div style="background-color: #ffe6e6; color: #d40004; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ffcccc;">
+            <i class="fa-solid fa-triangle-exclamation"></i> ${sessionScope.error}
+        </div>
+        <% session.removeAttribute("error"); %>
+    </c:if>
+
     <c:choose>
         <%-- TRƯỜNG HỢP 1: CÓ SẢN PHẨM --%>
-        <c:when test="${not empty sessionScope.cart}">
+        <c:when test="${not empty cartItems}">
+
+            <c:set var="totalQty" value="0" />
+
             <div class="cart-left">
                 <div class="select-all">
                     <input type="checkbox" id="selectAll">
-                    <label for="selectAll">Chọn tất cả <span>(${sessionScope.cart.size()} sản phẩm)</span></label>
+                    <label for="selectAll">Sản phẩm trong giỏ <span>(${cartItems.size()})</span></label>
                 </div>
 
                 <div class="cart-list">
-                    <c:set var="total" value="0"/>
-                    <c:forEach var="entry" items="${sessionScope.cart}">
-                        <c:set var="item" value="${entry.value}"/>
-                        <%-- Cộng dồn tổng tiền: giá * số lượng --%>
-                        <c:set var="total" value="${total + (item.price * item.quantity)}"/>
+                    <c:forEach var="item" items="${cartItems}">
+
+                        <c:set var="totalQty" value="${totalQty + item.quantity}" />
 
                         <div class="cart-item">
-                            <input type="checkbox" class="item-check">
+                            <input type="checkbox" class="item-check" name="selectedItems" value="${item.detailId}">
 
-                            <img src="${item.image}" alt="${item.name}">
+                            <img src="${item.imageUrl}" alt="${item.productName}" onerror="this.src='https://via.placeholder.com/80'">
 
                             <div class="item-info">
-                                <h4>${item.name}</h4>
+                                <h4><a href="${pageContext.request.contextPath}/detail?id=${item.variantId}" style="text-decoration: none; color: #333;">${item.productName}</a></h4>
 
                                 <div class="color">
                                     <span class="color-name">Màu: ${item.color}</span> |
                                     <span class="size-name">Size: ${item.size}</span>
                                 </div>
+                                <div class="color" style="font-size: 12px; color: #888;">
+                                    Mã: ${item.code} <br>
+                                    <i>(Kho còn: ${item.stock})</i>
+                                </div>
 
                                 <div class="price">
                                     <span class="current-price">
-                                        <fmt:formatNumber value="${item.price * item.quantity}" pattern="#,###"/>₫
+                                        <fmt:formatNumber value="${item.price}" pattern="#,###"/>₫
                                     </span>
                                 </div>
                             </div>
 
                             <div class="quantity">
-                                <a href="cart?action=update&id=${item.variantId}&quantity=${item.quantity - 1}"
-                                   class="qty-btn">-</a>
+                                <c:if test="${item.quantity > 1}">
+                                    <a href="${pageContext.request.contextPath}/cart?action=update&id=${item.variantId}&quantity=${item.quantity - 1}"
+                                       class="qty-btn" style="text-decoration: none;">-</a>
+                                </c:if>
+                                <c:if test="${item.quantity <= 1}">
+                                    <a href="${pageContext.request.contextPath}/cart?action=delete&id=${item.variantId}"
+                                       class="qty-btn" onclick="return confirm('Xóa sản phẩm này?')">-</a>
+                                </c:if>
+
                                 <span>${item.quantity}</span>
-                                <a href="cart?action=update&id=${item.variantId}&quantity=${item.quantity + 1}"
-                                   class="qty-btn">+</a>
+
+                                <c:if test="${item.quantity < item.stock}">
+                                    <a href="${pageContext.request.contextPath}/cart?action=update&id=${item.variantId}&quantity=${item.quantity + 1}"
+                                       class="qty-btn" style="text-decoration: none;">+</a>
+                                </c:if>
+                                <c:if test="${item.quantity >= item.stock}">
+                                    <span class="qty-btn disabled" title="Đã đạt giới hạn kho">+</span>
+                                </c:if>
                             </div>
 
-                            <a href="cart?action=delete&id=${item.variantId}" class="delete-btn"
-                               onclick="return confirm('Xóa sản phẩm này?')">
+                            <div style="font-weight: bold; font-size: 14px; color: #333; min-width: 80px; text-align: right;">
+                                <fmt:formatNumber value="${item.totalPrice}" pattern="#,###"/>₫
+                            </div>
+
+                            <a href="${pageContext.request.contextPath}/cart?action=delete&id=${item.variantId}"
+                               class="delete-btn"
+                               onclick="return confirm('Bạn chắc chắn muốn xóa sản phẩm này?')" title="Xóa">
                                 <i class="fa fa-trash"></i>
                             </a>
                         </div>
@@ -349,133 +294,51 @@
             <div class="cart-right">
                 <h3>THÔNG TIN THANH TOÁN</h3>
                 <hr class="divider">
+
                 <div class="quantity-total">
-                    <p>Số lượng loại sản phẩm: </p>
-                    <span>${sessionScope.cart.size()}</span>
+                    <p>Tổng số lượng sản phẩm: </p>
+                    <span>${totalQty}</span>
                 </div>
+
                 <div class="total">
-                    <p>Tổng tiền: </p>
-                    <span><fmt:formatNumber value="${total}" pattern="#,###"/>₫</span>
+                    <p>Tạm tính: </p>
+                    <span><fmt:formatNumber value="${grandTotal}" pattern="#,###"/>₫</span>
                 </div>
+
                 <hr class="divider">
+
                 <div class="final-total">
                     <p>Tổng thanh toán: </p>
                     <span style="color: #d40004; font-size: 20px; font-weight: bold;">
-                        <fmt:formatNumber value="${total}" pattern="#,###"/>₫
+                        <fmt:formatNumber value="${grandTotal}" pattern="#,###"/>₫
                     </span>
                 </div>
-                <a href="pay.jsp" class="checkout-btn">ĐI ĐẾN THANH TOÁN</a>
+
+                <a href="${pageContext.request.contextPath}/checkout" class="checkout-btn">TIẾN HÀNH ĐẶT HÀNG</a>
+
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="${pageContext.request.contextPath}/home" style="text-decoration: none; color: #666; font-size: 13px;">
+                        <i class="fa fa-arrow-left"></i> Tiếp tục mua sắm
+                    </a>
+                </div>
             </div>
         </c:when>
 
-        <%-- TRƯỜNG HỢP 2: TRỐNG --%>
+        <%-- TRƯỜNG HỢP 2: GIỎ HÀNG TRỐNG --%>
         <c:otherwise>
-            <div style="text-align: center; padding: 100px 0; width: 100%;">
-                <i class="fa-solid fa-cart-shopping" style="font-size: 64px; color: #eee; margin-bottom: 20px;"></i>
-                <h2>Giỏ hàng của bạn đang trống</h2>
+            <div style="text-align: center; padding: 80px 0; width: 100%; background: #fff; border-radius: 10px;">
+                <i class="fa-solid fa-cart-arrow-down" style="font-size: 80px; color: #ddd; margin-bottom: 20px;"></i>
+                <h2 style="color: #555;">Giỏ hàng của bạn đang trống!</h2>
+                <p style="color: #888; margin-bottom: 30px;">Hãy thêm sản phẩm để nhận ưu đãi nhé.</p>
                 <a href="${pageContext.request.contextPath}/home" class="checkout-btn"
-                   style="width: 200px; margin: 20px auto;">MUA SẮM NGAY</a>
+                   style="width: 250px; margin: 0 auto; display: inline-block;">MUA SẮM NGAY</a>
             </div>
         </c:otherwise>
     </c:choose>
 </div>
 
-<%--    <div class="cart-right">--%>
-<%--        <h3>THÔNG TIN THANH TOÁN</h3>--%>
-<%--        <hr class="divider">--%>
-
-<%--        <div class="quantity-total">--%>
-<%--            <p>Số lượng loại sản phẩm: </p>--%>
-<%--            <span>${sessionScope.cart.size()}</span>--%>
-<%--        </div>--%>
-
-<%--        <div class="total">--%>
-<%--            <p>Tổng tiền: </p>--%>
-<%--            <span><fmt:formatNumber value="${total}" type="currency" currencySymbol=""/>₫</span>--%>
-<%--        </div>--%>
-<%--        <hr class="divider">--%>
-
-<%--        <div class="final-total">--%>
-<%--            <p>Tổng thanh toán: </p>--%>
-<%--            <span style="color: #d40004; font-size: 20px; font-weight: bold;">--%>
-<%--            <fmt:formatNumber value="${total}" type="currency" currencySymbol=""/>₫--%>
-<%--        </span>--%>
-<%--        </div>--%>
-
-<%--        <a href="pay.jsp" class="checkout-btn">ĐI ĐẾN THANH TOÁN</a>--%>
-<%--    </div>--%>
-</div>
-<!-- === FOOTER === -->
-<footer class="footer">
-    <div class="container">
-        <div class="footer-columns">
-            <!-- Cột 1: Giới thiệu -->
-            <div class="footer-col">
-                <h3>Giới thiệu</h3>
-                <p>Chào mừng bạn đến với <strong>Noble Loft Theory</strong> — không gian dành cho những ai yêu thích
-                    cái đẹp và nghệ thuật trang trí nội thất.</p>
-                <p>Chúng tôi mang đến các sản phẩm decor trang trí nhà với phong cách hiện đại, tối giản nhưng vẫn
-                    giữ được sự tinh tế trong từng chi tiết.</p>
-
-            </div>
-
-            <!-- Cột 2: Liên kết -->
-            <div class="footer-col">
-                <h3>Liên kết</h3>
-                <ul>
-                    <li><a>Chính sách đổi trả hoàn hàng</a></li>
-                    <li><a>Chính sách bảo mật mật khẩu</a></li>
-                    <li><a>Hướng dẫn mua hàng, sản phẩm</a></li>
-                    <li><a>Chính sách kiểm hàng hóa vận chuyển</a></li>
-                    <li><a>Chính sách giao hàng tận nơi</a></li>
-                    <li><a>Hướng dẫn thanh toán đơn hàng</a></li>
-                </ul>
-
-            </div>
-
-            <!-- Cột 3: Thông tin liên hệ -->
-            <div class="footer-col">
-                <h3>Thông tin liên hệ</h3>
-                <p><i class="fa fa-map-marker"></i>Khu phố 33, P.Linh Xuân, TP.HCM</p>
-                <p><i class="fa fa-map-marker"></i> Đại học Nông Lâm TP.Hồ Chí Minh</p>
-                <p><i class="fa fa-phone"></i> Liên hệ: 03751841444 - 03381776315 </p>
-
-                <p><i class="fa fa-envelope"></i> <a
-                        href="mailto:NLT@noblelofttheory.com">NLT@noblelofttheory.com</a></p>
-            </div>
-
-
-            <!-- Cột 4: Fanpage -->
-            <div class="footer-col">
-                <h3>Fanpage</h3>
-                <div class="fanpage-box">
-                    <p>Liên hệ ngay trang chủ của shop Noble Loft Theory.</p>
-                    <p>Nếu bạn đang có thắc mắc gì ở sản phẩm.</p>
-                    <p>Fanpage, Youtube và Instagram.</p>
-
-
-                    <div class="social-box">
-                        <div class="social-icons">
-                            <!-- mấy cái # này là chưa có link liên kết nào có gắn v -->
-                            <a href="https://www.facebook.com/share/1HP5fZGNqb/?mibextid=wwXIfr">
-                                <i class="fa-brands fa-facebook"></i></a>
-                            <a href="https://www.instagram.com/nltnoblelofttheory/">
-                                <i class="fa-brands fa-instagram"></i></a>
-                            <a href="https://www.youtube.com/channel/UC931-4vCWPGos5fSNQ8Rh-g">
-                                <i class="fa-brands fa-youtube"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="footer-bottom">
-        <p>Copyright © 2025 NLT Noble Loft Theory. Powered by NLT </p>
-    </div>
-    </div>
-</footer>
+<%--<script src="${pageContext.request.contextPath}/frontend/js/detail.js"></script>--%>
+<jsp:include page="/frontend/footer.jsp"/>
 
 </body>
-
 </html>
