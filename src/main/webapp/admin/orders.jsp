@@ -12,6 +12,19 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/style.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/orders.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+    </style>
 </head>
 <body>
 
@@ -32,6 +45,15 @@
             </form>
         </div>
     </div>
+
+    <%-- Display error message if it exists in the session --%>
+    <c:if test="${not empty sessionScope.errorMessage}">
+        <div class="alert alert-danger" role="alert">
+            ${sessionScope.errorMessage}
+        </div>
+        <%-- Remove the attribute from the session to prevent it from showing again --%>
+        <c:remove var="errorMessage" scope="session"/>
+    </c:if>
 
     <div class="table-container">
         <table class="customers-table">
