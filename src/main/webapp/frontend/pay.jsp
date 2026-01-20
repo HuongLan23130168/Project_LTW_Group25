@@ -1,3 +1,7 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -5,444 +9,345 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thanh toán</title>
-    <link rel="stylesheet" href="css/header.css">
-    <link rel="stylesheet" href="css/footer.css">
-    <link rel="stylesheet" href="css/pay.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/frontend/css/header.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/frontend/css/footer.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/frontend/css/pay.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <style>
-        /* === BREADCRUMB === */
-        .breadcrumb {
-            margin: 20px 40px 10px;
-            color: #333;
-        }
+<style>
+    /* === BREADCRUMB === */
+    .breadcrumb {
+        margin: 20px 40px 10px;
+        color: #333;
+    }
 
-        .breadcrumb a {
-            text-decoration: none;
-            color: #000;
-        }
+    .breadcrumb a {
+        text-decoration: none;
+        color: #000;
+    }
 
-        .breadcrumb a:hover {
-            text-decoration: underline;
-            color: #74512D;
-        }
+    .breadcrumb a:hover {
+        text-decoration: underline;
+        color: #74512D;
+    }
 
-        .breadcrumb .current {
-            color: #74512D;
-            font-weight: 700;
-        }
+    .breadcrumb .current {
+        color: #74512D;
+        font-weight: 700;
+    }
 
-        /* === TIẾN TRÌNH === */
-        .progress {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 80px;
-            margin: 20px 0 40px;
-        }
+    /* === TIẾN TRÌNH === */
+    .progress {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 80px;
+        margin: 20px 0 40px;
+    }
 
-        .progress .step {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px 18px;
-            border: 2px solid;
-            border-radius: 20px;
-            font-weight: 600;
-            color: #999;
-            position: relative;
-            background-color: #fff;
-            transition: all 0.3s ease;
-        }
+    .progress .step {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 18px;
+        border: 2px solid;
+        border-radius: 20px;
+        font-weight: 600;
+        color: #999;
+        position: relative;
+        background-color: #fff;
+        transition: all 0.3s ease;
+    }
 
-        .progress .step i {
-            margin-right: 6px;
-        }
+    .progress .step i {
+        margin-right: 6px;
+    }
 
-        .progress .step.active {
-            color: #fff;
-            background-color: #ECB176;
-        }
+    .progress .step.active {
+        color: #fff;
+        background-color: #ECB176;
+    }
 
-        .progress .step::after {
-            content: "";
-            position: absolute;
-            right: -60px;
-            top: 50%;
-            width: 50px;
-            height: 2px;
-            background-color: #ddd;
-            transform: translateY(-50%);
-        }
+    .progress .step::after {
+        content: "";
+        position: absolute;
+        right: -60px;
+        top: 50%;
+        width: 50px;
+        height: 2px;
+        background-color: #ddd;
+        transform: translateY(-50%);
+    }
 
-        .progress .step:last-child::after {
-            display: none;
-        }
+    .progress .step:last-child::after {
+        display: none;
+    }
 
-        /* === SẢN PHẨM === */
-        .cart-item {
-            display: flex;
-            align-items: center;
-            background: #fff;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            padding: 10px 15px;
-            margin-bottom: 15px;
-            gap: 15px;
-        }
+    /* === SẢN PHẨM === */
+    .cart-item {
+        display: flex;
+        align-items: center;
+        background: #fff;
+        border: 2px solid #eee;
+        border-radius: 10px;
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        gap: 15px;
+    }
 
-        .cart-item img {
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
+    .cart-item img {
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
 
-        .cart-item .item-info {
-            flex: 1;
-        }
+    .cart-item .item-info {
+        flex: 1;
+    }
 
-        .cart-item h4 {
-            font-size: 15px;
-            margin: 3px 0;
-            color: #333;
-        }
+    .cart-item h4 {
+        font-size: 15px;
+        margin: 3px 0;
+        color: #333;
+    }
 
-        /* === MÀU SẮC === */
-        .color {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    /* === MÀU SẮC === */
+    .color {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
 
-        .color-box {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            border: 1px solid #ccc;
-        }
+    .color-box {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 1px solid #ccc;
+    }
 
-        .color-name {
-            font-weight: 500;
-        }
+    .color-name {
+        font-weight: 500;
+    }
 
-        /* === GIÁ === */
-        .price {
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-        }
+    /* === GIÁ === */
+    .price {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+    }
 
-        .current-price {
-            color: #e67e22;
-            font-weight: 700;
-            font-size: 15px;
-        }
+    .current-price {
+        color: #e67e22;
+        font-weight: 700;
+        font-size: 15px;
+    }
 
-        .old-price {
-            color: #aaa;
-            font-size: 13px;
-            text-decoration: line-through;
-        }
+    .old-price {
+        color: #aaa;
+        font-size: 13px;
+        text-decoration: line-through;
+    }
 
-        .discount {
-            color: #d40004;
-            font-weight: 600;
-            font-size: 13px;
-        }
+    .discount {
+        color: #d40004;
+        font-weight: 600;
+        font-size: 13px;
+    }
 
-        /* Nút thanh toán */
-        .checkout-btn {
-            display: block;
-            text-align: center;
-            background: #A79277;
-            color: #fff;
-            text-decoration: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 550;
-            margin-top: 20px;
-            transition: background 0.3s;
-        }
+    /* Nút thanh toán */
+    .checkout-btn {
+        display: block;
+        width: 100%; /* Chiếm hết chiều rộng cột phải */
+        background: #A79277;
+        color: #fff;
+        padding: 15px;
+        border: none; /* Xóa viền mặc định của button */
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 16px;
+        margin-top: 20px;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s;
+        text-transform: uppercase; /* Viết hoa chữ */
+    }
 
-        .checkout-btn:hover {
-            background: #74512D;
-        }
-    </style>
+    .checkout-btn:hover {
+        background: #74512D;
+        transform: translateY(-2px); /* Hiệu ứng nhấc nhẹ khi di chuột */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
 
-    <!-- === HEADER === -->
-    <header class="header">
-        <div class="header-top">
-            <div class="logo">
-                <img src="https://i.postimg.cc/5t4yq9qJ/logo-ltw.jpg" alt="Logo">
-                <span><a href="home.jsp">Noble Loft Theory</a></span>
-            </div>
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" placeholder="Tìm kiếm">
-            </div>
-            <div class="header-right">
-                <a href="tracking.jsp">Tra cứu đơn hàng</a>
-                <a href="gioithieu.jsp">Giới thiệu</a>
-                <a href="contact.jsp">Liên hệ</a>
-                <div class="icons">
-                    <a href="cart.jsp" class="circle"><i class="fa-solid fa-cart-shopping"></i></a>
-                    <a href="account.jsp" class="circle"><i class="fa-solid fa-user"></i></a>
-                </div>
-            </div>
-        </div>
+    .checkout-btn:active {
+        transform: translateY(0); /* Nhấn xuống khi click */
+    }
+</style>
 
-        <nav class="menu">
-            <a href="home.jsp" class="menu-item active">Trang chủ</a>
-            <a href="living.jsp" class="menu-item">Phòng khách</a>
-            <a href="kitchen.jsp" class="menu-item">Phòng bếp</a>
-            <a href="bedroom.jsp" class="menu-item">Phòng ngủ</a>
-            <a href="office.jsp" class="menu-item">Phòng làm việc</a>
-            <a href="balcony.jsp" class="menu-item">Ban Công</a>
+<!-- === HEADER === -->
+<jsp:include page="/frontend/header.jsp"/>
 
-            <div class="dropdown">
-                <a href="decor.jsp">Decor <i class="fa-solid fa-chevron-down"></i></a>
-                <div class="dropdown-content">
-                    <a href="decor.jsp">Cây</a>
-                    <a href="decor.jsp">Hoa</a>
-                    <a href="decor.jsp">Đèn</a>
-                    <a href="decor.jsp">Tượng & Phụ kiện</a>
-                    <a href="decor.jsp">Đồng hồ</a>
-                    <a href="decor.jsp">Tranh</a>
-                    <a href="decor.jsp">Gương</a>
-                    <a href="decor.jsp">Nến & Tinh dầu</a>
-                    <a href="decor.jsp">Bình & Lọ hoa</a>
-                    <a href="decor.jsp">Chăn & Gối</a>
-                    <a href="decor.jsp">Kệ & Giá đỡ mini</a>
-                    <a href="decor.jsp">Bàn decor</a>
-                    <a href="decor.jsp">Ghế decor</a>
-                </div>
-            </div>
-        </nav>
-    </header>
+<!-- ===== BREADCRUMB / TIẾN TRÌNH ===== -->
+<div class="breadcrumb">
+    <a href="${pageContext.request.contextPath}/home">Trang chủ</a> &#47;
+    <a href="${pageContext.request.contextPath}/detail-product">Chi tiết sản phẩm</a> &#47;
+    <a href="${pageContext.request.contextPath}/cart">Giỏ hàng</a> &#47;
+    <span class="current">Thông tin đặt hàng</span>
+</div>
 
-    <!-- ===== BREADCRUMB / TIẾN TRÌNH ===== -->
-    <div class="breadcrumb">
-        <a href="home.jsp">Trang chủ</a> &#47;
-        <a href="detail.jsp">Chi tiết sản phẩm</a> &#47;
-        <a href="cart.jsp">Giỏ hàng</a> &#47;
-        <span class="current">Thông tin đặt hàng</span>
-    </div>
+<div class="progress">
+    <div class="step"><i class="fa fa-cart-shopping"></i> Giỏ hàng</div>
+    <div class="step active"><i class="fa fa-credit-card"></i> Thông tin đặt hàng</div>
+    <div class="step"><i class="fa fa-check-circle"></i> Hoàn tất</div>
+</div>
 
-    <div class="progress">
-        <div class="step"><i class="fa fa-cart-shopping"></i> Giỏ hàng</div>
-        <div class="step active"><i class="fa fa-credit-card"></i> Thông tin đặt hàng</div>
-        <div class="step"><i class="fa fa-check-circle"></i> Hoàn tất</div>
-    </div>
-
-    <!-- ===== KHUNG CHÍNH ===== -->
+<!-- ===== KHUNG CHÍNH ===== -->
+<form action="${pageContext.request.contextPath}/place-order" method="POST">
     <div class="checkout-container">
-        <!-- === CỘT TRÁI === -->
         <div class="checkout-left">
-            <!-- THÔNG TIN NGƯỜI NHẬN -->
             <h4>THÔNG TIN NGƯỜI NHẬN</h4>
             <div class="form-group">
-                <input type="text" placeholder="Họ & tên*" required>
-                <input type="tel" placeholder="Số điện thoại*" required>
-                <input type="email" placeholder="Email*" required>
+                <input type="text" name="fullName" placeholder="Họ & tên*" required>
+                <input type="tel" name="phone" placeholder="Số điện thoại*" required>
+                <input type="email" name="email" value="${sessionScope.acc.email}" required>
             </div>
 
-            <!-- ĐỊA CHỈ NHẬN HÀNG -->
             <h4>ĐỊA CHỈ NHẬN HÀNG</h4>
             <div class="address-group">
-                <input type="text" placeholder="Tỉnh/ Thành phố*" required>
-                <input type="text" placeholder="Quận/ Huyện*" required>
-                <input type="text" placeholder="Phường/ Xã*" required>
-                <input type="text" placeholder="Số nhà, tên đường*" required>
-                <textarea placeholder="Ghi chú cho người giao hàng (nếu có)"></textarea>
+                <input type="text" name="addressDetail" placeholder="Số nhà, tên đường*" required>
+                <input type="text" name="ward" placeholder="Phường/Xã*" required>
+                <input type="text" name="district" placeholder="Quận/Huyện*" >
+                <input type="text" name="city" placeholder="Tỉnh/Thành phố*" required>
+                <textarea name="note" placeholder="Ghi chú cho người giao hàng (nếu có)"></textarea>
             </div>
 
             <h4 class="section-title">HÌNH THỨC THANH TOÁN</h4>
             <div class="option-grid">
                 <label class="option-box">
-                    <input type="radio" name="payment" checked>
-                    <div class="option-content">
-                        <p class="main-text">THANH TOÁN KHI NHẬN HÀNG (COD)</p>
-                    </div>
+                    <input type="radio" name="paymentMethod" value="1" checked>
+                    <div class="option-content"><p class="main-text">COD</p></div>
                 </label>
-
                 <label class="option-box">
-                    <input type="radio" name="payment">
-                    <div class="option-content">
-                        <p class="main-text">CHUYỂN KHOẢN NGÂN HÀNG</p>
-                    </div>
+                    <input type="radio" name="paymentMethod" value="2">
+                    <div class="option-content"><p class="main-text">CHUYỂN KHOẢN</p></div>
                 </label>
             </div>
 
-            <!-- PHƯƠNG THỨC VẬN CHUYỂN -->
-            <h4 class="section-title">PHƯƠNG THỨC VẬN CHUYỂN</h4>
+            <h4 class="section-title">HÌNH THỨC VẬN CHUYỂN</h4>
             <div class="option-grid">
                 <label class="option-box">
-                    <input type="radio" name="shipping">
-                    <div class="option-content">
-                        <p class="main-text">HỎA TỐC</p>
-                    </div>
-                </label>
-
-                <label class="option-box">
-                    <input type="radio" name="shipping" checked>
+                    <input type="radio" name="shippingType" value="tiêu chuẩn" checked
+                           onclick="updateShipping(30000)">
                     <div class="option-content">
                         <p class="main-text">TIÊU CHUẨN</p>
+                        <p class="sub-text">30,000₫</p>
+                    </div>
+                </label>
+                <label class="option-box">
+                    <input type="radio" name="shippingType" value="hỏa tốc"
+                           onclick="updateShipping(130000)">
+                    <div class="option-content">
+                        <p class="main-text">HỎA TỐC (TP.HCM)</p>
+                        <p class="sub-text">130,000₫</p>
                     </div>
                 </label>
             </div>
-
         </div>
-
-        <!-- === CỘT PHẢI === -->
         <div class="checkout-right">
             <h3>THÔNG TIN THANH TOÁN</h3>
             <hr class="divider">
-
             <p class="section-title">Danh sách sản phẩm</p>
 
-            <!-- === DANH SÁCH SẢN PHẨM === -->
             <div class="cart-list">
-                <!-- Sản phẩm 1 -->
-                <div class="cart-item">
-                    <img src="https://product.hstatic.net/200000486527/product/img_4118_3465223127a34592a0671827a04680e8_master.jpg"
-                        alt="sp">
-                    <div class="item-info">
-                        <h4>Thảm trải sàn cao cấp Arcus phong cách Bắc Âu</h4>
-                        <div class="price">
-                            <span class="current-price">1.125.000₫</span>
-                            <span class="old-price">1.500.000₫</span>
-                            <span class="discount">-25%</span>
+                <c:forEach var="item" items="${cartItems}">
+                    <div class="cart-item">
+                        <img src="${item.imageUrl}" alt="${item.productName}">
+                        <div class="item-info">
+                            <h4>${item.productName}</h4>
+                            <p style="font-size: 12px; color: #888; margin: 5px 0;">
+                                SL: ${item.quantity} |
+                                Phân loại: ${not empty item.color ? item.color : 'Mặc định'} - ${item.size}
+                            </p>
+                            <div class="price">
+                                <span class="current-price">
+                                    <fmt:formatNumber value="${item.totalPrice}" pattern="#,###"/>₫
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Sản phẩm 2 -->
-                <div class="cart-item">
-                    <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m14zw7atgqred4" alt="sp">
-                    <div class="item-info">
-                        <h4>Đồ chơi sang trọng dài tay ngôi sao dễ thương</h4>
-                        <div class="color">Màu sắc:
-                            <span class="color-box" style="background-color: #000;"></span>
-                            <span class="color-name">Đen</span>
-                        </div>
-                        <div class="price">
-                            <span class="current-price">159.000₫</span>
-                        </div>
-                    </div>
-                </div>
+                </c:forEach>
             </div>
 
             <hr class="divider">
-
-            <!-- === THÔNG TIN THANH TOÁN === -->
-            <div class="payment-line">
-                <p>Hình thức thanh toán: </p>
-                <span>COD</span>
-            </div>
             <div class="shipping-line">
-                <p>Phương thức vận chuyển: </p>
-                <span>Hỏa tốc</span>
+                <p>Hình thức thanh toán: </p>
+                <span id="paymentMethodDisplay">COD</span>
             </div>
-            <hr class="divider">
 
+            <div class="payment-line">
+                <p>Hình thức vận chuyển: </p>
+                <span id="shippingMethodDisplay">TIÊU CHUẨN</span>
+            </div>
+
+            <hr class="divider">
             <div class="total-line">
                 <p>Tiền sản phẩm: </p>
-                <span>1.125.000₫</span>
+                <span><fmt:formatNumber value="${grandTotal}" pattern="#,###"/>₫</span>
             </div>
+
             <div class="ship-total">
                 <p>Phí vận chuyển: </p>
-                <span>50.000₫</span>
+                <span id="shippingFeeDisplay">30,000₫</span>
             </div>
 
             <hr class="divider">
             <div class="final-total">
                 <p>TỔNG THANH TOÁN</p>
-                <span>1.175.000₫</span>
+                <span id="finalTotalDisplay">
+                    <fmt:formatNumber value="${grandTotal + 30000}" pattern="#,###"/>₫
+                </span>
             </div>
 
-            <a href="completed.jsp" class="checkout-btn">ĐẶT HÀNG NGAY</a>
+            <form action="${pageContext.request.contextPath}/place-order" method="POST">
+                <button type="submit" class="checkout-btn">
+                    XÁC NHẬN ĐẶT HÀNG
+                </button>
+            </form>
         </div>
     </div>
+</form>
+<script>
+    const grandTotal = ${grandTotal};
 
+    function updateShipping(fee) {
+        // 1. Cập nhật hiển thị phí
+        document.getElementById('shippingFeeDisplay').innerText = fee.toLocaleString() + '₫';
 
-    <!-- === FOOTER === -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-columns">
-                <!-- Cột 1: Giới thiệu -->
-                <div class="footer-col">
-                    <h3>Giới thiệu</h3>
-                    <p>Chào mừng bạn đến với <strong>Noble Loft Theory</strong> — không gian dành cho những ai yêu thích
-                        cái đẹp và nghệ thuật trang trí nội thất.</p>
-                    <p>Chúng tôi mang đến các sản phẩm decor trang trí nhà với phong cách hiện đại, tối giản nhưng vẫn
-                        giữ được sự tinh tế trong từng chi tiết.</p>
+        // 2. Cập nhật tên hình thức vận chuyển (dựa vào fee để đoán tên hoặc truyền thêm tham số)
+        const methodName = (fee === 30000) ? "TIÊU CHUẨN" : "HỎA TỐC";
+        document.getElementById('shippingMethodDisplay').innerText = methodName;
 
-                </div>
+        // 3. Tính lại tổng tiền
+        const finalTotal = grandTotal + fee;
+        document.getElementById('finalTotalDisplay').innerText = finalTotal.toLocaleString() + '₫';
+    }
 
-                <!-- Cột 2: Liên kết -->
-                <div class="footer-col">
-                    <h3>Liên kết</h3>
-                    <ul>
-                        <li><a>Chính sách đổi trả hoàn hàng</a></li>
-                        <li><a>Chính sách bảo mật mật khẩu</a></li>
-                        <li><a>Hướng dẫn mua hàng, sản phẩm</a></li>
-                        <li><a>Chính sách kiểm hàng hóa vận chuyển</a></li>
-                        <li><a>Chính sách giao hàng tận nơi</a></li>
-                        <li><a>Hướng dẫn thanh toán đơn hàng</a></li>
-                    </ul>
-
-                </div>
-
-                <!-- Cột 3: Thông tin liên hệ -->
-                <div class="footer-col">
-                    <h3>Thông tin liên hệ</h3>
-                    <p><i class="fa fa-map-marker"></i>Khu phố 33, P.Linh Xuân, TP.HCM</p>
-                    <p><i class="fa fa-map-marker"></i> Đại học Nông Lâm TP.Hồ Chí Minh</p>
-                    <p><i class="fa fa-phone"></i> Liên hệ: 03751841444 - 03381776315 </p>
-
-                    <p><i class="fa fa-envelope"></i> <a
-                            href="mailto:NLT@noblelofttheory.com">NLT@noblelofttheory.com</a></p>
-                </div>
-
-
-                <!-- Cột 4: Fanpage -->
-                <div class="footer-col">
-                    <h3>Fanpage</h3>
-                    <div class="fanpage-box">
-                        <p>Liên hệ ngay trang chủ của shop Noble Loft Theory.</p>
-                        <p>Nếu bạn đang có thắc mắc gì ở sản phẩm.</p>
-                        <p>Fanpage, Youtube và Instagram.</p>
-
-
-                        <div class="social-box">
-                            <div class="social-icons">
-                                <!-- mấy cái # này là chưa có link liên kết nào có gắn v -->
-                                <a href="https://www.facebook.com/share/1HP5fZGNqb/?mibextid=wwXIfr">
-                                    <i class="fa-brands fa-facebook"></i></a>
-                                <a href="https://www.instagram.com/nltnoblelofttheory/">
-                                    <i class="fa-brands fa-instagram"></i></a>
-                                <a href="https://www.youtube.com/channel/UC931-4vCWPGos5fSNQ8Rh-g">
-                                    <i class="fa-brands fa-youtube"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <p>Copyright © 2025 NLT Noble Loft Theory. Powered by NLT </p>
-        </div>
-        </div>
-    </footer>
+    // Lắng nghe sự kiện thay đổi hình thức thanh toán
+    document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const methodText = (this.value === "1") ? "COD" : "CHUYỂN KHOẢN";
+            document.getElementById('paymentMethodDisplay').innerText = methodText;
+        });
+    });
+</script>
+<!-- === FOOTER === -->
+<jsp:include page="/frontend/footer.jsp"/>
 
 </body>
 
