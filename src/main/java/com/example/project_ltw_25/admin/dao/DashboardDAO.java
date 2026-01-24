@@ -1,113 +1,83 @@
 package com.example.project_ltw_25.admin.dao;
 
 import com.example.project_ltw_25.admin.model.Order;
-import com.example.project_ltw_25.user.dao.DBDAO;
 import com.example.project_ltw_25.user.model.Product;
+import com.example.project_ltw_25.user.dao.DBDAO;
 import org.jdbi.v3.core.Jdbi;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class DashboardDAO {
     private Jdbi jdbi = DBDAO.get();
 
-    // 1. Tổng doanh thu tháng hiện tại
+    // 1. Tổng doanh thu (tính các đơn đã giao thành công)
     public double getTotalRevenue() {
-//        return jdbi.withHandle(handle ->
-//                // Sửa lại thành 'D' hoặc 'Delivered' tùy theo cách bạn lưu trong DB
-//                handle.createQuery("SELECT SUM(total_price) FROM orders WHERE status = 'D' OR status = 'Delivered'")
-//                        .mapTo(Double.class)
-//                        .findOne()
-//                        .orElse(0.0)
-//        );
-        return 1000000000;
+        String sql = "SELECT SUM(o.total_price) FROM orders o " +
+                "JOIN order_status_history osh ON o.id = osh.order_id " +
+                "WHERE osh.status = 'đã giao' " +
+                "AND osh.id = (SELECT MAX(id) FROM order_status_history WHERE order_id = o.id)";
+        return jdbi.withHandle(handle ->
+                handle.createQuery(sql).mapTo(Double.class).findOne().orElse(0.0)
+        );
     }
 
-    // 2. Danh sách 8 đơn hàng mới nhất
+    // 2. Đơn hàng mới nhất + trạng thái hiện tại (8 đơn)
     public List<Order> getRecentOrders() {
-//        return jdbi.withHandle(handle ->
-//                handle.createQuery("SELECT id, order_code AS orderCode, recipient_name AS recipientName, " +
-//                                "total_price AS totalPrice, order_date AS orderDate " +
-//                                "FROM orders ORDER BY order_date DESC LIMIT 8")
-//                        .mapToBean(Order.class)
-//                        .list()
-//        );
-        return new ArrayList<>();
-
+        String sql = "SELECT o.id, o.order_code AS orderCode, o.recipient_name AS recipientName, " +
+                "o.total_price AS totalPrice, osh.status, o.order_date AS orderDate " +
+                "FROM orders o " +
+                "JOIN order_status_history osh ON o.id = osh.order_id " +
+                "WHERE osh.id = (SELECT MAX(id) FROM order_status_history WHERE order_id = o.id) " +
+                "ORDER BY o.order_date DESC LIMIT 8";
+        return jdbi.withHandle(handle -> handle.createQuery(sql).mapToBean(Order.class).list());
     }
 
-    // 3. Top 4 sản phẩm bán chạy nhất (Để hiển thị bên phải Dashboard)
-    // Sửa trong DashboardDAO.java
-    public List<Product> getBestSellers() {
-//        String sql = "SELECT p.id, p.product_name AS name, p.price, '' AS image, SUM(od.quantity) as total_sold " +
-//                "FROM order_details od " +
-//                "JOIN products p ON od.product_id = p.id " +
-//                "GROUP BY p.id, p.product_name, p.price " +
-//                "ORDER BY total_sold DESC " +
-//                "LIMIT 4"; // Thay SELECT TOP 4 bằng LIMIT 4 ở cuối
-//
-//        return jdbi.withHandle(handle ->
-//                handle.createQuery(sql)
-//                        .mapToBean(Product.class)
-//                        .list()
-//        );
-        return new ArrayList<>();
-    }
-
-    // 4. Đếm số đơn hàng chờ xử lý
+    // 3. Đếm đơn hàng đang xử lý
     public int countPendingOrders() {
-//        return jdbi.withHandle(handle ->
-//                handle.createQuery("SELECT COUNT(*) FROM orders WHERE status = 'Processing'")
-//                        .mapTo(Integer.class)
-//                        .one()
-//        );
-        return 0;
+        String sql = "SELECT COUNT(*) FROM orders o " +
+                "JOIN order_status_history osh ON o.id = osh.order_id " +
+                "WHERE osh.status = 'đang xử lý' " + // Hoặc 'Chờ xác nhận'
+                "AND osh.id = (SELECT MAX(id) FROM order_status_history WHERE order_id = o.id)";
+        return jdbi.withHandle(handle -> handle.createQuery(sql).mapTo(Integer.class).one());
     }
-    public List<Map<String, Object>> getRevenueLast7Days() {
-//        String sql =
-//                "WITH Last7Days AS (" +
-//                        "    SELECT CAST(GETDATE() AS DATE) AS DisplayDate, 0 AS DaysAgo " +
-//                        "    UNION ALL " +
-//                        "    SELECT DATEADD(day, -1, DisplayDate), DaysAgo + 1 " +
-//                        "    FROM Last7Days WHERE DaysAgo < 6" +
-//                        ") " +
-//                        "SELECT FORMAT(d.DisplayDate, 'dd/MM') as date, " +
-//                        "       ISNULL(SUM(o.total_price), 0) as daily_revenue " +
-//                        "FROM Last7Days d " +
-//                        "LEFT JOIN orders o ON CAST(o.order_date AS DATE) = d.DisplayDate AND o.status = 'Delivered' " +
-//                        "GROUP BY d.DisplayDate " +
-//                        "ORDER BY d.DisplayDate ASC";
-//
-//        return jdbi.withHandle(handle ->
-//                handle.createQuery(sql)
-//                        .mapToMap()
-//                        .list()
-//        );
-        return new ArrayList<>();
 
+    // 4. Lấy top 4 sản phẩm bán chạy
+    public List<Product> getBestSellers() {
+        String sql = "SELECT p.id, p.product_name, pv.price, pv.image_url, SUM(od.quantity) AS totalSold " +
+                "FROM order_details od " +
+                "JOIN product_variants pv ON od.variant_id = pv.id " +
+                "JOIN products p ON pv.product_id = p.id " +
+                "GROUP BY p.id, p.product_name, pv.price, pv.image_url " +
+                "ORDER BY totalSold DESC LIMIT 4";
+        return jdbi.withHandle(handle -> handle.createQuery(sql).mapToBean(Product.class).list());
     }
-    // Đếm sản phẩm sắp hết hàng (tồn kho < 10)
+
+    // 5. Thống kê kho hàng
     public int getLowStockCount() {
-//        String sql = "SELECT COUNT(*) FROM inventories WHERE stock_quantity < 10";
-//        return jdbi.withHandle(handle ->
-//                handle.createQuery(sql)
-//                        .mapTo(Integer.class)
-//                        .one()
-//        );
-        return 0;
+        return jdbi.withHandle(handle ->
+                handle.createQuery("SELECT COUNT(*) FROM inventories WHERE stock_quantity < 10").mapTo(Integer.class).one());
     }
 
-    // Lấy tổng số sản phẩm trong kho
     public int getTotalStock() {
-//        String sql = "SELECT SUM(stock_quantity) FROM inventories";
-//        return jdbi.withHandle(handle ->
-//                handle.createQuery(sql)
-//                        .mapTo(Integer.class)
-//                        .findOne()
-//                        .orElse(0)
-//        );
-        return 0;
+        return jdbi.withHandle(handle ->
+                handle.createQuery("SELECT SUM(stock_quantity) FROM inventories").mapTo(Integer.class).findOne().orElse(0));
     }
 
+    // 6. Biểu đồ doanh thu 7 ngày qua
+    public List<Map<String, Object>> getRevenueLast7Days() {
+        String sql = "SELECT DATE_FORMAT(date_range.date, '%d/%m') as date, " +
+                "COALESCE(SUM(o.total_price), 0) as daily_revenue " +
+                "FROM ( " +
+                "  SELECT CURDATE() - INTERVAL (a.a + (10 * b.a)) DAY AS date " +
+                "  FROM (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6) AS a " +
+                "  CROSS JOIN (SELECT 0 AS a) AS b " +
+                ") AS date_range " +
+                "LEFT JOIN orders o ON DATE(o.order_date) = date_range.date " +
+                "LEFT JOIN order_status_history osh ON o.id = osh.order_id " +
+                "  AND osh.status = 'đã giao' " +
+                "  AND osh.id = (SELECT MAX(id) FROM order_status_history WHERE order_id = o.id) " +
+                "GROUP BY date_range.date ORDER BY date_range.date ASC";
+        return jdbi.withHandle(handle -> handle.createQuery(sql).mapToMap().list());
+    }
 }
