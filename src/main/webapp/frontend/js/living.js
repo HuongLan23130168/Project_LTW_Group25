@@ -1,24 +1,35 @@
 console.clear();
 
-document.addEventListener("DOMContentLoaded", () => {
-  const filterGroups = document.querySelectorAll(".filter-group");
 
-  filterGroups.forEach((group) => {
-    const label = group.querySelector(".filter-label");
-    const optionsDiv = group.querySelector(".options");
-    const icon = group.querySelector(".filter-icon");
+document.addEventListener('DOMContentLoaded', function() {
+  // Code xử lý đóng mở bộ lọc
+  const labels = document.querySelectorAll('.filter-label');
+  labels.forEach(label => {
+    label.addEventListener('click', function() {
+      const options = this.nextElementSibling;
+      const icon = this.querySelector('.filter-icon i');
 
-    if (label && optionsDiv && icon) {
-      icon.style.transform = "rotate(0deg)";
-      icon.style.transition = "transform 0.2s";
-
-      label.addEventListener("click", () => {
-        const isHidden = optionsDiv.style.display === "none";
-
-        optionsDiv.style.display = isHidden ? "block" : "none";
-
-        icon.style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
-      });
-    }
+      if (options.style.display === 'none' || options.style.display === '') {
+        options.style.display = 'block';
+        icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+      } else {
+        options.style.display = 'none';
+        icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+      }
+    });
   });
 });
+// --- 10. BACK TO TOP ---
+const backToTopBtn = document.getElementById("backToTop");
+if(backToTopBtn) {
+  window.onscroll = function() {
+    if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+      backToTopBtn.classList.add("show");
+    } else {
+      backToTopBtn.classList.remove("show");
+    }
+  };
+  backToTopBtn.onclick = function() {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  };
+}

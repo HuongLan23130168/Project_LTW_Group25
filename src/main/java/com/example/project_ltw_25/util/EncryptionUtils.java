@@ -1,9 +1,11 @@
-package com.example.project_ltw_25.util;
+package com.example.project_ltw_25.user.util;
+
+import java.security.MessageDigest;
 
 public class EncryptionUtils {
     public static String hashMD5(String password) {
         try {
-            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] array = md.digest(password.getBytes());
             StringBuilder sb = new StringBuilder();
             for (byte b : array) {

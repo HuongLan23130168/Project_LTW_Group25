@@ -1,90 +1,95 @@
-package com.example.project_ltw_25.controller;
+package com.example.project_ltw_25.user.controller;
 
-import com.example.project_ltw_25.dao.CartDAO;
-import com.example.project_ltw_25.model.CartItem;
+import com.example.project_ltw_25.user.dao.CartDAO;
+import com.example.project_ltw_25.user.model.CartItem;
+import com.example.project_ltw_25.user.model.User;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @WebServlet(name = "CartServlet", value = "/cart")
 public class CartServlet extends HttpServlet {
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
-        HttpSession session = request.getSession();
-
-        // Giả sử bạn lấy userId từ session người dùng đã đăng nhập
-        Integer userId = (Integer) session.getAttribute("userId");
-
-        // Nếu chưa đăng nhập -> trang login
-        if (userId == null) {
-            response.sendRedirect(request.getContextPath() + "/frontend/login.jsp");
-            return;
-        }
-
-        if ("add".equals(action)) {
-            int variantId = Integer.parseInt(request.getParameter("variantId"));
-            int quantity = Integer.parseInt(request.getParameter("quantity"));
-
-            CartDAO dao = new CartDAO();
-
-            // 1. Lưu vào Database
-            int cartId = dao.getOrCreateCart(userId);
-            dao.addItemToCart(cartId, variantId, quantity);
-
-            // 2. Cập nhật lại giỏ hàng trong Session để JSP hiển thị ngay lập tức
-            session.setAttribute("cart", CartDAO.getCartDetails(userId));
-
-            // 3. Chuyển hướng -> giỏ hàng
-            response.sendRedirect(request.getContextPath() + "/frontend/cart.jsp");
-        }
-    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 1. Kiểm tra đăng nhập qua đối tượng 'acc'
+        processRequest(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    // Gộp chung logic xử lý để tránh sai sót giữa GET và POST
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+
         HttpSession session = request.getSession();
-        Object userObj = session.getAttribute("acc");
-        if (userObj == null) {
-            response.sendRedirect(request.getContextPath() + "/frontend/login.jsp");
+        User user = (User) session.getAttribute("acc");
+
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        Integer userId = (Integer) session.getAttribute("userId");
-
+        CartDAO dao = new CartDAO();
         String action = request.getParameter("action");
+        String idRaw = request.getParameter("id");
+        String qtyRaw = request.getParameter("quantity");
 
-        // 2. Nếu action == null, nghĩa là người dùng chỉ muốn XEM GIỎ HÀNG
-        if (action == null) {
-            session.setAttribute("cart", CartDAO.getCartDetails(userId));
-            request.getRequestDispatcher("/frontend/cart.jsp").forward(request, response);
-            return;
-        }
-
-        // 3. Nếu có action (update hoặc delete)
         try {
-            int variantId = Integer.parseInt(request.getParameter("id"));
-
-            if (action.equals("update")) {
-                int newQty = Integer.parseInt(request.getParameter("quantity"));
-                if (newQty > 0) {
-                    CartDAO.updateQuantity(userId, variantId, newQty);
+            if (action != null) {
+                // Nhánh Checkout: Xử lý trước vì không cần ID sản phẩm lẻ
+                if ("checkout".equals(action)) {
+                    List<CartItem> list = dao.getCartByUserId(user.getId());
+                    if (list == null || list.isEmpty()) {
+                        session.setAttribute("error", "Giỏ hàng của bạn đang trống!");
+                        response.sendRedirect(request.getContextPath() + "/cart");
+                        return;
+                    }
+                    double grandTotal = list.stream().mapToDouble(CartItem::getTotalPrice).sum();
+                    request.setAttribute("cartItems", list);
+                    request.setAttribute("grandTotal", grandTotal);
+                    request.getRequestDispatcher("/frontend/pay.jsp").forward(request, response);
+                    return;
                 }
-            } else if (action.equals("delete")) {
-                CartDAO.removeItem(userId, variantId);
+
+                // Các nhánh cần ID (Update/Delete)
+                if (idRaw != null && !idRaw.isEmpty()) {
+                    int variantId = Integer.parseInt(idRaw);
+                    if ("delete".equals(action)) {
+                        dao.removeItem(user.getId(), variantId);
+                    } else if ("update".equals(action) && qtyRaw != null) {
+                        int quantity = Integer.parseInt(qtyRaw);
+                        dao.updateQuantity(user.getId(), variantId, quantity);
+                    }
+                    response.sendRedirect(request.getContextPath() + "/cart");
+                    return;
+                }
             }
+
+            // MẶC ĐỊNH: Hiển thị giỏ hàng
+            List<CartItem> list = dao.getCartByUserId(user.getId());
+            double grandTotal = 0;
+            int totalQuantity = 0;
+            if (list != null) {
+                for (CartItem item : list) {
+                    grandTotal += item.getTotalPrice();
+                    totalQuantity += item.getQuantity();
+                }
+            }
+            request.setAttribute("cartItems", list);
+            request.setAttribute("grandTotal", grandTotal);
+            session.setAttribute("totalQty", totalQuantity);
+            request.getRequestDispatcher("/frontend/cart.jsp").forward(request, response);
+
         } catch (Exception e) {
-            e.printStackTrace(); // Tránh bị dừng chương trình nếu parse lỗi
+            e.printStackTrace();
+            response.getWriter().println("Lỗi hệ thống: " + e.getMessage());
         }
-
-        // 4. Cập nhật lại session và redirect để tránh lặp lại hành động khi F5
-        session.setAttribute("cart", CartDAO.getCartDetails(userId));
-        response.sendRedirect(request.getContextPath() + "/cart");
-        }
-
-
+    }
 }

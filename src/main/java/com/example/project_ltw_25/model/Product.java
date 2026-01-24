@@ -1,32 +1,21 @@
 package com.example.project_ltw_25.model;
 
-import java.io.Serializable;
+import java.util.List;
 
-public class Product implements Serializable {
+public class Product {
     private int id;
-    private String productCode;
-    private String productName;
+    private String product_code;
+    private String product_name;
+    private int product_type_id;
+    private int category_id;
     private String description;
-
-    private String categoryName;
-    private String productTypeName;
-
-    private double price;
-    private String imageUrl;
+    private List<Product_variant> variants;
+    private List<Product_image> images; // Thêm danh sách hình ảnh
 
     public Product() {
     }
 
-    public Product(int id, String productCode, String productName, String description, String categoryName, String productTypeName, double price, String imageUrl) {
-        this.id = id;
-        this.productCode = productCode;
-        this.productName = productName;
-        this.description = description;
-        this.categoryName = categoryName;
-        this.productTypeName = productTypeName;
-        this.price = price;
-        this.imageUrl = imageUrl;
-    }
+    // ... các getter/setter cũ ...
 
     public int getId() {
         return id;
@@ -36,20 +25,36 @@ public class Product implements Serializable {
         this.id = id;
     }
 
-    public String getProductCode() {
-        return productCode;
+    public String getProduct_code() {
+        return product_code;
     }
 
-    public void setProductCode(String productCode) {
-        this.productCode = productCode;
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
     }
 
-    public String getProductName() {
-        return productName;
+    public String getProduct_name() {
+        return product_name;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+    public void setProduct_name(String product_name) {
+        this.product_name = product_name;
+    }
+
+    public int getProduct_type_id() {
+        return product_type_id;
+    }
+
+    public void setProduct_type_id(int product_type_id) {
+        this.product_type_id = product_type_id;
+    }
+
+    public int getCategory_id() {
+        return category_id;
+    }
+
+    public void setCategory_id(int category_id) {
+        this.category_id = category_id;
     }
 
     public String getDescription() {
@@ -60,35 +65,20 @@ public class Product implements Serializable {
         this.description = description;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public List<Product_variant> getVariants() {
+        return variants;
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public void setVariants(List<Product_variant> variants) {
+        this.variants = variants;
     }
 
-    public String getProductTypeName() {
-        return productTypeName;
+    // Getter và Setter cho images
+    public List<Product_image> getImages() {
+        return images;
     }
 
-    public void setProductTypeName(String productTypeName) {
-        this.productTypeName = productTypeName;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImages(List<Product_image> images) {
+        this.images = images;
     }
 }

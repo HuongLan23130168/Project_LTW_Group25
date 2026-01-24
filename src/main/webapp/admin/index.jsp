@@ -6,77 +6,26 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Noble Loft Theory - Admin</title>
-    <link rel="stylesheet" href="css/style.css"/>
-    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/style.css"/>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
 
 <body>
-
-<!-- === SIDEBAR === -->
-<div class="sidebar" id="sidebar">
-    <div class="logo">
-        <a href="index.jsp">Noble Loft Theory</a>
+<jsp:include page="/admin/header.jsp"/>
+<jsp:include page="/admin/sidebar.jsp"/>
+<main>
+    <!-- === DASHBOARD === -->
+    <div class="main-content">
+        <div class="center-box">
+            <i class="fas fa-lock" style="font-size: 50px; color: #74512d;"></i>
+            <h1>Đây là trang của Admin!</h1>
+            <h3>Bạn cần <a href="${pageContext.request.contextPath}/login"
+                           style="color: #74512d; text-decoration: underline;">đăng nhập</a> để xem nội dung dashboard
+            </h3></div>
     </div>
-
-    <ul>
-        <li>
-            <a href="login.jsp"><i class="fas fa-chart-line"></i> Dashboard</a>
-        </li>
-        <li>
-            <a href="#"><i class="fas fa-box"></i> Sản phẩm</a>
-        </li>
-        <li>
-            <a href="#"><i class="fas fa-cart-shopping"></i> Đơn hàng</a>
-        </li>
-        <li>
-            <a href="#"><i class="fas fa-users"></i> Khách hàng</a>
-        </li>
-        <li>
-            <a href="#"><i class="fas fa-bell"></i> Thông báo</a>
-        </li>
-        <li>
-            <a href="#"><i class="fas fa-gear"></i> Tài khoản</a>
-        </li>
-    </ul>
-</div>
-
-<!-- === HEADER === -->
-<header class="header">
-    <div class="header-left">
-        <div class="search-container">
-            <i class="fa-solid fa-magnifying-glass" style="color: #74512d;"></i>
-            <input type="text" placeholder="Tìm kiếm" class="search-input"/>
-        </div>
-    </div>
-
-    <div class="header-right">
-        <!-- Nút thông báo -->
-        <button class="icon-button"><i class="fa-solid fa-bell"></i></button>
-
-        <!-- Hồ sơ người dùng -->
-        <div class="profile-dropdown">
-            <button class="icon-button user-btn">
-                <i class="fa-solid fa-user"></i>
-            </button>
-
-            <div class="dropdown-menu">
-                <a href="login.jsp"><i class="fas fa-right-from-bracket"></i> Đăng nhập</a>
-            </div>
-        </div>
-    </div>
-</header>
-
-
-<!-- === DASHBOARD === -->
-<div class="main-content">
-    <div class="center-box">
-        <h1>Đây là trang của Admin!</h1>
-        <h3>Bạn cần đăng nhập để có thể xem nội dung</h3>
-    </div>
-</div>
-
+</main>
 <script src="js/main.js"></script>
 </body>
 

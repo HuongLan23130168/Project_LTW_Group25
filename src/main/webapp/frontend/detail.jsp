@@ -1,296 +1,184 @@
-<!DOCTYPE html>
-<html lang="en">
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<!DOCTYPE html>
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chi Tiết Sản Phẩm</title>
-  <link rel="stylesheet" href="css/header.css">
-  <link rel="stylesheet" href="css/footer.css">
-  <link rel="stylesheet" href="css/detail.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${product.product_name}</title>
+
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/frontend/css/header.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/frontend/css/footer.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/frontend/css/detail.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
-  <!-- === HEADER === -->
-  <header class="header">
-    <div class="header-top">
-      <div class="logo">
-        <img src="https://i.postimg.cc/5t4yq9qJ/logo-ltw.jpg" alt="Logo">
-        <span><a href="home.jsp">Noble Loft Theory</a></span>
-      </div>
-      <div class="search-box">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" placeholder="Tìm kiếm">
-      </div>
-      <div class="header-right">
-        <a href="tracking.jsp">Tra cứu đơn hàng</a>
-        <a href="gioithieu.jsp">Giới thiệu</a>
-        <a href="contact.jsp">Liên hệ</a>
-        <div class="icons">
-          <a href="cart.jsp" class="circle"><i class="fa-solid fa-cart-shopping"></i></a>
-          <a href="account.jsp" class="circle"><i class="fa-solid fa-user"></i></a>
-        </div>
-      </div>
-    </div>
+<jsp:include page="header.jsp"/>
 
-    <nav class="menu">
-      <a href="home.jsp" class="">Trang chủ</a>
-      <a href="living.jsp" class="">Phòng khách</a>
-      <a href="kitchen.jsp" class="">Phòng bếp</a>
-      <a href="bedroom.jsp" class="">Phòng ngủ</a>
-      <a href="office.jsp" class="">Phòng làm việc</a>
-      <a href="balcony.jsp" class="">Ban Công</a>
+<c:choose>
+    <c:when test="${not empty product}">
+        <%-- Lấy biến thể đầu tiên làm mặc định --%>
+        <c:set var="defaultVariant" value="${product.variants[0]}"/>
 
-      <div class="dropdown">
-        <a href="decor.jsp">Decor <i class="fa-solid fa-chevron-down"></i></a>
-        <div class="dropdown-content">
-          <a href="decor.jsp">Cây</a>
-          <a href="decor.jsp">Hoa</a>
-          <a href="decor.jsp">Đèn</a>
-          <a href="decor.jsp">Tượng & Phụ kiện</a>
-          <a href="decor.jsp">Đồng hồ</a>
-          <a href="decor.jsp">Tranh</a>
-          <a href="decor.jsp">Gương</a>
-          <a href="decor.jsp">Nến & Tinh dầu</a>
-          <a href="decor.jsp">Bình & Lọ hoa</a>
-          <a href="decor.jsp">Chăn & Gối</a>
-          <a href="decor.jsp">Kệ & Giá đỡ mini</a>
-          <a href="decor.jsp">Bàn decor</a>
-          <a href="decor.jsp">Ghế decor</a>
-        </div>
-      </div>
-    </nav>
-  </header>
-  <!-- === BREADCRUMB === -->
-  <div class="breadcrumb">
-    <a href="home.jsp">Trang chủ</a> &#47;
-    <a href="living.jsp">Sản phẩm</a> &#47;
-    <span class="current">Đèn chùm pha lê 15 tay LED XANH chao đá đúc màu vàng</span>
-  </div>
-
-
-  <!-- === SECTION 1: THÔNG TIN SẢN PHẨM === -->
-  <section class="product-detail">
-    <div class="left">
-      <img id="mainImage" src="https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lmsocm37vc9r54.webp"
-        alt="Đèn chùm pha lê 15 tay LED XANH" class="main-img">
-      <div class="thumbs">
-        <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lmsocm37vc9r54.webp"
-          onclick="changeImage(this)">
-        <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lo1skjyjpey555.webp"
-          onclick="changeImage(this)">
-        <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lyymeaqjbmox7a.webp"
-          onclick="changeImage(this)">
-      </div>
-    </div>
-
-    <div class="right">
-      <h1>Đèn chùm pha lê 15 tay LED XANH chao đá đúc màu vàng</h1>
-
-      <div class="price-wrapper" data-size="90×65cm">
-        <p class="price-sale">1.888.000₫</p>
-        <p class="price-old">3.200.000₫</p>
-        <p class="discount">-41%</p>
-      </div>
-
-      <div class="price-wrapper hidden" data-size="110×75cm">
-        <p class="price-sale">2.688.000₫</p>
-        <p class="price-old">4.200.000₫</p>
-        <p class="discount">-36%</p>
-      </div>
-
-
-      <div class="select-group">
-        <label>Màu sắc:</label>
-        <div class="option-list">
-          <div class="option active">Vàng</div>
-
-        </div>
-      </div>
-
-      <div class="select-group">
-        <label>Kích thước:</label>
-        <div class="option-list">
-          <div class="option active">90×65cm</div>
-          <div class="option">110×75cm</div>
-        </div>
-      </div>
-      <div class="quantity-box">
-        <button class="qty-btn minus">−</button>
-        <input type="number" id="quantity" value="1" min="1">
-        <button class="qty-btn plus">+</button>
-      </div>
-      <div class="actions">
-        <a href="cart.jsp" class="add-cart"><i class="fa fa-cart-plus"></i> Thêm vào giỏ hàng</a>
-        <a href="pay.jsp" class="buy-now">Mua ngay</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- === SECTION 2: MÔ TẢ CHI TIẾT === -->
-  <section class="detail-section">
-    <h2>Mô tả chi tiết</h2>
-
-    <div class="description">
-
-      <strong>Tên sản phẩm:</strong> Đèn chùm pha lê 15 tay LED XANH chao đá đúc màu vàng <br>
-      <strong>Phân loại:</strong> Đèn chùm phòng khách đẹp – Tặng kèm bóng LED <br>
-      <strong>Giá bán:</strong> 1.888.000 ₫ <br>
-      <strong>Màu sắc:</strong> Vàng <br>
-      <strong>Phong cách:</strong> Cổ điển, Sang trọng <br>
-      <strong>Không gian phù hợp:</strong> Phòng khách, phòng ngủ, sảnh, nhà hàng <br><br>
-
-      <hr>
-
-      <strong>Thông số kỹ thuật:</strong><br>
-      • Chất liệu: Đá đúc, Hợp kim, Pha lê <br>
-      • Kích thước: 90 × 65 cm (900 × H650 mm + xích max 550 mm) <br>
-      • Công suất: Theo bóng <br>
-      • Nguồn sáng: Đui E14 = 15 bóng (TẶNG KÈM bóng LED) <br>
-      • Điện áp: 220–240V / 50–60 Hz <br>
-      • Loại bóng: Bóng đèn A Series <br><br>
-
-      <strong>Xuất xứ – Bảo hành:</strong><br>
-      • Xuất xứ: Nhập khẩu (đèn LED Đài Loan) <br>
-      • Bảo hành: 24 tháng <br>
-      • Hạn bảo hành khung + chất liệu: 10 năm <br><br>
-
-      <strong>Bộ sản phẩm bao gồm:</strong><br>
-      ✔ Đèn chùm hoàn thiện <br>
-      ✔ Bộ chao pha lê cao cấp <br>
-      ✔ Bóng LED E14 (tặng kèm) <br>
-      ✔ Hướng dẫn và phụ kiện lắp đặt đầy đủ <br><br>
-
-      <hr><br>
-
-      <strong>Hình ảnh sản phẩm:</strong><br><br>
-
-      <div class="detail-images">
-        <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lmsocm37vc9r54.webp" alt="Ảnh sản phẩm 1">
-        <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lo1skjyjpey555.webp" alt="Ảnh sản phẩm 2">
-        <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lyymeaqjbmox7a.webp" alt="Ảnh sản phẩm 3">
-      </div>
-
-    </div>
-  </section>
-
-
-  <!-- === SECTION 3: SẢN PHẨM TƯƠNG TỰ === -->
-  <section class="related-products">
-    <h2>Sản phẩm tương tự</h2>
-    <div class="slider-container">
-      <button class="slide-btn prev" onclick="scrollSlider(-1)"><i class="fa fa-chevron-left"></i></button>
-      <div class="slider" id="productSlider">
-        <div class="product">
-          <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lybs2p23oz3515.webp">
-          <h4>Đèn chùm pha lê 15 tay LED</h4>
-          <p class="price">5.386.000 ₫</p>
-        </div>
-        <div class="product">
-          <img src="https://down-vn.img.susercontent.com/file/b1b4f03c217b32d3d9ba42b0b8864a0f.webp">
-          <h4>Đèn Ốp Trần 20 Cánh Sen</h4>
-          <p class="price">1.760.000 ₫</p>
-        </div>
-        <div class="product">
-          <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m4164wl5iueoa1.webp">
-          <h4>Đèn thả pha lê 3 vòng</h4>
-          <p class="price">2.999.999 ₫</p>
-        </div>
-        <div class="product">
-          <img src="https://down-vn.img.susercontent.com/file/1a50731f21a429142e357c8dbff059bd.webp">
-          <h4>Đèn thả hoa bồ công anh</h4>
-          <p class="price">787.000 ₫</p>
-        </div>
-        <div class="product">
-          <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lmvsqkyjv1y554.webp">
-          <h4>Đèn chùm pha lê 12 tay LED</h4>
-          <p class="price">4.299.000 ₫</p>
+        <div class="breadcrumb">
+            <a href="${pageContext.request.contextPath}/home">Trang chủ</a> &#47;
+            <a href="${pageContext.request.contextPath}/products">Sản phẩm</a> &#47;
+            <span class="current">${product.product_name}</span>
         </div>
 
-      </div>
-      <button class="slide-btn next" onclick="scrollSlider(1)"><i class="fa fa-chevron-right"></i></button>
-    </div>
-  </section>
-
-  <!-- NÚT LÊN ĐẦU TRANG -->
-  <button id="backToTop" title="Lên đầu trang">
-    <i class="fa-solid fa-arrow-up"></i>
-  </button>
-
-  <!-- === FOOTER === -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-columns">
-        <!-- Cột 1: Giới thiệu -->
-        <div class="footer-col">
-          <h3>Giới thiệu</h3>
-          <p>Chào mừng bạn đến với <strong>Noble Loft Theory</strong> — không gian dành cho những ai yêu thích
-            cái đẹp và nghệ thuật trang trí nội thất.</p>
-          <p>Chúng tôi mang đến các sản phẩm decor trang trí nhà với phong cách hiện đại, tối giản nhưng vẫn
-            giữ được sự tinh tế trong từng chi tiết.</p>
-
-        </div>
-
-        <!-- Cột 2: Liên kết -->
-        <div class="footer-col">
-          <h3>Liên kết</h3>
-          <ul>
-            <li><a>Chính sách đổi trả hoàn hàng</a></li>
-            <li><a>Chính sách bảo mật mật khẩu</a></li>
-            <li><a>Hướng dẫn mua hàng, sản phẩm</a></li>
-            <li><a>Chính sách kiểm hàng hóa vận chuyển</a></li>
-            <li><a>Chính sách giao hàng tận nơi</a></li>
-            <li><a>Hướng dẫn thanh toán đơn hàng</a></li>
-          </ul>
-
-        </div>
-
-        <!-- Cột 3: Thông tin liên hệ -->
-        <div class="footer-col">
-          <h3>Thông tin liên hệ</h3>
-          <p><i class="fa fa-map-marker"></i>Khu phố 33, P.Linh Xuân, TP.HCM</p>
-          <p><i class="fa fa-map-marker"></i> Đại học Nông Lâm TP.Hồ Chí Minh</p>
-          <p><i class="fa fa-phone"></i> Liên hệ: 03751841444 - 03381776315 </p>
-
-          <p><i class="fa fa-envelope"></i> <a href="mailto:NLT@noblelofttheory.com">NLT@noblelofttheory.com</a></p>
-        </div>
-
-
-        <!-- Cột 4: Fanpage -->
-        <div class="footer-col">
-          <h3>Fanpage</h3>
-          <div class="fanpage-box">
-            <p>Liên hệ ngay trang chủ của shop Noble Loft Theory.</p>
-            <p>Nếu bạn đang có thắc mắc gì ở sản phẩm.</p>
-            <p>Fanpage, Youtube và Instagram.</p>
-
-
-            <div class="social-box">
-              <div class="social-icons">
-                <!-- mấy cái # này là chưa có link liên kết nào có gắn v -->
-                <a href="https://www.facebook.com/share/1HP5fZGNqb/?mibextid=wwXIfr">
-                  <i class="fa-brands fa-facebook"></i></a>
-                <a href="https://www.instagram.com/nltnoblelofttheory/">
-                  <i class="fa-brands fa-instagram"></i></a>
-                <a href="https://www.youtube.com/channel/UC931-4vCWPGos5fSNQ8Rh-g">
-                  <i class="fa-brands fa-youtube"></i></a>
-              </div>
+        <section class="product-detail">
+            <div class="left">
+                <img id="mainImage" src="${defaultVariant.image_url}" alt="${product.product_name}" class="main-img">
+                <div class="thumbs">
+                    <c:forEach var="v" items="${product.variants}" begin="0" end="2">
+                        <img src="${v.image_url}" onclick="changeImage(this.src, this)">
+                    </c:forEach>
+                    <c:if test="${not empty product.images}">
+                        <c:forEach var="img" items="${product.images}">
+                            <img src="${img.image_url}" onclick="changeImage(this.src, this)">
+                        </c:forEach>
+                    </c:if>
+                </div>
             </div>
-          </div>
+
+            <div class="right">
+                <h1>${product.product_name}</h1>
+
+                <div class="price-wrapper">
+                    <p class="price-sale" id="price-display">
+                        <fmt:formatNumber value="${defaultVariant.price}" type="currency" currencySymbol=""/>₫
+                    </p>
+                    <p class="price-old" style="display:none;">3.200.000₫</p>
+                    <p class="discount" style="display:none;">-41%</p>
+                </div>
+
+                <div class="select-group">
+                    <label>Màu sắc: <span id="color-text" style="font-weight:normal">${defaultVariant.color}</span></label>
+                    <div class="option-list" id="color-options">
+                    </div>
+                </div>
+
+                <div class="select-group">
+                    <label>Kích thước: <span id="size-text" style="font-weight:normal">${defaultVariant.size}</span></label>
+                    <div class="option-list" id="size-options">
+                    </div>
+                </div>
+
+                <div class="quantity-box">
+                    <button class="qty-btn minus" id="qty-decrease">−</button>
+                    <input type="number" id="quantity" value="1" min="1">
+                    <button class="qty-btn plus" id="qty-increase">+</button>
+                </div>
+
+                <div class="actions">
+                    <form id="cartForm" action="${pageContext.request.contextPath}/cart/add" method="post" style="display:none;">
+                        <input type="hidden" name="variantId" id="selected-variant-id" value="${defaultVariant.id}">
+                        <input type="hidden" name="quantity" id="form-quantity" value="1">
+                    </form>
+
+                    <a href="javascript:void(0)" class="add-cart" onclick="submitCart('add')">
+                        <i class="fa fa-cart-plus"></i> Thêm vào giỏ hàng
+                    </a>
+                    <a href="javascript:void(0)" class="buy-now" onclick="submitCart('buy')">
+                        Mua ngay
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="detail-section">
+            <h2>Mô tả chi tiết</h2>
+            <div class="description">
+                    ${product.description}
+
+                <hr>
+                <strong>Thông số kỹ thuật:</strong><br>
+                • Mã sản phẩm: ${product.product_code}<br>
+                • Chất liệu: <span id="info-material">${defaultVariant.material}</span><br>
+                • Kiểu dáng: <span id="info-style">${defaultVariant.style}</span><br>
+                • Xuất xứ: Việt Nam (Project Group 25)<br><br>
+
+                <hr><br>
+                <strong>Hình ảnh chi tiết:</strong><br><br>
+                <div class="detail-images">
+                    <c:forEach var="v" items="${product.variants}">
+                        <img src="${v.image_url}" alt="Ảnh chi tiết">
+                    </c:forEach>
+                </div>
+            </div>
+        </section>
+
+    </c:when>
+    <c:otherwise>
+        <div style="text-align: center; padding: 100px;">
+            <h2>Sản phẩm không tồn tại</h2>
         </div>
-      </div>
-    </div>
+    </c:otherwise>
+</c:choose>
 
-    <div class="footer-bottom">
-      <p>Copyright © 2025 NLT Noble Loft Theory. Powered by NLT </p>
-    </div>
-    </div>
-  </footer>
+<c:if test="${not empty relatedProducts}">
+    <section class="related-products">
+        <h2>Sản phẩm tương tự</h2>
+        <div class="slider-container">
+            <button class="slide-btn prev" onclick="scrollSlider(-1)"><i class="fa fa-chevron-left"></i></button>
+            <div class="slider" id="productSlider">
 
-  <script src="js/header.js"></script>
-  <script src="js/detail.js"></script>
+                <c:forEach var="rel" items="${relatedProducts}">
+                    <c:if test="${not empty rel.variants}">
+                        <a href="${pageContext.request.contextPath}/detail?id=${rel.id}" class="product">
+                            <img src="${rel.variants[0].image_url}" alt="${rel.product_name}">
+                            <h4>${rel.product_name}</h4>
+                            <p class="price">
+                                <fmt:formatNumber value="${rel.variants[0].price}" type="currency" currencySymbol=""/>₫
+                            </p>
+                        </a>
+                    </c:if>
+                </c:forEach>
+
+            </div>
+            <button class="slide-btn next" onclick="scrollSlider(1)"><i class="fa fa-chevron-right"></i></button>
+        </div>
+    </section>
+</c:if>
+
+<button id="backToTop" title="Lên đầu trang">
+    <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+<jsp:include page="footer.jsp"/>
+
+<script>
+    // 1. CHUẨN BỊ DỮ LIỆU TỪ SERVER (JAVA) SANG CLIENT (JS)
+    const variantsData = [
+        <c:if test="${not empty product.variants}">
+        <c:forEach var="v" items="${product.variants}" varStatus="loop">
+        {
+            "id": ${v.id},
+            "color": "${v.color}".trim(), // Loại bỏ khoảng trắng thừa
+            "size": "${v.size}".trim(),
+            "price": ${v.price},
+            "price_old": ${v.price_old},
+            // Tính % giảm giá trực tiếp tại đây để đảm bảo có số liệu
+            "discount": ${v.price_old > v.price ? Math.round((v.price_old - v.price) / v.price_old * 100) : 0},
+            "image_url": "${v.image_url}",
+            "material": "${v.material}",
+            "style": "${v.style}"
+        }${!loop.last ? ',' : ''}
+        </c:forEach>
+        </c:if>
+    ];
+
+    // Lấy biến thể mặc định (đầu tiên)
+    let selectedColor = "${defaultVariant.color}".trim();
+    let selectedSize = "${defaultVariant.size}".trim();
+</script>
+
+<script src="${pageContext.request.contextPath}/frontend/js/detail.js"></script>
+<script src="${pageContext.request.contextPath}/frontend/js/header.js"></script>
 </body>
-
 </html>

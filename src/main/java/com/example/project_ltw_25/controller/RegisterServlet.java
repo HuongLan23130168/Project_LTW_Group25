@@ -1,13 +1,12 @@
-package com.example.project_ltw_25.controller;
+package com.example.project_ltw_25.user.controller;
 
-import com.example.project_ltw_25.dao.UserDAO;
+import com.example.project_ltw_25.user.dao.UserDAO;
+import com.example.project_ltw_25.user.util.EncryptionUtils;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
-
-import static com.example.project_ltw_25.util.EncryptionUtils.hashMD5;
 
 @WebServlet(name = "RegisterServlet", value = "/register")
 public class RegisterServlet extends HttpServlet {
@@ -20,16 +19,17 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-
         String fullName = request.getParameter("fullname");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String confirmPass = request.getParameter("confirmPassword");
 
         // ĐỔI TỪ errorMessage THÀNH registerError
-        String emailRegex = "^[a-zA-Z0-9._%+-]+@gmail\\.com$";
+//      String emailRegex = "^[a-zA-Z0-9._%+-]+@(gmail|yahoo|outlook|edu)\\.com$";
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\\.)+(gmail|yahoo|outlook|edu|vn|com)$";
+
         if (email == null || !email.matches(emailRegex)) {
-            request.setAttribute("registerError", "Email không hợp lệ! Vui lòng sử dụng địa chỉ @gmail.com");
+            request.setAttribute("registerError", "Email không hợp lệ!");
             request.getRequestDispatcher("/frontend/login.jsp").forward(request, response);
             return;
         }
@@ -47,17 +47,16 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        String hashPassword = hashMD5(password);
+        String hashedPass = EncryptionUtils.hashMD5(password);
         UserDAO dao = new UserDAO();
 
         // LƯU Ý: Phải truyền hashPassword vào đây
-        boolean success = dao.register(fullName, email, hashPassword);
-
-        if (success) {
-            request.setAttribute("successMessage", "Đăng ký thành công! Vui lòng đăng nhập.");
+        boolean isSuccess = dao.register(fullName, email, hashedPass);
+        if (isSuccess) {
+            request.setAttribute("successMessage", "Đăng ký thành công! Vui lòng đăng nhập");
             request.getRequestDispatcher("/frontend/login.jsp").forward(request, response);
         } else {
-            request.setAttribute("registerError", "Email đã tồn tại hoặc có lỗi xảy ra!");
+            request.setAttribute("registerError", "Email đã tồn tại!");
             request.getRequestDispatcher("/frontend/login.jsp").forward(request, response);
         }
     }

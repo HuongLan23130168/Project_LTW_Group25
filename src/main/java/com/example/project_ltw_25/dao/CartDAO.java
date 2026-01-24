@@ -1,94 +1,191 @@
-package com.example.project_ltw_25.dao;
+package com.example.project_ltw_25.user.dao;
 
-import com.example.project_ltw_25.model.CartItem;
+import com.example.project_ltw_25.user.model.CartItem;
 import org.jdbi.v3.core.Jdbi;
 
-import java.sql.*;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 public class CartDAO {
-    private static Jdbi jdbi = DBDAO.get(); // Lấy Jdbi instance từ DBDAO
+    private static final Jdbi jdbi = DBDAO.get();
 
-    // 1. Lấy hoặc tạo giỏ hàng
-    public int getOrCreateCart(int userId) {
-        return jdbi.withHandle(handle -> {
-            Optional<Integer> cartId = handle.createQuery("SELECT id FROM carts WHERE user_id = :userId")
-                    .bind("userId", userId)
-                    .mapTo(Integer.class)
-                    .findFirst();
+    // 1. Lấy danh sách giỏ hàng
+    public List<CartItem> getCartByUserId(int userId) {
+        String sql = "SELECT " +
+                "cd.id AS detailId, " +
+                "cd.variant_id AS variantId, " +
+                "p.product_name AS productName, " +
+                "v.variant_code AS code, " +
+                "v.color, v.size, " +
+                "v.image_url AS imageUrl, " +
+                "v.price, " +
+                "cd.quantity AS quantity, " +
+                "IFNULL(i.stock_quantity, 0) AS stock, " +
+                // PHẢI THÊM DÒNG NÀY ĐỂ HIỆN GIÁ GIẢM
+                "COALESCE(d2.discount_percent, d1.discount_percent, 0) AS discountPercent " +
+                "FROM cart_details cd " +
+                "JOIN product_variants v ON cd.variant_id = v.id " +
+                "JOIN products p ON v.product_id = p.id " +
+                "LEFT JOIN inventories i ON v.id = i.variant_id " +
+                "LEFT JOIN categories c ON p.category_id = c.id " +
+                "LEFT JOIN product_types t ON p.product_type_id = t.id " +
+                "LEFT JOIN discount_categories dc ON c.id = dc.category_id " +
+                "LEFT JOIN discounts d1 ON dc.discount_id = d1.id " +
+                "LEFT JOIN discount_product_types dt ON t.id = dt.product_type_id " +
+                "LEFT JOIN discounts d2 ON dt.discount_id = d2.id " +
+                "WHERE cd.cart_id = (SELECT id FROM carts WHERE user_id = ?)";
 
-            if (cartId.isPresent()) return cartId.get();
-
-            return handle.createUpdate("INSERT INTO carts (user_id, created_at) VALUES (:userId, NOW())")
-                    .bind("userId", userId)
-                    .executeAndReturnGeneratedKeys()
-                    .mapTo(Integer.class)
-                    .one();
-        });
+        return jdbi.withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind(0, userId)
+                        .mapToBean(CartItem.class)
+                        .list()
+        );
     }
 
-    // 2. Thêm hoặc cập nhật (ON DUPLICATE KEY UPDATE)
-    public void addItemToCart(int cartId, int variantId, int quantity) {
-        jdbi.useHandle(handle -> {
-            handle.createUpdate("INSERT INTO cart_details (cart_id, variant_id, quantity) VALUES (:cartId, :variantId, :quantity) " +
-                            "ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)")
-                    .bind("cartId", cartId)
-                    .bind("variantId", variantId)
-                    .bind("quantity", quantity)
-                    .execute();
-        });
-    }
 
-    // Lấy danh sách sản phẩm trong giỏ (Cực kỳ quan trọng để hiển thị)
-    public static Map<Integer, CartItem> getCartDetails(int userId) {
-        return jdbi.withHandle(handle -> {
-            String sql = "SELECT pv.id AS variant_id, pv.color, pv.size, pv.price, pv.image_url, cd.quantity, p.product_name " +
-                    "FROM cart_details cd " +
-                    "JOIN product_variants pv ON cd.variant_id = pv.id " +
-                    "JOIN products p ON pv.product_id = p.id " +
-                    "JOIN carts c ON cd.cart_id = c.id " +
-                    "WHERE c.user_id = :userId";
+    public String addToCart(int userId, int variantId, int quantityToAdd) {
+        return jdbi.inTransaction(handle -> {
+            // 1. Kiểm tra sự tồn tại của dữ liệu kho thay vì mặc định bằng 0
+            Optional<Integer> stockOpt = handle.createQuery("SELECT stock_quantity FROM inventories WHERE variant_id = :vid")
+                    .bind("vid", variantId)
+                    .mapTo(Integer.class)
+                    .findOne();
 
-            List<CartItem> items = handle.createQuery(sql)
-                    .bind("userId", userId)
-                    .map((rs, ctx) -> {
-                        CartItem item = new CartItem();
-                        item.setVariantId(rs.getInt("variant_id"));
-                        item.setName(rs.getString("product_name"));
-                        item.setPrice(rs.getDouble("price"));
-                        item.setQuantity(rs.getInt("quantity"));
-                        item.setImage(rs.getString("image_url"));
-                        item.setColor(rs.getString("color"));
-                        item.setSize(rs.getString("size"));
-                        return item;
-                    }).list();
-
-            Map<Integer, CartItem> cartMap = new LinkedHashMap<>();
-            for (CartItem item : items) {
-                cartMap.put(item.getVariantId(), item);
+            if (stockOpt.isEmpty()) {
+                // Log này giúp bạn biết chính xác ID nào đang bị thiếu trong bảng inventories
+                System.out.println("Lỗi: variant_id " + variantId + " không tồn tại trong bảng inventories");
+                return "Sản phẩm này hiện chưa có thông tin kho hàng!";
             }
-            return cartMap;
+
+            int currentStock = stockOpt.get();
+
+            // 2. Lấy hoặc tạo giỏ hàng cho người dùng
+            Integer cartId = handle.createQuery("SELECT id FROM carts WHERE user_id = :uid")
+                    .bind("uid", userId)
+                    .mapTo(Integer.class)
+                    .findOne()
+                    .orElseGet(() -> handle.createUpdate("INSERT INTO carts(user_id) VALUES(:uid)")
+                            .bind("uid", userId)
+                            .executeAndReturnGeneratedKeys("id")
+                            .mapTo(Integer.class).one());
+
+            // 3. Kiểm tra số lượng hiện tại trong giỏ
+            Integer qtyInCart = handle.createQuery("SELECT quantity FROM cart_details WHERE cart_id = :cid AND variant_id = :vid")
+                    .bind("cid", cartId)
+                    .bind("vid", variantId)
+                    .mapTo(Integer.class)
+                    .findOne()
+                    .orElse(0);
+
+            // 4. So sánh với tồn kho thực tế
+            if ((qtyInCart + quantityToAdd) > currentStock) {
+                return "Rất tiếc, kho chỉ còn " + currentStock + " sản phẩm. Giỏ hàng đã có " + qtyInCart;
+            }
+
+            // 5. Cập nhật hoặc Thêm mới
+            if (qtyInCart > 0) {
+                handle.createUpdate("UPDATE cart_details SET quantity = quantity + :q WHERE cart_id = :cid AND variant_id = :vid")
+                        .bind("q", quantityToAdd).bind("cid", cartId).bind("vid", variantId).execute();
+            } else {
+                handle.createUpdate("INSERT INTO cart_details(cart_id, variant_id, quantity) VALUES(:cid, :vid, :q)")
+                        .bind("cid", cartId).bind("vid", variantId).bind("q", quantityToAdd).execute();
+            }
+            return "Success";
         });
     }
 
-    public static void updateQuantity(int userId, int variantId, int newQty) {
+    // 3. Cập nhật số lượng (Dùng cho nút Tăng/Giảm)
+// Trả về String thông báo lỗi hoặc "Success"
+    public String updateQuantity(int userId, int variantId, int newQuantity) {
+        return jdbi.inTransaction(handle -> {
+            try {
+                // Nếu số lượng <= 0 thì xóa luôn
+                if (newQuantity <= 0) {
+                    removeItem(userId, variantId);
+                    return "Success";
+                }
+
+                // A. Kiểm tra tồn kho
+                Integer currentStock = handle.createQuery("SELECT stock_quantity FROM inventories WHERE variant_id = ?")
+                        .bind(0, variantId)
+                        .mapTo(Integer.class)
+                        .findOne()
+                        .orElse(-1); // Trả về -1 nếu không tìm thấy dòng nào
+
+                if (currentStock == -1) return "Sản phẩm này chưa được nhập kho!";
+                if (currentStock == 0) return "Sản phẩm hiện đang hết hàng!";
+
+                // Nếu số lượng mới lớn hơn tồn kho -> Báo lỗi
+                if (newQuantity > currentStock) {
+                    return "Kho chỉ còn " + currentStock + " sản phẩm!";
+                }
+
+                // B. Lấy Cart ID của User
+                String sqlFindCart = "SELECT id FROM carts WHERE user_id = ?";
+                Optional<Integer> cartIdOpt = handle.createQuery(sqlFindCart)
+                        .bind(0, userId)
+                        .mapTo(Integer.class)
+                        .findOne();
+
+                if (cartIdOpt.isEmpty()) return "Giỏ hàng không tồn tại!";
+                int cartId = cartIdOpt.get();
+
+                // C. Cập nhật số lượng mới
+                int rows = handle.createUpdate("UPDATE cart_details SET quantity = ? WHERE cart_id = ? AND variant_id = ?")
+                        .bind(0, newQuantity)
+                        .bind(1, cartId)
+                        .bind(2, variantId)
+                        .execute();
+
+                return rows > 0 ? "Success" : "Lỗi cập nhật";
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "Lỗi hệ thống: " + e.getMessage();
+            }
+        });
+    }
+
+    // 4. Xóa sản phẩm khỏi giỏ
+    public boolean removeItem(int userId, int variantId) {
+        return jdbi.withHandle(handle -> {
+            // Lấy Cart ID
+            Optional<Integer> cartIdOpt = handle.createQuery("SELECT id FROM carts WHERE user_id = ?")
+                    .bind(0, userId)
+                    .mapTo(Integer.class)
+                    .findOne();
+
+            if (cartIdOpt.isEmpty()) return false;
+
+            // Xóa dòng trong cart_details
+            int rows = handle.createUpdate("DELETE FROM cart_details WHERE cart_id = ? AND variant_id = ?")
+                    .bind(0, cartIdOpt.get())
+                    .bind(1, variantId)
+                    .execute();
+
+            return rows > 0;
+        });
+    }
+
+    public int getTotalQuantityByUserId(int userId) {
+        String sql = "SELECT SUM(quantity) FROM cart_details cd " +
+                "JOIN carts c ON cd.cart_id = c.id " +
+                "WHERE c.user_id = ?";
+        return jdbi.withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind(0, userId)
+                        .mapTo(Integer.class)
+                        .findOne()
+                        .orElse(0)
+        );
+    }
+
+    public void clearCart(int userId) {
         jdbi.useHandle(handle -> {
-            handle.createUpdate("UPDATE cart_details SET quantity = :qty WHERE variant_id = :vId AND cart_id = (SELECT id FROM carts WHERE user_id = :uId)")
-                    .bind("qty", newQty)
-                    .bind("vId", variantId)
-                    .bind("uId", userId)
+            // Xóa tất cả chi tiết giỏ hàng dựa trên userId (thông qua bảng carts)
+            handle.createUpdate("DELETE FROM cart_details WHERE cart_id = (SELECT id FROM carts WHERE user_id = :userId)")
+                    .bind("userId", userId)
                     .execute();
         });
     }
-
-    public static void removeItem(int userId, int variantId) {
-        jdbi.useHandle(handle -> {
-            handle.createUpdate("DELETE FROM cart_details WHERE variant_id = :vId AND cart_id = (SELECT id FROM carts WHERE user_id = :uId)")
-                    .bind("vId", variantId)
-                    .bind("uId", userId)
-                    .execute();
-        });
-    }
-
-
 }

@@ -1,27 +1,41 @@
-package com.example.project_ltw_25.model;
+package com.example.project_ltw_25.user.model;
 
-import java.io.Serializable;
-
-public class CartItem implements Serializable {
-    private int variantId; // Lấy từ bảng product_variants
-    private String name;
-    private String image;
+public class CartItem {
+    private int detailId;
+    private int variantId;
+    private String productName;
+    private String code;
+    private String color;
+    private String size;
+    private String imageUrl;
     private double price;
     private int quantity;
-    private String color; // Từ bảng product_variants
-    private String size;
+    private int stock;
+    private double discountPercent;
 
     public CartItem() {
     }
 
-    public CartItem(int variantId, String name, String image, double price, int quantity, String color, String size) {
+    public CartItem(int detailId, int variantId, String productName, String code, String color, String size, String imageUrl, double price, int quantity, int stock, double discountPercent) {
+        this.detailId = detailId;
         this.variantId = variantId;
-        this.name = name;
-        this.image = image;
-        this.price = price;
-        this.quantity = quantity;
+        this.productName = productName;
+        this.code = code;
         this.color = color;
         this.size = size;
+        this.imageUrl = imageUrl;
+        this.price = price;
+        this.quantity = quantity;
+        this.stock = stock;
+        this.discountPercent = discountPercent;
+    }
+
+    public int getDetailId() {
+        return detailId;
+    }
+
+    public void setDetailId(int detailId) {
+        this.detailId = detailId;
     }
 
     public int getVariantId() {
@@ -32,36 +46,20 @@ public class CartItem implements Serializable {
         this.variantId = variantId;
     }
 
-    public String getName() {
-        return name;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
-    public String getImage() {
-        return image;
+    public String getCode() {
+        return code;
     }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getColor() {
@@ -80,8 +78,53 @@ public class CartItem implements Serializable {
         this.size = size;
     }
 
-    // Tính thành tiền cho mỗi item
-    public double getSubTotal() {
-        return price * quantity;
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public double getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public void setDiscountPercent(double discountPercent) {
+        this.discountPercent = discountPercent;
+    }
+
+    // Tính giá cuối cùng của 1 món hàng
+    public double getFinalPrice() {
+        return price * (1 - discountPercent / 100);
+    }
+
+    // Tính tổng tiền cho dòng này (Giá sau giảm * số lượng)
+    public double getTotalPrice() {
+        return getFinalPrice() * quantity;
     }
 }

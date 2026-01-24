@@ -1,0 +1,274 @@
+package com.example.project_ltw_25.admin.model;
+
+import com.example.project_ltw_25.user.model.Shipping;
+import java.sql.Timestamp;
+
+public class Order {
+    // --- 1. Các trường dữ liệu (Fields) ---
+    private int id;
+    private int userId;
+    private String orderCode;      // Mapping: order_code
+    private Timestamp orderDate;   // Mapping: order_date
+    private double totalPrice;     // Mapping: total_price
+    private String status;
+    private String recipientName;  // Mapping: recipient_name
+    private String recipientPhone; // Mapping: recipient_phone
+    private String shippingAddress;// Mapping: shipping_address
+    private String note;
+    private int paymentMethodId;
+
+    // Object lồng nhau
+    private Shipping shipping;
+
+    // --- 2. Các trường DTO (Hiển thị thêm từ bảng Users/Payments/Logic tính toán) ---
+    private String customerName;   // full_name từ bảng users
+    private String customerEmail;
+    private String customerPhone;
+    private String customerAddress;
+    private String paymentMethod;  // Tên phương thức (COD/Chuyển khoản)
+    private double shippingFee;
+    private double grandTotal;
+
+    // --- 3. Constructors ---
+    public Order() {
+    }
+
+    public Order(int id, int userId, String orderCode, Timestamp orderDate, double totalPrice, String status,
+                 String recipientName, String recipientPhone, String shippingAddress, String note,
+                 int paymentMethodId, Shipping shipping, String customerName, String customerEmail,
+                 String customerPhone, String customerAddress, String paymentMethod, double shippingFee) {
+        this.id = id;
+        this.userId = userId;
+        this.orderCode = orderCode;
+        this.orderDate = orderDate;
+        this.totalPrice = totalPrice;
+        this.status = status;
+        this.recipientName = recipientName;
+        this.recipientPhone = recipientPhone;
+        this.shippingAddress = shippingAddress;
+        this.note = note;
+        this.paymentMethodId = paymentMethodId;
+        this.shipping = shipping;
+        this.customerName = customerName;
+        this.customerEmail = customerEmail;
+        this.customerPhone = customerPhone;
+        this.customerAddress = customerAddress;
+        this.paymentMethod = paymentMethod;
+        this.shippingFee = shippingFee;
+        // Tự động tính grandTotal
+        this.grandTotal = totalPrice + shippingFee;
+    }
+
+    // --- 4. Getters & Setters (Chuẩn Java - CamelCase) ---
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
+    }
+
+    public Timestamp getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(Timestamp orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public String getStatus() {
+        if (this.status == null || this.status.trim().isEmpty()) {
+            return "Chờ xử lý";
+        }
+        return this.status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getRecipientName() {
+        return recipientName;
+    }
+
+    public void setRecipientName(String recipientName) {
+        this.recipientName = recipientName;
+    }
+
+    public String getRecipientPhone() {
+        return recipientPhone;
+    }
+
+    public void setRecipientPhone(String recipientPhone) {
+        this.recipientPhone = recipientPhone;
+    }
+
+    public String getShippingAddress() {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public int getPaymentMethodId() {
+        return paymentMethodId;
+    }
+
+    public void setPaymentMethodId(int paymentMethodId) {
+        this.paymentMethodId = paymentMethodId;
+    }
+
+    public Shipping getShipping() {
+        return shipping;
+    }
+
+    public void setShipping(Shipping shipping) {
+        this.shipping = shipping;
+    }
+
+    // --- DTO Getters/Setters ---
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
+
+    public String getCustomerPhone() {
+        return customerPhone;
+    }
+
+    public void setCustomerPhone(String customerPhone) {
+        this.customerPhone = customerPhone;
+    }
+
+    public String getCustomerAddress() {
+        return customerAddress;
+    }
+
+    public void setCustomerAddress(String customerAddress) {
+        this.customerAddress = customerAddress;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public double getShippingFee() {
+        return shippingFee;
+    }
+
+    public void setShippingFee(double shippingFee) {
+        this.shippingFee = shippingFee;
+    }
+
+    // Logic tính tổng tiền cuối cùng
+    public double getGrandTotal() {
+        return this.totalPrice + this.shippingFee;
+    }
+
+    public void setGrandTotal(double grandTotal) {
+        this.grandTotal = grandTotal;
+    }
+
+    // =========================================================================
+    // 5. CÁC PHƯƠNG THỨC TƯƠNG THÍCH (ALIAS) CHO JDBI/DATABASE (Snake_case)
+    // Giúp code chạy được cả khi dùng .setOrder_code() hoặc mapToBean
+    // =========================================================================
+
+    public void setOrder_code(String orderCode) {
+        this.orderCode = orderCode;
+    }
+
+    public String getOrder_code() {
+        return this.orderCode;
+    }
+
+    public void setOrder_date(Timestamp orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public Timestamp getOrder_date() {
+        return this.orderDate;
+    }
+
+    public void setTotal_price(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public double getTotal_price() {
+        return this.totalPrice;
+    }
+
+    public void setRecipient_name(String recipientName) {
+        this.recipientName = recipientName;
+    }
+
+    public String getRecipient_name() {
+        return this.recipientName;
+    }
+
+    public void setRecipient_phone(String recipientPhone) {
+        this.recipientPhone = recipientPhone;
+    }
+
+    public String getRecipient_phone() {
+        return this.recipientPhone;
+    }
+
+    public void setShipping_address(String shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+
+    public String getShipping_address() {
+        return this.shippingAddress;
+    }
+}
