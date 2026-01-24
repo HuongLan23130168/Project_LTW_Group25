@@ -8,18 +8,13 @@
 </head>
 <body>
 
-<!-- === HEADER === -->
+<!-- HEADER -->
 <header class="header">
-    <div class="header-left">
-        <div class="search-container">
-            <i class="fa-solid fa-magnifying-glass" style="color: #74512d;"></i>
-            <input type="text" placeholder="Tìm kiếm" class="search-input"/>
-        </div>
-    </div>
+    <div class="header-left"></div>
 
     <div class="header-right">
         <div class="notify-wrapper">
-            <a href="notifi.jsp" class="icon-button">
+            <a href="${pageContext.request.contextPath}/admin/notifi" class="icon-button">
                 <i class="fa-solid fa-bell"></i>
                 <c:if test="${not empty sessionScope.acc}">
                     <span id="notifyCount" class="notify-badge">3</span>
