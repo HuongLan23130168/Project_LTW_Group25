@@ -1,4 +1,4 @@
-package com.example.demoweb1.model;
+package com.example.project_ltw_25.user.model;
 
 public class Contact {
 
@@ -8,18 +8,54 @@ public class Contact {
     private String message;
     private String status;
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Contact() {
+    }
 
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
+    public Contact(int id, String fullName, String email, String message, String status) {
+        this.id = id;
+        this.fullName = fullName;
+        this.email = email;
+        this.message = message;
+        this.status = status;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public int getId() {
+        return id;
+    }
 
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
