@@ -19,7 +19,7 @@
 <jsp:include page="/admin/sidebar.jsp"/>
 
 
-<!-- === DASHBOARD === -->
+<!-- DASHBOARD  -->
 <div class="main-content">
     <div class="cards">
         <div class="card">
@@ -27,7 +27,7 @@
                 <i class="fas fa-coins"></i>
                 <h4>Doanh thu (tháng)</h4>
             </div>
-            <h2><fmt:formatNumber value="${revenue}" type="currency" currencySymbol="₫"/></h2>
+            <h2><fmt:formatNumber value="${revenue}" type="number" maxFractionDigits="0"/>₫</h2>
             <p>Dữ liệu cập nhật thời gian thực</p>
         </div>
 
@@ -36,8 +36,16 @@
                 <i class="fas fa-box-open"></i>
                 <h4>Sản phẩm bán chạy</h4>
             </div>
-            <h2>24</h2>
-            <p>Top: Gương trang trí</p>
+            <c:choose>
+                <c:when test="${not empty bestSellers}">
+                    <h2>${bestSellers[0].totalSold}</h2>
+                    <p>Top: ${bestSellers[0].product_name}</p>
+                </c:when>
+                <c:otherwise>
+                    <h2>0</h2>
+                    <p>Chưa có dữ liệu</p>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <div class="card">
@@ -45,9 +53,10 @@
                 <i class="fas fa-warehouse"></i>
                 <h4>Tồn kho</h4>
             </div>
-            <h2>${totalStock} sp</h2>
+            <h2>${totalStock}</h2>
             <p style="color: ${lowStock > 0 ? 'red' : 'inherit'}">
-                Cần nhập: ${lowStock}
+                <c:if test="${lowStock > 0}"></c:if>
+                Cần nhập: ${lowStock} mặt hàng
             </p>
         </div>
 
@@ -56,8 +65,17 @@
                 <i class="fas fa-shopping-bag"></i>
                 <h4>Đơn hàng mới</h4>
             </div>
+
             <h2>${pendingOrdersCount}</h2>
-            <p>Cần xử lý ngay</p>
+
+            <c:choose>
+                <c:when test="${pendingOrdersCount > 0}">
+                    <p style="color: red;">Cần xử lý ngay</p>
+                </c:when>
+                <c:otherwise>
+                    <p>Đã xử lý hết</p>
+                </c:otherwise>
+            </c:choose>
         </div>
     </div>
 
@@ -74,11 +92,12 @@
             <ul class="top-products">
                 <c:forEach var="p" items="${bestSellers}">
                     <li>
-                        <img src="${p.image}" alt="${p.name}">
+                        <img src="${p.image_url}" alt="${p.product_name}">
                         <div>
-                            <strong class="prod-title">${p.name}</strong>
+                            <strong class="prod-title">${p.product_name}</strong>
                             <p class="muted">
-                                <fmt:formatNumber value="${p.price}" type="number"/>₫ • ${p.totalSold} đã bán
+                                <fmt:formatNumber value="${p.price}" type="number" maxFractionDigits="0"/>₫
+                                • ${p.totalSold} đã bán
                             </p>
                         </div>
                     </li>
@@ -91,10 +110,6 @@
     <div class="recent-orders">
         <div class="recent-orders-header">
             <h3>Đơn hàng gần đây</h3>
-            <div class="search-orders">
-                <input type="text" placeholder="Tìm mã / Khách hàng..." class="search-input-orders">
-                <i class="fas fa-search search-icon-orders"></i>
-            </div>
         </div>
 
         <div class="recent-orders">
@@ -103,29 +118,28 @@
                 <tr>
                     <th>Mã đơn</th>
                     <th>Khách hàng</th>
-                    <th>Sản phẩm</th>
+                    <th>Ngày đặt</th>
                     <th>Tổng tiền</th>
                     <th>Trạng thái</th>
                 </tr>
                 </thead>
-
                 <tbody>
                 <c:forEach var="o" items="${recentOrders}">
                     <tr>
                         <td><a href="order-detail?id=${o.id}">#${o.orderCode}</a></td>
                         <td>${o.recipientName}</td>
-                        <td>${o.orderCode}</td>
-                        <td><fmt:formatNumber value="${o.totalPrice}" type="number"/>₫</td>
+                        <td><fmt:formatDate value="${o.orderDate}" pattern="dd/MM/yyyy HH:mm"/></td>
+                        <td><fmt:formatNumber value="${o.totalPrice}" type="number" maxFractionDigits="0"/>₫</td>
                         <td>
                             <c:choose>
-                                <c:when test="${o.status == 'Delivered'}">
+                                <c:when test="${o.status == 'đã giao'}">
                                     <span class="status delivered">Đã giao</span>
                                 </c:when>
-                                <c:when test="${o.status == 'Cancelled'}">
+                                <c:when test="${o.status == 'đã hủy'}">
                                     <span class="status cancelled">Đã hủy</span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="status processing">Đang xử lý</span>
+                                    <span class="status processing">${o.status}</span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -134,14 +148,16 @@
                 </tbody>
             </table>
         </div>
-
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Truyền dữ liệu từ Server sang Client
-    const chartLabels = ${jsonLabels};
-    const chartData = ${jsonValues};
+    const chartLabels = ${not empty jsonLabels ? jsonLabels : '[]'};
+    const chartData = ${not empty jsonValues ? jsonValues : '[]'};
+
+    console.log("Labels:", chartLabels);
+    console.log("Data:", chartData);
 </script>
 <script src="${pageContext.request.contextPath}/admin/js/main.js"></script>
 <script src="${pageContext.request.contextPath}/admin/js/dashboard.js"></script>

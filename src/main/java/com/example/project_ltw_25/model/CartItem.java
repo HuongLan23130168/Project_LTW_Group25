@@ -1,9 +1,7 @@
 package com.example.project_ltw_25.user.model;
 
-import java.io.Serializable;
-
-public class CartItem implements Serializable {
-    private int detailId;       // ID dòng trong giỏ hàng (để xóa)
+public class CartItem {
+    private int detailId;
     private int variantId;
     private String productName;
     private String code;
@@ -11,13 +9,14 @@ public class CartItem implements Serializable {
     private String size;
     private String imageUrl;
     private double price;
-    private int quantity;       // Số lượng khách mua
-    private int stock;          // Số lượng tồn kho thực tế
+    private int quantity;
+    private int stock;
+    private double discountPercent;
 
     public CartItem() {
     }
 
-    public CartItem(int detailId, int variantId, String productName, String code, String color, String size, String imageUrl, double price, int quantity, int stock) {
+    public CartItem(int detailId, int variantId, String productName, String code, String color, String size, String imageUrl, double price, int quantity, int stock, double discountPercent) {
         this.detailId = detailId;
         this.variantId = variantId;
         this.productName = productName;
@@ -28,6 +27,7 @@ public class CartItem implements Serializable {
         this.price = price;
         this.quantity = quantity;
         this.stock = stock;
+        this.discountPercent = discountPercent;
     }
 
     public int getDetailId() {
@@ -110,7 +110,21 @@ public class CartItem implements Serializable {
         this.stock = stock;
     }
 
+    public double getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public void setDiscountPercent(double discountPercent) {
+        this.discountPercent = discountPercent;
+    }
+
+    // Tính giá cuối cùng của 1 món hàng
+    public double getFinalPrice() {
+        return price * (1 - discountPercent / 100);
+    }
+
+    // Tính tổng tiền cho dòng này (Giá sau giảm * số lượng)
     public double getTotalPrice() {
-        return this.price * this.quantity;
+        return getFinalPrice() * quantity;
     }
 }

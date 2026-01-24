@@ -17,14 +17,22 @@ public class CartDAO {
                 "p.product_name AS productName, " +
                 "v.variant_code AS code, " +
                 "v.color, v.size, " +
-                "v.image_url AS imageUrl, " + // ĐÃ ĐỔI THÀNH imageUrl ĐỂ KHỚP VỚI JAVA
+                "v.image_url AS imageUrl, " +
                 "v.price, " +
                 "cd.quantity AS quantity, " +
-                "IFNULL(i.stock_quantity, 0) AS stock " +
+                "IFNULL(i.stock_quantity, 0) AS stock, " +
+                // PHẢI THÊM DÒNG NÀY ĐỂ HIỆN GIÁ GIẢM
+                "COALESCE(d2.discount_percent, d1.discount_percent, 0) AS discountPercent " +
                 "FROM cart_details cd " +
                 "JOIN product_variants v ON cd.variant_id = v.id " +
                 "JOIN products p ON v.product_id = p.id " +
                 "LEFT JOIN inventories i ON v.id = i.variant_id " +
+                "LEFT JOIN categories c ON p.category_id = c.id " +
+                "LEFT JOIN product_types t ON p.product_type_id = t.id " +
+                "LEFT JOIN discount_categories dc ON c.id = dc.category_id " +
+                "LEFT JOIN discounts d1 ON dc.discount_id = d1.id " +
+                "LEFT JOIN discount_product_types dt ON t.id = dt.product_type_id " +
+                "LEFT JOIN discounts d2 ON dt.discount_id = d2.id " +
                 "WHERE cd.cart_id = (SELECT id FROM carts WHERE user_id = ?)";
 
         return jdbi.withHandle(handle ->
@@ -34,6 +42,7 @@ public class CartDAO {
                         .list()
         );
     }
+
 
     public String addToCart(int userId, int variantId, int quantityToAdd) {
         return jdbi.inTransaction(handle -> {
@@ -87,7 +96,7 @@ public class CartDAO {
     }
 
     // 3. Cập nhật số lượng (Dùng cho nút Tăng/Giảm)
-    // Trả về String thông báo lỗi hoặc "Success"
+// Trả về String thông báo lỗi hoặc "Success"
     public String updateQuantity(int userId, int variantId, int newQuantity) {
         return jdbi.inTransaction(handle -> {
             try {
@@ -155,6 +164,28 @@ public class CartDAO {
                     .execute();
 
             return rows > 0;
+        });
+    }
+
+    public int getTotalQuantityByUserId(int userId) {
+        String sql = "SELECT SUM(quantity) FROM cart_details cd " +
+                "JOIN carts c ON cd.cart_id = c.id " +
+                "WHERE c.user_id = ?";
+        return jdbi.withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind(0, userId)
+                        .mapTo(Integer.class)
+                        .findOne()
+                        .orElse(0)
+        );
+    }
+
+    public void clearCart(int userId) {
+        jdbi.useHandle(handle -> {
+            // Xóa tất cả chi tiết giỏ hàng dựa trên userId (thông qua bảng carts)
+            handle.createUpdate("DELETE FROM cart_details WHERE cart_id = (SELECT id FROM carts WHERE user_id = :userId)")
+                    .bind("userId", userId)
+                    .execute();
         });
     }
 }

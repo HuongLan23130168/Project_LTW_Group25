@@ -2,13 +2,11 @@ package com.example.project_ltw_25.user.dao;
 
 import com.example.project_ltw_25.user.model.User;
 import org.jdbi.v3.core.Jdbi;
-
 import java.util.List;
 
 public class UserDAO {
     private Jdbi jdbi = DBDAO.get();
 
-    // Đăng ký: Lưu mật khẩu đã băm MD5 từ Java
     public boolean register(String name, String email, String hashedPass) {
         try {
             return jdbi.withHandle(handle ->
@@ -16,13 +14,12 @@ public class UserDAO {
                             .bind("name", name)
                             .bind("email", email)
                             .bind("pass", hashedPass)
-                            .bind("role", "2") // Truyền role từ controller vào
+                            .bind("role", "1")
                             .execute() > 0
             );
         } catch (Exception e) { e.printStackTrace(); return false; }
     }
 
-    // Đăng nhập truyền thống: Kiểm tra email và pass MD5
     public User login(String email, String hashedPass) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("SELECT * FROM users WHERE email = :email AND password = :pass")
@@ -32,7 +29,6 @@ public class UserDAO {
         );
     }
 
-    // Cập nhật Token duy nhất cho Magic Link
     public void updateToken(String email, String token) {
         jdbi.useHandle(handle ->
                 handle.createUpdate("UPDATE users SET token = :token, token_expiry = DATE_ADD(NOW(), INTERVAL 15 MINUTE) WHERE email = :email")
@@ -40,11 +36,9 @@ public class UserDAO {
         );
     }
 
-    // Xác thực token duy nhất
-    // Sửa trong UserDAO.java
     public User getUserByToken(String token) {
         return jdbi.withHandle(handle ->
-                handle.createQuery("SELECT * FROM users WHERE token = :token")
+                handle.createQuery("SELECT * FROM users WHERE token = :token AND token_expiry > NOW()")
                         .bind("token", token)
                         .mapToBean(User.class)
                         .findFirst()
@@ -52,7 +46,6 @@ public class UserDAO {
         );
     }
 
-    // Xóa token sau khi dùng (Đảm bảo dùng 1 lần)
     public void clearToken(String email) {
         jdbi.useHandle(handle -> handle.createUpdate("UPDATE users SET token = NULL WHERE email = :email").bind("email", email).execute());
     }
@@ -67,7 +60,6 @@ public class UserDAO {
         );
     }
 
-    // Cập nhật mật khẩu mới (nhận vào chuỗi đã băm MD5 từ Controller)
     public boolean updatePassword(String email, String hashedPass) {
         try {
             return jdbi.withHandle(handle ->
@@ -87,6 +79,32 @@ public class UserDAO {
                 handle.createQuery("SELECT * FROM users")
                         .mapToBean(User.class)
                         .list()
+        );
+    }
+
+    public boolean updateAdminProfile(String email, String fullName, String phone, String address) {
+        try {
+            return jdbi.withHandle(handle ->
+                    handle.createUpdate("UPDATE users SET full_name = :name, phone = :phone, address = :addr WHERE email = :email")
+                            .bind("name", fullName)
+                            .bind("phone", phone)
+                            .bind("addr", address)
+                            .bind("email", email)
+                            .execute() > 0
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public User getUserWithAddress(String email) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("SELECT * FROM users WHERE email = :email")
+                        .bind("email", email)
+                        .mapToBean(User.class)
+                        .findFirst()
+                        .orElse(null)
         );
     }
 }

@@ -186,12 +186,6 @@
     .checkout-btn:hover {
         background: #74512D;
     }
-    .qty-btn.disabled {
-        pointer-events: none;
-        background-color: #eee;
-        color: #999;
-        border-color: #ddd;
-    }
 </style>
 <jsp:include page="/frontend/header.jsp"/>
 
@@ -219,7 +213,7 @@
         <%-- TRƯỜNG HỢP 1: CÓ SẢN PHẨM --%>
         <c:when test="${not empty cartItems}">
 
-            <c:set var="totalQty" value="0" />
+            <c:set var="totalQty" value="0"/>
 
             <div class="cart-left">
                 <div class="select-all">
@@ -230,15 +224,17 @@
                 <div class="cart-list">
                     <c:forEach var="item" items="${cartItems}">
 
-                        <c:set var="totalQty" value="${totalQty + item.quantity}" />
+                        <c:set var="totalQty" value="${totalQty + item.quantity}"/>
 
                         <div class="cart-item">
                             <input type="checkbox" class="item-check" name="selectedItems" value="${item.detailId}">
 
-                            <img src="${item.imageUrl}" alt="${item.productName}" onerror="this.src='https://via.placeholder.com/80'">
+                            <img src="${item.imageUrl}" alt="${item.productName}"
+                                 onerror="this.src='https://via.placeholder.com/80'">
 
                             <div class="item-info">
-                                <h4><a href="${pageContext.request.contextPath}/detail?id=${item.variantId}" style="text-decoration: none; color: #333;">${item.productName}</a></h4>
+                                <h4><a href="${pageContext.request.contextPath}/detail?id=${item.variantId}"
+                                       style="text-decoration: none; color: #333;">${item.productName}</a></h4>
 
                                 <div class="color">
                                     <span class="color-name">Màu: ${item.color}</span> |
@@ -246,35 +242,64 @@
                                 </div>
                                 <div class="color" style="font-size: 12px; color: #888;">
                                     Mã: ${item.code} <br>
-                                    <i>(Kho còn: ${item.stock})</i>
                                 </div>
 
+                                    <%-- Tìm đoạn này trong file của bạn --%>
                                 <div class="price">
-                                    <span class="current-price">
-                                        <fmt:formatNumber value="${item.price}" pattern="#,###"/>₫
-                                    </span>
+                                    <c:choose>
+                                        <%-- Nếu có giảm giá (discountPercent > 0) --%>
+                                        <c:when test="${item.discountPercent > 0}">
+            <span class="current-price">
+                <fmt:formatNumber value="${item.getFinalPrice()}" pattern="#,###"/>₫
+            </span>
+                                            <span class="old-price"
+                                                  style="text-decoration: line-through; color: #aaa; margin-left: 5px;">
+                <fmt:formatNumber value="${item.price}" pattern="#,###"/>₫
+            </span>
+                                            <span class="discount"
+                                                  style="color: #d40004; font-size: 12px; margin-left: 5px;">
+                (-<fmt:formatNumber value="${item.discountPercent}" pattern="#"/>%)
+            </span>
+                                        </c:when>
+                                        <%-- Nếu không giảm giá, hiện giá gốc bình thường --%>
+                                        <c:otherwise>
+            <span class="current-price">
+                <fmt:formatNumber value="${item.price}" pattern="#,###"/>₫
+            </span>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                             </div>
 
                             <div class="quantity">
-                                <c:if test="${item.quantity > 1}">
-                                    <a href="${pageContext.request.contextPath}/cart?action=update&id=${item.variantId}&quantity=${item.quantity - 1}"
-                                       class="qty-btn" style="text-decoration: none;">-</a>
-                                </c:if>
-                                <c:if test="${item.quantity <= 1}">
-                                    <a href="${pageContext.request.contextPath}/cart?action=delete&id=${item.variantId}"
-                                       class="qty-btn" onclick="return confirm('Xóa sản phẩm này?')">-</a>
-                                </c:if>
+                                <c:choose>
+                                    <c:when test="${item.quantity > 1}">
+                                        <a href="${pageContext.request.contextPath}/cart?action=update&id=${item.variantId}&quantity=${item.quantity - 1}"
+                                           class="qty-btn">-</a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a href="${pageContext.request.contextPath}/cart?action=delete&id=${item.variantId}"
+                                           class="qty-btn" onclick="return confirm('Xóa sản phẩm này?')">-</a>
+                                    </c:otherwise>
+                                </c:choose>
 
-                                <span>${item.quantity}</span>
+                                <span style="margin: 0 10px; font-weight: bold;">${item.quantity}</span>
 
-                                <c:if test="${item.quantity < item.stock}">
-                                    <a href="${pageContext.request.contextPath}/cart?action=update&id=${item.variantId}&quantity=${item.quantity + 1}"
-                                       class="qty-btn" style="text-decoration: none;">+</a>
-                                </c:if>
-                                <c:if test="${item.quantity >= item.stock}">
-                                    <span class="qty-btn disabled" title="Đã đạt giới hạn kho">+</span>
-                                </c:if>
+                                <c:choose>
+                                    <%-- Nếu còn hàng thì cho phép tăng --%>
+                                    <c:when test="${item.quantity < item.stock}">
+                                        <a href="${pageContext.request.contextPath}/cart?action=update&id=${item.variantId}&quantity=${item.quantity + 1}"
+                                           class="qty-btn">+</a>
+                                    </c:when>
+
+                                    <%-- Nếu đã đạt tối đa, nhấn vào sẽ hiện thông báo luôn --%>
+                                    <c:otherwise>
+                                        <%-- Dùng href="#" hoặc đường dẫn cũ, nhưng quan quan trọng là cái onclick --%>
+                                        <a href="#" class="qty-btn"
+                                           style="color: #ccc;"
+                                           onclick="alert('Rất tiếc, kho chỉ còn ${item.stock} sản phẩm!'); return false;">+</a>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
 
                             <div style="font-weight: bold; font-size: 14px; color: #333; min-width: 80px; text-align: right;">
@@ -314,10 +339,13 @@
                     </span>
                 </div>
 
-                <a href="${pageContext.request.contextPath}/checkout" class="checkout-btn">TIẾN HÀNH ĐẶT HÀNG</a>
+                <a href="${pageContext.request.contextPath}/cart?action=checkout" class="checkout-btn">
+                    THANH TOÁN
+                </a>
 
                 <div style="text-align: center; margin-top: 15px;">
-                    <a href="${pageContext.request.contextPath}/home" style="text-decoration: none; color: #666; font-size: 13px;">
+                    <a href="${pageContext.request.contextPath}/list-product"
+                       style="text-decoration: none; color: #666; font-size: 13px;">
                         <i class="fa fa-arrow-left"></i> Tiếp tục mua sắm
                     </a>
                 </div>
@@ -330,14 +358,21 @@
                 <i class="fa-solid fa-cart-arrow-down" style="font-size: 80px; color: #ddd; margin-bottom: 20px;"></i>
                 <h2 style="color: #555;">Giỏ hàng của bạn đang trống!</h2>
                 <p style="color: #888; margin-bottom: 30px;">Hãy thêm sản phẩm để nhận ưu đãi nhé.</p>
-                <a href="${pageContext.request.contextPath}/home" class="checkout-btn"
+                <a href="${pageContext.request.contextPath}/list-product" class="checkout-btn"
                    style="width: 250px; margin: 0 auto; display: inline-block;">MUA SẮM NGAY</a>
             </div>
         </c:otherwise>
     </c:choose>
 </div>
 
-<%--<script src="${pageContext.request.contextPath}/frontend/js/detail.js"></script>--%>
+<script>
+    document.getElementById('selectAll').onclick = function () {
+        var checkboxes = document.querySelectorAll('.item-check');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = this.checked;
+        }
+    }
+</script>
 <jsp:include page="/frontend/footer.jsp"/>
 
 </body>

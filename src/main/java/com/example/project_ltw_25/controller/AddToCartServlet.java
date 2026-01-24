@@ -32,9 +32,10 @@ public class AddToCartServlet extends HttpServlet {
         String vIdRaw = request.getParameter("variantId");
         String qtyRaw = request.getParameter("quantity");
 
+        String redirectAction = request.getParameter("redirectAction"); // Lấy action từ form
+
         try {
-            // Kiểm tra xem dữ liệu có bị null hoặc trống không
-            if (vIdRaw != null && !vIdRaw.isEmpty() && qtyRaw != null && !qtyRaw.isEmpty()) {
+            if (vIdRaw != null && !vIdRaw.isEmpty()) {
                 int variantId = Integer.parseInt(vIdRaw);
                 int quantity = Integer.parseInt(qtyRaw);
 
@@ -42,25 +43,25 @@ public class AddToCartServlet extends HttpServlet {
                 String result = dao.addToCart(user.getId(), variantId, quantity);
 
                 if ("Success".equals(result)) {
+                    // Nếu khách chọn "Mua ngay", chuyển hướng thẳng tới trang giỏ hàng
+                    if ("buy".equals(redirectAction)) {
+                        response.sendRedirect(request.getContextPath() + "/cart");
+                        return; // Ngắt hàm tại đây
+                    }
+                    int newTotal = dao.getTotalQuantityByUserId(user.getId());
+                    session.setAttribute("totalQty", newTotal);
+
                     session.setAttribute("msg", "Đã thêm vào giỏ hàng!");
                 } else {
                     session.setAttribute("error", result);
                 }
-            } else {
-                session.setAttribute("error", "Lỗi: Không tìm thấy ID sản phẩm hoặc số lượng.");
             }
         } catch (Exception e) {
-            // QUAN TRỌNG: Ghi log lỗi ra console để debug
             e.printStackTrace();
-            session.setAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
         }
 
-        // Quay lại trang cũ (Referer)
+        // Nếu là "add" (Thêm vào giỏ), quay lại trang cũ để hiện SweetAlert
         String referer = request.getHeader("Referer");
-        if (referer != null && !referer.isEmpty()) {
-            response.sendRedirect(referer);
-        } else {
-            response.sendRedirect(request.getContextPath() + "/home");
-        }
+        response.sendRedirect(referer != null ? referer : request.getContextPath() + "/home");
     }
 }

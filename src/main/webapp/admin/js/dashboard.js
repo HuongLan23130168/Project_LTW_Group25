@@ -1,6 +1,5 @@
 const ctx = document.getElementById('revenueChart').getContext('2d');
 
-// Nhận dữ liệu JSON từ Servlet qua EL
 const labels = chartLabels;
 const dataValues = chartData;
 

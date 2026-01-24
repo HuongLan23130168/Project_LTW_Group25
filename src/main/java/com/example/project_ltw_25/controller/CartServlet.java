@@ -25,7 +25,6 @@ public class CartServlet extends HttpServlet {
 
     // Gộp chung logic xử lý để tránh sai sót giữa GET và POST
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 1. Fix lỗi hiển thị font chữ tiếng Việt khi báo lỗi
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
 
@@ -39,54 +38,58 @@ public class CartServlet extends HttpServlet {
 
         CartDAO dao = new CartDAO();
         String action = request.getParameter("action");
-
-        // Lấy tham số dưới dạng String trước
         String idRaw = request.getParameter("id");
         String qtyRaw = request.getParameter("quantity");
 
         try {
-            // 2. CHỈ xử lý Logic khi có action và ID không bị NULL
-            if (action != null && idRaw != null && !idRaw.isEmpty()) {
-                int variantId = Integer.parseInt(idRaw);
-
-                if ("delete".equals(action)) {
-                    dao.removeItem(user.getId(), variantId);
-                }
-                else if ("update".equals(action) && qtyRaw != null && !qtyRaw.isEmpty()) {
-                    int quantity = Integer.parseInt(qtyRaw);
-                    String result = dao.updateQuantity(user.getId(), variantId, quantity);
-                    if (!"Success".equals(result)) {
-                        session.setAttribute("error", result);
+            if (action != null) {
+                // Nhánh Checkout: Xử lý trước vì không cần ID sản phẩm lẻ
+                if ("checkout".equals(action)) {
+                    List<CartItem> list = dao.getCartByUserId(user.getId());
+                    if (list == null || list.isEmpty()) {
+                        session.setAttribute("error", "Giỏ hàng của bạn đang trống!");
+                        response.sendRedirect(request.getContextPath() + "/cart");
+                        return;
                     }
+                    double grandTotal = list.stream().mapToDouble(CartItem::getTotalPrice).sum();
+                    request.setAttribute("cartItems", list);
+                    request.setAttribute("grandTotal", grandTotal);
+                    request.getRequestDispatcher("/frontend/pay.jsp").forward(request, response);
+                    return;
                 }
-                // Sau khi xử lý Xong thì chuyển hướng để URL sạch (tránh lỗi F5)
-                response.sendRedirect(request.getContextPath() + "/cart");
-                return;
+
+                // Các nhánh cần ID (Update/Delete)
+                if (idRaw != null && !idRaw.isEmpty()) {
+                    int variantId = Integer.parseInt(idRaw);
+                    if ("delete".equals(action)) {
+                        dao.removeItem(user.getId(), variantId);
+                    } else if ("update".equals(action) && qtyRaw != null) {
+                        int quantity = Integer.parseInt(qtyRaw);
+                        dao.updateQuantity(user.getId(), variantId, quantity);
+                    }
+                    response.sendRedirect(request.getContextPath() + "/cart");
+                    return;
+                }
             }
 
-            // 3. LOGIC HIỂN THỊ (Khi action == null hoặc sau khi Redirect)
+            // MẶC ĐỊNH: Hiển thị giỏ hàng
             List<CartItem> list = dao.getCartByUserId(user.getId());
             double grandTotal = 0;
             int totalQuantity = 0;
-
             if (list != null) {
                 for (CartItem item : list) {
                     grandTotal += item.getTotalPrice();
                     totalQuantity += item.getQuantity();
                 }
             }
-
             request.setAttribute("cartItems", list);
             request.setAttribute("grandTotal", grandTotal);
-            request.setAttribute("totalQuantity", totalQuantity);
-
-            // Forward ra trang JSP
+            session.setAttribute("totalQty", totalQuantity);
             request.getRequestDispatcher("/frontend/cart.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
-            // Nếu có lỗi, in ra lỗi cụ thể để debug chứ không để trang trắng
-            response.getWriter().println("Hệ thống gặp lỗi: " + e.getMessage());
+            response.getWriter().println("Lỗi hệ thống: " + e.getMessage());
         }
     }
 }
