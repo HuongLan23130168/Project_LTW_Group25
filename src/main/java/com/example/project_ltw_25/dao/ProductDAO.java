@@ -1,177 +1,166 @@
-package com.example.project_ltw_25.dao;
+package com.example.project_ltw_25.user.dao;
 
+import com.example.project_ltw_25.user.model.Product;
+import com.example.project_ltw_25.user.model.Product_image;
+import com.example.project_ltw_25.user.model.Product_variant;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.mapper.RowMapper;
-import org.jdbi.v3.core.statement.StatementContext;
-import com.example.project_ltw_25.model.Product;
-import com.example.project_ltw_25.model.Product_image;
-import com.example.project_ltw_25.model.Product_variant;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalDouble;
 
 public class ProductDAO {
     private static final Jdbi jdbi = DBDAO.get();
 
-    // Row Mappers để đọc dữ liệu
-    private static class ProductMapper implements RowMapper<Product> {
-        @Override
-        public Product map(ResultSet rs, StatementContext ctx) throws SQLException {
-            Product p = new Product();
-            p.setId(rs.getInt("id"));
-            p.setProduct_code(rs.getString("product_code"));
-            p.setProduct_name(rs.getString("product_name"));
-            p.setProduct_type_id(rs.getInt("product_type_id"));
-            p.setCategory_id(rs.getInt("category_id"));
-            p.setDescription(rs.getString("description"));
-            return p;
-        }
-    }
-
-    private static class ProductVariantMapper implements RowMapper<Product_variant> {
-        @Override
-        public Product_variant map(ResultSet rs, StatementContext ctx) throws SQLException {
-            Product_variant pv = new Product_variant();
-            pv.setId(rs.getInt("id"));
-            pv.setProduct_id(rs.getInt("product_id"));
-            pv.setStyle(rs.getString("style"));
-            pv.setColor(rs.getString("color"));
-            pv.setSize(rs.getString("size"));
-            pv.setMaterial(rs.getString("material"));
-            pv.setPrice(rs.getDouble("price"));
-            pv.setImage_url(rs.getString("image_url"));
-            pv.setPrice_old(rs.getDouble("price_old"));
-            return pv;
-        }
-    }
-
-    private static class ProductImageMapper implements RowMapper<Product_image> {
-        @Override
-        public Product_image map(ResultSet rs, StatementContext ctx) throws SQLException {
-            Product_image pi = new Product_image();
-            pi.setId(rs.getInt("id"));
-            pi.setProduct_id(rs.getInt("product_id"));
-            pi.setImage_url(rs.getString("image_url"));
-            return pi;
-        }
-    }
-
-    public boolean addProduct(Product product, Product_variant variant, List<Product_image> images) {
-        try {
-            return jdbi.inTransaction(handle -> {
-                String productQuery = "INSERT INTO products (product_code, product_name, product_type_id, category_id, description) VALUES (:product_code, :product_name, :product_type_id, :category_id, :description)";
-                int productId = handle.createUpdate(productQuery)
-                        .bind("product_code", product.getProduct_code())
-                        .bind("product_name", product.getProduct_name())
-                        .bind("product_type_id", product.getProduct_type_id())
-                        .bind("category_id", product.getCategory_id())
-                        .bind("description", product.getDescription())
-                        .executeAndReturnGeneratedKeys("id")
-                        .mapTo(Integer.class)
-                        .one();
-
-                String variantQuery = "INSERT INTO product_variants (product_id, style, color, size, material, price, image_url) VALUES (:product_id, :style, :color, :size, :material, :price, :image_url)";
-                handle.createUpdate(variantQuery)
-                        .bind("product_id", productId)
-                        .bind("style", variant.getStyle())
-                        .bind("color", variant.getColor())
-                        .bind("size", variant.getSize())
-                        .bind("material", variant.getMaterial())
-                        .bind("price", variant.getPrice())
-                        .bind("image_url", variant.getImage_url())
-                        .execute();
-
-                if (images != null && !images.isEmpty()) {
-                    String imageQuery = "INSERT INTO product_images (product_id, image_url) VALUES (:product_id, :image_url)";
-                    for (Product_image image : images) {
-                        handle.createUpdate(imageQuery)
-                                .bind("product_id", productId)
-                                .bind("image_url", image.getImage_url())
-                                .execute();
-                    }
-                }
-                return true;
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     public Product getById(int id) {
         return jdbi.withHandle(handle -> {
-            Optional<Product> productOptional = handle.createQuery("SELECT * FROM products WHERE id = :id")
-                    .bind("id", id)
-                    .map(new ProductMapper())
-                    .findFirst();
+            String sqlProduct = """
+                SELECT
+                    p.*,
+                    t.type_name,
+                    (SELECT image_url FROM product_images WHERE product_id = p.id ORDER BY id LIMIT 1) AS image_url,
+                    (
+                        SELECT MAX(d.discount_percent)
+                        FROM discounts d
+                        WHERE
+                            (
+                                d.id IN (SELECT discount_id FROM discount_categories WHERE category_id = p.category_id) OR
+                                d.id IN (SELECT discount_id FROM discount_product_types WHERE product_type_id = p.product_type_id)
+                            )
+                            AND NOW() BETWEEN d.start_date AND d.end_date
+                    ) AS discount_percent
+                FROM products p
+                LEFT JOIN product_types t ON p.product_type_id = t.id
+                WHERE p.id = :id
+            """;
 
-            if (productOptional.isPresent()) {
-                Product product = productOptional.get();
-                List<Product_variant> variants = handle.createQuery("SELECT * FROM product_variants WHERE product_id = :id")
-                        .bind("id", id)
-                        .map(new ProductVariantMapper())
-                        .list();
+            Optional<Product> productOpt = handle.createQuery(sqlProduct)
+                    .bind("id", id)
+                    .map((rs, ctx) -> {
+                        Product p = new Product();
+                        p.setId(rs.getInt("id"));
+                        p.setProduct_name(rs.getString("product_name"));
+                        p.setProduct_code(rs.getString("product_code"));
+                        p.setDescription(rs.getString("description"));
+                        p.setImage_url(rs.getString("image_url"));
+                        p.setCategory_id(rs.getString("category_id"));
+                        // Lấy discount percent, nếu null thì trả về 0
+                        p.setDiscountPercent(rs.getObject("discount_percent") != null ? rs.getDouble("discount_percent") : 0.0);
+
+                        String tags = rs.getString("tags");
+                        if (tags != null) {
+                            String t = tags.toLowerCase();
+                            p.setNewProduct(t.contains("new"));
+                            p.setBestSeller(t.contains("best"));
+                        }
+                        return p;
+                    }).findFirst();
+
+            if (productOpt.isPresent()) {
+                Product product = productOpt.get();
+
+                List<Product_variant> variants = getVariantsByProductId(id);
                 product.setVariants(variants);
 
-                List<Product_image> images = handle.createQuery("SELECT * FROM product_images WHERE product_id = :id")
-                        .bind("id", id)
-                        .map(new ProductImageMapper())
-                        .list();
-                product.setImages(images);
+                product.setImages(handle.createQuery("SELECT * FROM product_images WHERE product_id = :id")
+                        .bind("id", id).mapToBean(Product_image.class).list());
+
+                if (!variants.isEmpty()) {
+                    OptionalDouble minPriceOpt = variants.stream()
+                            .mapToDouble(v -> v.getPrice().doubleValue())
+                            .min();
+
+                    if (minPriceOpt.isPresent()) {
+                        double minPrice = minPriceOpt.getAsDouble();
+                        product.setPrice(minPrice);
+
+                        if (product.getDiscountPercent() > 0) {
+                            double newPrice = minPrice * (1 - (product.getDiscountPercent() / 100.0));
+                            product.setPrice_new(newPrice);
+                        } else {
+                            product.setPrice_new(minPrice);
+                        }
+                    }
+                }
                 return product;
             }
             return null;
         });
     }
 
-    public List<Product> getAll() {
-        return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM products").map(new ProductMapper()).list());
-    }
-
-    public List<Product> getByCategory(int categoryId) {
+    public List<Product> getRelatedProducts(String categoryId, int currentId) {
         return jdbi.withHandle(handle -> {
-            List<Product> products = handle.createQuery("SELECT * FROM products WHERE category_id = :categoryId")
+            String sql = """
+                SELECT
+                    p.id, p.product_name,
+                    (SELECT image_url FROM product_images WHERE product_id = p.id LIMIT 1) AS image_url,
+                    (SELECT MIN(price) FROM product_variants WHERE product_id = p.id) as base_origin_price,
+                    p.tags,
+                    (
+                        SELECT MAX(d.discount_percent)
+                        FROM discounts d
+                        WHERE
+                            (
+                                d.id IN (SELECT discount_id FROM discount_categories WHERE category_id = p.category_id) OR
+                                d.id IN (SELECT discount_id FROM discount_product_types WHERE product_type_id = p.product_type_id)
+                            )
+                            AND NOW() BETWEEN d.start_date AND d.end_date
+                    ) AS discount_percent
+                FROM products p
+                WHERE p.category_id = :categoryId AND p.id != :currentId
+                ORDER BY RAND()
+                LIMIT 4
+            """;
+
+            return handle.createQuery(sql)
                     .bind("categoryId", categoryId)
-                    .map(new ProductMapper())
-                    .list();
+                    .bind("currentId", currentId)
+                    .map((rs, ctx) -> {
+                        Product p = new Product();
+                        p.setId(rs.getInt("id"));
+                        p.setProduct_name(rs.getString("product_name"));
+                        p.setImage_url(rs.getString("image_url"));
 
-            for (Product product : products) {
-                List<Product_variant> variants = handle.createQuery("SELECT * FROM product_variants WHERE product_id = :id LIMIT 1")
-                        .bind("id", product.getId())
-                        .map(new ProductVariantMapper())
-                        .list();
-                product.setVariants(variants);
-            }
-            return products;
+                        double basePrice = rs.getDouble("base_origin_price");
+                        p.setPrice(basePrice);
+
+                        double discountPercent = rs.getObject("discount_percent") != null ? rs.getDouble("discount_percent") : 0.0;
+                        p.setDiscountPercent(discountPercent);
+
+                        if (discountPercent > 0) {
+                            double newPrice = basePrice * (1 - (discountPercent / 100.0));
+                            p.setPrice_new(newPrice);
+                        } else {
+                            p.setPrice_new(basePrice);
+                        }
+
+                        String tags = rs.getString("tags");
+                        if (tags != null) {
+                            String t = tags.toLowerCase();
+                            p.setNewProduct(t.contains("new"));
+                            p.setBestSeller(t.contains("best"));
+                        }
+                        return p;
+                    }).list();
         });
     }
-    // Trong class ProductDao
 
-    public List<Product> getRelatedProducts(int categoryId, int currentProductId) {
+    public List<Product_variant> getVariantsByProductId(int productId) {
         return jdbi.withHandle(handle -> {
-            // 1. Lấy danh sách sản phẩm cùng danh mục, giới hạn 4 hoặc 8 item
-            String sql = "SELECT * FROM products WHERE category_id = :catId AND id != :currentId LIMIT 8";
+            String sql = """
+                SELECT
+                    pv.id, pv.variant_code, pv.product_id, pv.style,
+                    pv.color, pv.size, pv.material, pv.price,
+                    COALESCE(i.stock_quantity, 0) as stock_quantity
+                FROM product_variants pv
+                LEFT JOIN inventories i ON pv.id = i.variant_id
+                WHERE pv.product_id = :pid
+            """;
 
-            List<Product> products = handle.createQuery(sql)
-                    .bind("catId", categoryId)
-                    .bind("currentId", currentProductId)
-                    .map(new ProductMapper())
+            return handle.createQuery(sql)
+                    .bind("pid", productId)
+                    .mapToBean(Product_variant.class)
                     .list();
-
-            // 2. Với mỗi sản phẩm, nạp danh sách variants để lấy ảnh và giá đại diện
-            for (Product p : products) {
-                List<Product_variant> variants = handle.createQuery("SELECT * FROM product_variants WHERE product_id = :pid")
-                        .bind("pid", p.getId())
-                        .map(new ProductVariantMapper())
-                        .list();
-                p.setVariants(variants);
-            }
-
-            return products;
         });
     }
-
-
 }
