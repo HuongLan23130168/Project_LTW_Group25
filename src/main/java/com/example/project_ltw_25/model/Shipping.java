@@ -2,20 +2,22 @@ package com.example.project_ltw_25.user.model;
 
 public class Shipping {
     private int id;
-    private int order_id;
-    private int shipping_fee;
-    private String shipping_status;
-    private String tracking_number;
+    private int orderId;
+    private String shippingType;
+    private int shippingFee;
+    private String shippingStatus;
+    private String trackingNumber;
 
     public Shipping() {
     }
 
-    public Shipping(int id, int order_id, int shipping_fee, String shipping_status, String tracking_number) {
+    public Shipping(int id, int orderId, String shippingType, int shippingFee, String shippingStatus, String trackingNumber) {
         this.id = id;
-        this.order_id = order_id;
-        this.shipping_fee = shipping_fee;
-        this.shipping_status = shipping_status;
-        this.tracking_number = tracking_number;
+        this.orderId = orderId;
+        this.shippingType = shippingType;
+        this.shippingFee = shippingFee;
+        this.shippingStatus = shippingStatus;
+        this.trackingNumber = trackingNumber;
     }
 
     public int getId() {
@@ -26,35 +28,43 @@ public class Shipping {
         this.id = id;
     }
 
-    public int getOrder_id() {
-        return order_id;
+    public int getOrderId() {
+        return orderId;
     }
 
-    public void setOrder_id(int order_id) {
-        this.order_id = order_id;
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
     }
 
-    public int getShipping_fee() {
-        return shipping_fee;
+    public String getShippingType() {
+        return shippingType;
     }
 
-    public void setShipping_fee(int shipping_fee) {
-        this.shipping_fee = shipping_fee;
+    public void setShippingType(String shippingType) {
+        this.shippingType = shippingType;
     }
 
-    public String getShipping_status() {
-        return shipping_status;
+    public int getShippingFee() {
+        return shippingFee;
     }
 
-    public void setShipping_status(String shipping_status) {
-        this.shipping_status = shipping_status;
+    public void setShippingFee(int shippingFee) {
+        this.shippingFee = shippingFee;
     }
 
-    public String getTracking_number() {
-        return tracking_number;
+    public String getShippingStatus() {
+        return shippingStatus;
     }
 
-    public void setTracking_number(String tracking_number) {
-        this.tracking_number = tracking_number;
+    public void setShippingStatus(String shippingStatus) {
+        this.shippingStatus = shippingStatus;
+    }
+
+    public String getTrackingNumber() {
+        return trackingNumber;
+    }
+
+    public void setTrackingNumber(String trackingNumber) {
+        this.trackingNumber = trackingNumber;
     }
 }

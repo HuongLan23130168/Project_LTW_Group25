@@ -65,7 +65,9 @@ public class PlaceOrderServlet extends HttpServlet {
 
                 // 1. LẤY DỮ LIỆU CHUẨN TỪ DB (Kiểu OrderItem)
                 List<OrderItem> orderItems = orderDAO.getOrderItemsByOrderId(order.getId());
-
+                double actualTotal = orderItems.stream()
+                        .mapToDouble(i -> (i.getPrice() * i.getQuantity()) * (1 - i.getDiscount() / 100.0))
+                        .sum();
                 // 2. SET ATTRIBUTE (Chỉ set 1 lần duy nhất cho orderItems)
                 request.setAttribute("orderItems", orderItems);
                 request.setAttribute("orderCode", orderCode);
@@ -74,11 +76,14 @@ public class PlaceOrderServlet extends HttpServlet {
 
                 request.setAttribute("orderName", name);
                 request.setAttribute("orderPhone", phone);
+                request.setAttribute("orderEmail", email);
                 request.setAttribute("orderAddress", address);
+                request.setAttribute("orderDate", new java.util.Date());
                 request.setAttribute("shippingType", shippingType);
                 request.setAttribute("shippingFee", shippingFee);
-                request.setAttribute("grandTotal", total);
+                request.setAttribute("grandTotal", actualTotal);
                 request.setAttribute("paymentMethod", (paymentId == 1 ? "COD" : "Chuyển khoản"));
+                request.setAttribute("orderNote", note);
 
                 // 3. Xóa giỏ hàng và Forward
                 cartDAO.clearCart(user.getId());
