@@ -1,6 +1,7 @@
-package com.example.demoweb1.dao;
+package com.example.project_ltw_25.user.dao;
 
-import com.example.demoweb1.model.Contact;
+import com.example.project_ltw_25.user.dao.DBDAO;
+import com.example.project_ltw_25.user.model.Contact;
 import org.jdbi.v3.core.Jdbi;
 
 public class ContactDAO {
