@@ -218,24 +218,18 @@
                             SL: ${item.quantity} |
                             Phân loại: ${not empty item.color ? item.color : 'Mặc định'} - ${item.size}
                         </p>
-                            <%--                    <div class="price">--%>
-                            <%--                    <span class="current-price">--%>
-                            <%--                        <fmt:formatNumber value="${item.totalPrice}" pattern="#,###"/>₫--%>
-                            <%--                    </span>--%>
-                            <%--                    </div>--%>
-
                         <div class="price">
                             <span class="current-price">
-                                <fmt:formatNumber value="${(item.price * item.quantity) * (1 - item.discount / 100)}" pattern="#,###"/>₫
+                                <span class="current-price">
+                                    <fmt:formatNumber value="${(item.price * item.quantity) * (1 - (item.discount / 100.0))}" pattern="#,###"/>₫
+                                </span>
                             </span>
 
                             <c:if test="${item.discount > 0}">
-                                <span class="old-price" style="text-decoration: line-through; color: #888; font-size: 0.9em; margin-left: 5px;">
+                                <span class="old-price"
+                                      style="text-decoration: line-through; color: #888; font-size: 0.9em; margin-left: 5px;">
                                     <fmt:formatNumber value="${item.price * item.quantity}" pattern="#,###"/>₫
                                 </span>
-<%--                                <span class="discount-tag"--%>
-<%--                                      style="color: #d40004; font-weight: bold; font-size: 0.8em; margin-left: 5px;">-${item.discount}%--%>
-<%--                                </span>--%>
                             </c:if>
                         </div>
                     </div>
@@ -262,8 +256,20 @@
                     <td>${orderPhone}</td>
                 </tr>
                 <tr>
+                    <td>Email</td>
+                    <td>${orderEmail}</td>
+                </tr>
+                <tr>
                     <td>Địa chỉ</td>
                     <td>${orderAddress}</td>
+                </tr>
+                <tr>
+                    <td>Ngày đặt</td>
+                    <td><fmt:formatDate value="${orderDate}" pattern="dd/MM/yyyy HH:mm"/></td>
+                </tr>
+                <tr>
+                    <td>Ghi chú</td>
+                    <td><i style="color: #666;">${not empty orderNote ? orderNote : 'Không có ghi chú'}</i></td>
                 </tr>
                 <tr class="divider">
                     <td colspan="2"></td>
