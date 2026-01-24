@@ -1,189 +1,316 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Noble Loft Theory - View Orders</title>
-    <link rel="stylesheet" href="css/style.css"/>
-    <link rel="stylesheet" href="css/viewOrders.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Noble Loft Theory - Chi tiết đơn hàng</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/style.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/viewOrders.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 </head>
-
 <body>
-<!-- === SIDEBAR === -->
-<div class="sidebar" id="sidebar">
-    <div class="logo">
-        <a href="dashboard.jsp">Noble Loft Theory</a>
-    </div>
-    <ul>
-        <li>
-            <a href="dashboard.jsp"><i class="fas fa-chart-line"></i> Dashboard</a>
-        </li>
-        <li>
-            <a href="products.jsp"><i class="fas fa-box"></i> Sản phẩm</a>
-        </li>
-        <li class="active">
-            <a href="orders.jsp"><i class="fas fa-cart-shopping"></i> Đơn hàng</a>
-        </li>
-        <li>
-            <a href="customers.jsp"><i class="fas fa-users"></i> Khách hàng</a>
-        </li>
-        <li>
-            <a href="notifi.jsp"><i class="fas fa-bell"></i> Thông báo</a>
-        </li>
-        <li>
-            <a href="account.jsp"><i class="fas fa-gear"></i> Tài khoản</a>
-        </li>
-    </ul>
-</div>
 
-<!-- === HEADER === -->
-<header class="header">
-    <div class="header-left">
-        <div class="search-container">
-            <i class="fa-solid fa-magnifying-glass" style="color: #74512d;"></i>
-            <input type="text" placeholder="Tìm kiếm" class="search-input"/>
-        </div>
-    </div>
+<jsp:include page="/admin/header.jsp"/>
+<jsp:include page="/admin/sidebar.jsp"/>
 
-    <div class="header-right">
-        <!-- Nút thông báo -->
-        <div class="notify-wrapper">
-            <a href="notifi.jsp" class="icon-button">
-                <i class="fa-solid fa-bell"></i>
-                <span id="notifyCount" class="notify-badge">3</span>
-            </a>
-        </div>
-
-        <!-- Hồ sơ người dùng -->
-        <div class="profile-dropdown">
-            <button class="icon-button user-btn">
-                <i class="fa-solid fa-user"></i>
-            </button>
-
-            <div class="dropdown-menu">
-                <a href="account.jsp"><i class="fas fa-user"></i> Tài khoản</a>
-                <a href="index.jsp"><i class="fas fa-right-from-bracket"></i> Đăng xuất</a>
-            </div>
-        </div>
-    </div>
-</header>
-
-<!-- === VIEW ORDERS === -->
 <main class="main-content">
-    <!-- ===== BREADCRUMB / TIẾN TRÌNH ===== -->
-    <div class="breadcrumb">
-        <a href="orders.jsp">Đơn hàng</a> &#47;
-        <span class="current">Chi tiết đơn hàng</span>
-    </div>
 
-
-    <div class="transaction-wrapper">
-        <div class="left-card">
-
-            <div class="orders-id">
-                <a>Mã đơn: #34834
-                    <span class="status completed">Hoàn thành</span>
-                    <span> | 25/08/2025 </span>
-                </a>
-            </div>
-
-            <div class="detail-card">
-                <h3>Thông tin khách hàng</h3>
-                <table>
-                    <tr>
-                        <td>Tên</td>
-                        <td>Nguyễn Qua Môn</td>
-                    </tr>
-                    <tr>
-                        <td>Email</td>
-                        <td>quamon@example.com</td>
-                    </tr>
-                    <tr>
-                        <td>SDT</td>
-                        <td>09356286432</td>
-                    </tr>
-                    <tr>
-                        <td>Địa chỉ</td>
-                        <td>khu phố 5, Phường Tân Tiến,Thành Phố Biên Hòa, Đồng Nai</td>
-                    </tr>
-                    <tr>
-                        <td>PT thanh toán</td>
-                        <td> COD thanh toán khi nhận hàng</td>
-                    </tr>
-                </table>
+    <%-- TRƯỜNG HỢP KHÔNG TÌM THẤY ĐƠN HÀNG --%>
+    <c:if test="${empty order}">
+        <div class="orders-id empty-container">
+            <i class="fa fa-search empty-icon"></i>
+            <h2 class="empty-title">Không tìm thấy đơn hàng</h2>
+            <p>Đơn hàng bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
+            <div class="back-to-orders">
+                <a href="${pageContext.request.contextPath}/admin/orders">Quay lại danh sách</a>
             </div>
         </div>
+    </c:if>
 
+    <%-- TRƯỜNG HỢP CÓ DỮ LIỆU ĐƠN HÀNG --%>
+    <c:if test="${not empty order}">
+        <div class="breadcrumb">
+            <a href="${pageContext.request.contextPath}/admin/orders">Đơn hàng</a> &#47;
+            <span class="current">Chi tiết đơn hàng #${order.order_code}</span>
+        </div>
 
-        <div class="right-card">
-            <div class="detail-card">
+        <div class="transaction-wrapper">
 
-                <h3>Danh sách sản phẩm</h3>
-                <table>
-                    <tr>
-                        <th>STT</th>
-                        <th>Sản phẩm</th>
-                        <th>SL</th>
-                        <th>Giá</th>
-                        <th>Giảm</th>
-                        <th>Tổng</th>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>Đèn thả chùm hoa bồ công anh pha lê hiện đại , trang trí sang trọng , tặng kèm bóng led
-                        </td>
-                        <td>1</td>
-                        <td>787,000₫</td>
-                        <td>0%</td>
-                        <td>787,000₫</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Sách Giả mô hình cao cấp hiện đại cổ điển trang trí decor</td>
-                        <td>2</td>
-                        <td>296,000₫</td>
-                        <td>0%</td>
-                        <td>296,000₫</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Tranh gỗ vẽ tay trang trí nhà cửa , sân vườn, quà tặng mộc mạc</td>
-                        <td>1</td>
-                        <td>230,000₫</td>
-                        <td>0%</td>
-                        <td>230,000₫</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Hoa Decor - Hoa Cẩm Tú Cầu Camelia Decor, Cành 67cm Gồm 15 Bông Lớn, Chất Liệu Lụa Cao
-                            Cấp Màu Sắc Tự Nhiên
-                        </td>
-                        <td>1</td>
-                        <td>430,000₫</td>
-                        <td>0%</td>
-                        <td>430,000₫</td>
-                    </tr>
-                </table>
+            <div class="left-card">
 
-                <div class="total">
-                    <p>Phí ship: 35,000₫</p>
-                    <h4>Tổng cộng: 1,743,000₫</h4>
+<%--                <div class="orders-id">--%>
+<%--                    <a>--%>
+<%--                        <span>Mã đơn: <strong>#${order.order_code}</strong></span>--%>
+
+<%--                        <c:set var="lowerStatus" value="${fn:toLowerCase(order.status)}" />--%>
+<%--                        <c:choose>--%>
+<%--                            <c:when test="${fn:contains(lowerStatus, 'hoàn thành') or fn:contains(lowerStatus, 'đã giao') or fn:contains(lowerStatus, 'thành công')}">--%>
+<%--                                <span class="status status-completed">${order.status}</span>--%>
+<%--                            </c:when>--%>
+<%--                            <c:when test="${fn:contains(lowerStatus, 'hủy')}">--%>
+<%--                                <span class="status status-cancelled">${order.status}</span>--%>
+<%--                            </c:when>--%>
+<%--                            <c:when test="${fn:contains(lowerStatus, 'xử lý') or fn:contains(lowerStatus, 'chờ') or fn:contains(lowerStatus, 'đang giao')}">--%>
+<%--                                <span class="status status-pending">${order.status}</span>--%>
+<%--                            </c:when>--%>
+<%--                            <c:otherwise>--%>
+<%--                                <span class="status">${order.status}</span>--%>
+<%--                            </c:otherwise>--%>
+<%--                        </c:choose>--%>
+
+<%--                        <c:if test="${not empty order.order_date}">--%>
+<%--                            <span class="order-date-text">--%>
+<%--                                | <i class="far fa-calendar-alt"></i> <fmt:formatDate value="${order.order_date}" pattern="dd/MM/yyyy HH:mm"/>--%>
+<%--                            </span>--%>
+<%--                        </c:if>--%>
+<%--                    </a>--%>
+<%--                </div>--%>
+
+<%--                <div class="order-actions">--%>
+<%--                    <h3>Hành động</h3>--%>
+<%--                    <form action="${pageContext.request.contextPath}/admin/updateOrderStatus" method="post">--%>
+<%--                        <input type="hidden" name="orderId" value="${order.id}">--%>
+<%--                        <input type="hidden" name="currentStatus" value="${order.status}">--%>
+
+<%--                        <c:choose>--%>
+<%--                            &lt;%&ndash; CASE: Chờ xử lý &ndash;%&gt;--%>
+<%--                            <c:when test="${order.status == 'Chờ xử lý' || order.status == 'Chờ lấy hàng'}">--%>
+<%--                                <button type="submit" class="btn-action btn-ship"--%>
+<%--                                        onclick="return confirm('Xác nhận chuyển đơn hàng sang trạng thái ĐANG GIAO?');">--%>
+<%--                                    <i class="fa fa-truck"></i> Xác nhận giao hàng--%>
+<%--                                </button>--%>
+<%--                            </c:when>--%>
+
+<%--                            &lt;%&ndash; CASE: Đang giao &ndash;%&gt;--%>
+<%--                            <c:when test="${fn:contains(order.status, 'Đang giao') || fn:contains(order.status, 'Vận chuyển')}">--%>
+<%--                                <button type="submit" class="btn-action btn-complete"--%>
+<%--                                        onclick="return confirm('Xác nhận đơn hàng đã GIAO THÀNH CÔNG?');">--%>
+<%--                                    <i class="fa fa-check-circle"></i> Xác nhận hoàn thành--%>
+<%--                                </button>--%>
+<%--                            </c:when>--%>
+
+<%--                            &lt;%&ndash; CASE: Đã xong &ndash;%&gt;--%>
+<%--                            <c:when test="${fn:contains(order.status, 'Hoàn thành') || fn:contains(order.status, 'thành công')}">--%>
+<%--                                <div class="alert-box alert-success">--%>
+<%--                                    <i class="fa fa-check-double"></i> Đơn hàng đã hoàn tất--%>
+<%--                                </div>--%>
+<%--                            </c:when>--%>
+
+<%--                            &lt;%&ndash; CASE: Đã hủy &ndash;%&gt;--%>
+<%--                            <c:when test="${fn:contains(order.status, 'hủy') || fn:contains(order.status, 'Hủy')}">--%>
+<%--                                <div class="alert-box alert-cancel">--%>
+<%--                                    <i class="fa fa-times-circle"></i> Đơn hàng đã hủy--%>
+<%--                                </div>--%>
+<%--                            </c:when>--%>
+
+<%--                            &lt;%&ndash; DEFAULT &ndash;%&gt;--%>
+<%--                            <c:otherwise>--%>
+<%--                                <div class="alert-box alert-default">--%>
+<%--                                    <i class="fa fa-info-circle"></i> Không có hành động khả dụng--%>
+<%--                                </div>--%>
+<%--                            </c:otherwise>--%>
+<%--                        </c:choose>--%>
+<%--                    </form>--%>
+<%--                </div>--%>
+
+    <div class="orders-id">
+        <a>
+            <span>Mã đơn: <strong>#${order.order_code}</strong></span>
+
+            <c:set var="lowerStatus" value="${fn:toLowerCase(order.status)}" />
+            <c:choose>
+                <%-- MÀU XANH LÁ: Đã giao (Khách đã xác nhận thành công) --%>
+                <c:when test="${fn:contains(lowerStatus, 'đã giao') or fn:contains(lowerStatus, 'hoàn thành')}">
+                    <span class="status status-completed">${order.status}</span>
+                </c:when>
+
+                <%-- MÀU CAM: Chờ xác nhận (Admin đã giao xong, đợi khách bấm) --%>
+                <c:when test="${fn:contains(lowerStatus, 'chờ xác nhận')}">
+                    <span class="status status-waiting">${order.status}</span>
+                </c:when>
+
+                <%-- MÀU XANH BIỂN: Đang giao (Đang đi trên đường) --%>
+                <c:when test="${fn:contains(lowerStatus, 'đang giao') or fn:contains(lowerStatus, 'vận chuyển')}">
+                    <span class="status status-shipping">${order.status}</span>
+                </c:when>
+
+                <%-- MÀU ĐỎ: Hủy --%>
+                <c:when test="${fn:contains(lowerStatus, 'hủy')}">
+                    <span class="status status-cancelled">${order.status}</span>
+                </c:when>
+
+                <%-- MẶC ĐỊNH: Chờ xử lý --%>
+                <c:otherwise>
+                    <span class="status status-pending">${order.status}</span>
+                </c:otherwise>
+            </c:choose>
+
+            <c:if test="${not empty order.order_date}">
+            <span class="order-date-text">
+                | <i class="far fa-calendar-alt"></i> <fmt:formatDate value="${order.order_date}" pattern="dd/MM/yyyy HH:mm"/>
+            </span>
+            </c:if>
+        </a>
+    </div>
+
+    <div class="order-actions">
+        <h3>Hành động</h3>
+        <form action="${pageContext.request.contextPath}/admin/updateOrderStatus" method="post">
+            <input type="hidden" name="orderId" value="${order.id}">
+            <input type="hidden" name="currentStatus" value="${order.status}">
+
+            <c:choose>
+                <%-- CASE 1: Chờ xử lý -> Nút chuyển sang ĐANG GIAO (Màu xanh biển) --%>
+                <c:when test="${order.status == 'Chờ xử lý' || order.status == 'Chờ lấy hàng'}">
+                    <button type="submit" class="btn-action btn-ship"
+                            onclick="return confirm('Xác nhận giao đơn hàng này cho đơn vị vận chuyển?');">
+                        <i class="fa fa-truck"></i> Xác nhận Giao Hàng
+                    </button>
+                </c:when>
+
+                <%-- CASE 2: Đang giao -> Nút chuyển sang CHỜ XÁC NHẬN (Báo hàng đã tới) --%>
+                <c:when test="${fn:contains(order.status, 'Đang giao') || fn:contains(order.status, 'Vận chuyển')}">
+                    <button type="submit" class="btn-action" style="background-color: #d35400;"
+                            onclick="return confirm('Xác nhận hàng ĐÃ ĐẾN ĐỊA CHỈ KHÁCH (Chờ khách xác nhận)?');">
+                        <i class="fa fa-map-marker-alt"></i> Xác nhận Hàng Đã Đến
+                    </button>
+                </c:when>
+
+                <%-- CASE 3: Chờ xác nhận -> Admin KHÔNG làm gì cả, đợi khách bấm --%>
+                <c:when test="${order.status == 'Chờ xác nhận'}">
+                    <div class="alert-box" style="background: #fdebd0; color: #d35400; border: 1px solid #fad7a0;">
+                        <i class="fa fa-clock"></i> Đã giao hàng đến nơi. Đang chờ khách xác nhận.
+                    </div>
+                </c:when>
+
+                <%-- CASE 4: Đã giao (Hoàn tất) --%>
+                <c:when test="${fn:contains(order.status, 'Đã giao') || fn:contains(order.status, 'Hoàn thành')}">
+                    <div class="alert-box alert-success">
+                        <i class="fa fa-check-double"></i> Đơn hàng hoàn tất
+                    </div>
+                </c:when>
+
+                <%-- CASE 5: Hủy --%>
+                <c:when test="${fn:contains(order.status, 'hủy') || fn:contains(order.status, 'Hủy')}">
+                    <div class="alert-box alert-cancel">
+                        <i class="fa fa-times-circle"></i> Đơn hàng đã hủy
+                    </div>
+                </c:when>
+
+                <c:otherwise>
+                    <div class="alert-box alert-default">
+                        <i class="fa fa-info-circle"></i> Không có hành động
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        </form>
+    </div>
+                <div class="detail-card">
+                    <h3>Thông tin khách hàng</h3>
+                    <table>
+                        <tr>
+                            <td class="label-col">Họ tên</td>
+                            <td><strong>${order.customerName}</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="label-col">Email</td>
+                            <td>${order.customerEmail}</td>
+                        </tr>
+                        <tr>
+                            <td class="label-col">Số điện thoại</td>
+                            <td>${order.customerPhone}</td>
+                        </tr>
+                        <tr>
+                            <td class="label-col">Địa chỉ nhận</td>
+                            <td>${order.customerAddress}</td>
+                        </tr>
+                        <tr>
+                            <td class="label-col">Thanh toán</td>
+                            <td><span class="payment-badge">${order.paymentMethod}</span></td>
+                        </tr>
+                        <c:if test="${not empty order.note}">
+                            <tr>
+                                <td class="label-col">Ghi chú</td>
+                                <td class="note-text">"${order.note}"</td>
+                            </tr>
+                        </c:if>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="right-card">
+                <div class="detail-card">
+                    <h3>Danh sách sản phẩm</h3>
+
+                    <c:if test="${empty orderItems}">
+                        <p class="text-center text-muted">Không có sản phẩm nào trong đơn hàng này.</p>
+                    </c:if>
+
+                    <c:if test="${not empty orderItems}">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th class="col-index">#</th>
+                                <th class="col-product">Sản phẩm</th>
+                                <th class="col-qty">SL</th>
+                                <th class="col-price">Đơn giá</th>
+                                <th class="col-total">Thành tiền</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <c:forEach var="item" items="${orderItems}" varStatus="stt">
+                                <tr>
+                                    <td>${stt.count}</td>
+                                    <td>
+                                        <div class="product-name">${item.name}</div>
+                                        <div class="product-variant">
+                                            <c:if test="${not empty item.color}">Màu: ${item.color}</c:if>
+                                            <c:if test="${not empty item.size}"> - Size: ${item.size}</c:if>
+                                        </div>
+                                    </td>
+                                    <td>x${item.quantity}</td>
+                                    <td>
+                                        <fmt:formatNumber value="${item.price}" type="number"/>₫
+                                        <c:if test="${item.discount > 0}">
+                                            <br><small class="discount-tag">-${item.discount}%</small>
+                                        </c:if>
+                                    </td>
+                                    <td class="col-total">
+                                        <fmt:formatNumber value="${item.total}" type="number"/>₫
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+
+                        <div class="summary-section">
+                            <p class="summary-row">Tạm tính:
+                                <strong><fmt:formatNumber value="${order.totalPrice - order.shipping.shippingFee}" type="number"/>₫</strong>
+                            </p>
+                            <p class="summary-row">Phí vận chuyển:
+                                <strong><fmt:formatNumber value="${order.shipping.shippingFee}" type="number"/>₫</strong>
+                            </p>
+                            <h4 class="grand-total">
+                                Tổng cộng: <fmt:formatNumber value="${order.totalPrice}" type="number"/>₫
+                            </h4>
+                        </div>
+                    </c:if>
                 </div>
             </div>
         </div>
-    </div>
-    </div>
 
-    <div class="back-to-orders">
-        <a href="orders.jsp">Quay lại</a>
-    </div>
-
+        <div class="back-to-orders">
+            <a href="${pageContext.request.contextPath}/admin/orders"><i class="fas fa-arrow-left"></i> Quay lại danh sách</a>
+        </div>
+    </c:if>
 </main>
 
-<script src="js/main.js"></script>
+<script src="${pageContext.request.contextPath}/admin/js/main.js"></script>
 </body>
-
 </html>

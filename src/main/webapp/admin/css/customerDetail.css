@@ -24,19 +24,22 @@
 .customer-detail-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 24px;
-    align-items: flex-start;
+    gap: 44px;
     margin-bottom: 24px;
+    align-items: stretch;
 }
 
-/* Left and Right Cards */
 .detail-card-left,
 .detail-card-right {
     background: #ffffff;
     border-radius: 12px;
     padding: 24px;
+    display: flex;
+    flex-direction: column;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+
 }
+
 
 .detail-card-left {
     flex: 1;
@@ -44,8 +47,8 @@
 }
 
 .detail-card-right {
-    flex: 2;
-    min-width: 400px;
+    flex: 1;
+    min-width: 0;
 }
 
 /* Title inside cards */
@@ -74,8 +77,11 @@
 /* Customer Stats Section */
 .customer-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    /*grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));*/
     gap: 16px;
+    flex-direction: column;
+    flex: 1;
+
 }
 
 .stat-card {
@@ -84,6 +90,12 @@
     border-radius: 8px;
     padding: 16px;
     text-align: center;
+    flex: 1; /* 3 card chia đều chiều cao */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+
 }
 
 .stat-card h3 {

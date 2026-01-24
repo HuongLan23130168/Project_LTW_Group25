@@ -1,3 +1,8 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -5,236 +10,195 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Noble Loft Theory - Orders</title>
-    <link rel="stylesheet" href="css/style.css"/>
-    <link rel="stylesheet" href="css/orders.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/style.css"/>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/orders.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+
+    <style>
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .filter-container form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* Wrapper để chứa icon và input */
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Style cho icon kính lúp nằm bên trong input */
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            color: #888;
+            font-size: 14px;
+            pointer-events: none; /* Để bấm xuyên qua icon vào input */
+        }
+
+        .search-order-input {
+            padding: 8px 12px 8px 35px; /* Padding trái 35px để chừa chỗ cho icon */
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 240px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-order-input:focus {
+            border-color: #bca77d;
+        }
+
+        /* Style cho nút tìm kiếm */
+        .btn-search {
+            background-color: #bca77d; /* Màu vàng nâu theo theme */
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .btn-search:hover {
+            background-color: #a68a63; /* Màu đậm hơn khi hover */
+        }
+
+        /* Style cho select box đẹp hơn tí */
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
+<style>
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
 
+    .alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+</style>
 <body>
-<!-- === SIDEBAR === -->
-<div class="sidebar" id="sidebar">
-    <div class="logo">
-        <a href="dashboard.jsp">Noble Loft Theory</a>
-    </div>
-    <ul>
-        <li>
-            <a href="dashboard.jsp"><i class="fas fa-chart-line"></i> Dashboard</a>
-        </li>
-        <li>
-            <a href="products.jsp"><i class="fas fa-box"></i> Sản phẩm</a>
-        </li>
-        <li class="active">
-            <a href="orders.jsp"><i class="fas fa-cart-shopping"></i> Đơn hàng</a>
-        </li>
-        <li>
-            <a href="customers.jsp"><i class="fas fa-users"></i> Khách hàng</a>
-        </li>
-        <li>
-            <a href="notifi.jsp"><i class="fas fa-bell"></i> Thông báo</a>
-        </li>
-        <li>
-            <a href="account.jsp"><i class="fas fa-gear"></i> Tài khoản</a>
-        </li>
-    </ul>
-</div>
-
-<!-- === HEADER === -->
-<header class="header">
-    <div class="header-left">
-        <div class="search-container">
-            <i class="fa-solid fa-magnifying-glass" style="color: #74512d;"></i>
-            <input type="text" placeholder="Tìm kiếm" class="search-input"/>
-        </div>
-    </div>
-
-    <div class="header-right">
-        <!-- Nút thông báo -->
-        <div class="notify-wrapper">
-            <a href="notifi.jsp" class="icon-button">
-                <i class="fa-solid fa-bell"></i>
-                <span id="notifyCount" class="notify-badge">3</span>
-            </a>
-        </div>
-
-        <!-- Hồ sơ người dùng -->
-        <div class="profile-dropdown">
-            <button class="icon-button user-btn">
-                <i class="fa-solid fa-user"></i>
-            </button>
-
-            <div class="dropdown-menu">
-                <a href="account.jsp"><i class="fas fa-user"></i> Tài khoản</a>
-                <a href="index.jsp"><i class="fas fa-right-from-bracket"></i> Đăng xuất</a>
-            </div>
-        </div>
-    </div>
-</header>
+<jsp:include page="/admin/header.jsp"/>
+<jsp:include page="/admin/sidebar.jsp"/>
 
 <!-- === ORDERS === -->
-<main class="orders-container">
-    <h1>Danh sách đơn hàng</h1>
-    <!-- THANH CÔNG CỤ -->
-    <div class="orders-toolbar">
-        <div class="toolbar-left">
-            <div class="orders-header">
-                <h3 class="orders-title">Danh sách đơn hàng</h3>
-                <p>Danh sách trạng thái đơn hàng gân đây nhất được đặt hàng </p>
-            </div>
-        </div>
-        <div class="toolbar-right">
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" placeholder="Tìm kiếm..." id="searchOrders">
-            </div>
+<main class="main-content">
+    <div class="customers-header">
+        <h1>Danh sách đơn hàng</h1>
+        <div class="filter-container">
+            <form method="get" action="${pageContext.request.contextPath}/admin/orders">
 
-            <select id="filterTime">
-                <option>7 ngày gần nhất</option>
-                <option>10 ngày gần nhất</option>
-                <option>15 ngày gần nhất</option>
-                <option>30 ngày gần nhất</option>
-            </select>
+                <div class="search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" name="search" class="search-order-input"
+                           placeholder="Tìm mã đơn, tên khách..."
+                           value="${param.search}">
+                </div>
+
+                <button type="submit" class="btn-search">
+                    Tìm kiếm
+                </button>
+
+                <select name="sortBy" onchange="this.form.submit()">
+                    <option value="newest" ${param.sortBy == 'newest' || empty param.sortBy ? 'selected' : ''}>Mới
+                        nhất
+                    </option>
+                    <option value="oldest" ${param.sortBy == 'oldest' ? 'selected' : ''}>Cũ nhất</option>
+                </select>
+            </form>
         </div>
     </div>
 
-    <table class="orders-table">
-        <thead>
-        <tr>
-            <th><input type="checkbox" id="checkAll"></th>
-            <th>Mã đơn</th>
-            <th>Khách hàng</th>
-            <th>Email</th>
-            <th>Ngày đặt</th>
-            <th>Trạng thái</th>
-            <th>Tổng tiền</th>
-            <th>Khác</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td><input type="checkbox" class="row-check"></td>
-            <td>#34834</td>
-            <td>Nguyễn Qua Môn</td>
-            <td>quamon@example.com</td>
-            <td>25/08/2025</td>
-            <td><span class="status completed">Hoàn tất</span></td>
-            <td>1,743,000đ</td>
-            <td class="action-cell">
-                <a href="#" class="action-toggle">...</a>
-                <div class="action-menu">
-                    <a href="viewOrders.jsp"><i class="fas fa-pen"></i></i>Chi tiết</a>
-                    <a href="#" class="delete-order"><i class="fa-solid fa-trash"></i> Xóa</a>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td><input type="checkbox" class="row-check"></td>
-            <td>#34835</td>
-            <td>Nguyễn Thị Khách Hàng</td>
-            <td>kh@example.com</td>
-            <td>26/08/2025</td>
-            <td><span class="status pending">Đang xử lý</span></td>
-            <td>100,000đ</td>
-            <td class="action-cell">
-                <a href="#" class="action-toggle">...</a>
-                <div class="action-menu">
-                    <a href="viewOrders.jsp"><i class="fas fa-pen"></i></i>Chi tiết</a>
-                    <a href="#" class="delete-order"><i class="fa-solid fa-trash"></i> Xóa</a>
-                </div>
-            </td>
-        </tr>
+    <%-- Display error message if it exists in the session --%>
+    <c:if test="${not empty sessionScope.errorMessage}">
+        <div class="alert alert-danger" role="alert">
+                ${sessionScope.errorMessage}
+        </div>
+        <%-- Remove the attribute from the session to prevent it from showing again --%>
+        <c:remove var="errorMessage" scope="session"/>
+    </c:if>
 
-        <tr>
-            <td><input type="checkbox" class="row-check"></td>
-            <td>#323552</td>
-            <td>Trần Công An</td>
-            <td>congan@example.com</td>
-            <td>01/03/2028</td>
-            <td><span class="status failed">Thất bại</span></td>
-            <td>210,000₫</td>
-            <td class="action-cell">
-                <a href="#" class="action-toggle">...</a>
-                <div class="action-menu">
-                    <a href="viewOrders.jsp"><i class="fas fa-pen"></i></i>Chi tiết</a>
-                    <a href="#" class="delete-order"><i class="fa-solid fa-trash"></i> Xóa</a>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td><input type="checkbox" class="row-check"></td>
-            <td>#323552</td>
-            <td>Nguyễn Văn A</td>
-            <td>anha@example.com</td>
-            <td>01/03/2028</td>
-            <td><span class="status failed">Thất bại</span></td>
-            <td>111,000₫</td>
-            <td class="action-cell">
-                <a href="#" class="action-toggle">...</a>
-                <div class="action-menu">
-                    <a href="viewOrders.jsp"><i class="fas fa-pen"></i></i>Chi tiết</a>
-                    <a href="#" class="delete-order"><i class="fa-solid fa-trash"></i> Xóa</a>
-                </div>
-            </td>
-        </tr>
-
-        <tr>
-            <td><input type="checkbox" class="row-check"></td>
-            <td>#323552</td>
-            <td>Trần Trần Trần</td>
-            <td>ttt@example.com</td>
-            <td>12/11/2025</td>
-            <td><span class="status completed">Hoàn thành</span></td>
-            <td>210,000₫</td>
-            <td class="action-cell">
-                <a href="#" class="action-toggle">...</a>
-                <div class="action-menu">
-                    <a href="viewOrders.jsp"><i class="fas fa-pen"></i></i>Chi tiết</a>
-                    <a href="#" class="delete-order"><i class="fa-solid fa-trash"></i> Xóa</a>
-                </div>
-            </td>
-        </tr>
-
-        <tr>
-            <td><input type="checkbox" class="row-check"></td>
-            <td>#323552</td>
-            <td>Cam Tắc Quýt</td>
-            <td>ctq@example.com</td>
-            <td>01/03/2028</td>
-            <td><span class="status completed">Hoàn thành</span></td>
-            <td>100,000₫</td>
-            <td class="action-cell">
-                <a href="#" class="action-toggle">...</a>
-                <div class="action-menu">
-                    <a href="viewOrders.jsp"><i class="fas fa-pen"></i></i>Chi tiết</a>
-                    <a href="#" class="delete-order"><i class="fa-solid fa-trash"></i> Xóa</a>
-                </div>
-            </td>
-        </tr>
-
-        <tr>
-            <td><input type="checkbox" class="row-check"></td>
-            <td>#323552</td>
-            <td>Trần Đức Bo</td>
-            <td>botran@example.com</td>
-            <td>11/11/2025</td>
-            <td><span class="status pending">Đang xử lý</span></td>
-            <td>12,000,000₫</td>
-            <td class="action-cell">
-                <a href="#" class="action-toggle">...</a>
-                <div class="action-menu">
-                    <a href="viewOrders.jsp"><i class="fas fa-pen"></i></i>Chi tiết</a>
-                    <a href="#" class="delete-order"><i class="fa-solid fa-trash"></i> Xóa</a>
-                </div>
-            </td>
-        </tr>
-
-        </tbody>
-    </table>
-
-    <script src="js/orders.js"></script>
+    <div class="table-container">
+        <table class="customers-table">
+            <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Khách hàng</th>
+                <th>Ngày đặt</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:forEach var="order" items="${orders}">
+                <tr>
+                    <td>#${order.order_code}</td>
+                    <td>${order.recipient_name}</td>
+                    <td><fmt:formatDate value="${order.order_date}" pattern="dd/MM/yyyy HH:mm"/></td>
+                    <td><fmt:formatNumber value="${order.total_price}" type="number"/>₫</td>
+                    <td>
+                        <c:set var="lowerStatus" value="${fn:toLowerCase(order.status)}"/>
+                        <c:choose>
+                            <c:when test="${fn:contains(lowerStatus, 'hoàn thành') or fn:contains(lowerStatus, 'đã giao')}">
+                                <span class="status status-completed">${order.status}</span>
+                            </c:when>
+                            <c:when test="${fn:contains(lowerStatus, 'hủy')}">
+                                <span class="status status-cancelled">${order.status}</span>
+                            </c:when>
+                            <c:when test="${fn:contains(lowerStatus, 'xử lý') or fn:contains(lowerStatus, 'chờ')}">
+                                <span class="status status-pending">${order.status}</span>
+                            </c:when>
+                            <c:otherwise>
+                                <span class="status">${order.status}</span>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                    <td>
+                        <a href="${pageContext.request.contextPath}/admin/viewOrder?orderId=${order.id}"
+                           class="view-btn">Xem</a>
+                    </td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+    </div>
 </main>
 
-<script src="js/main.js"></script>
+<script src="${pageContext.request.contextPath}/admin/js/main.js"></script>
 </body>
 
 </html>

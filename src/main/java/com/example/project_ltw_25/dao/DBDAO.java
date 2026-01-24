@@ -1,6 +1,4 @@
-package com.example.demoweb1.dao;
-
-
+package com.example.project_ltw_25.admin.dao;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import org.jdbi.v3.core.Jdbi;
@@ -10,7 +8,7 @@ public class DBDAO {
     // Thông tin kết nối
     private static final String HOST = "localhost";
     private static final String PORT = "3306";
-    private static final String DATABASE = "db_ltw";
+    private static final String DATABASE = "ltw_group25";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "";
 
@@ -25,10 +23,12 @@ public class DBDAO {
             try {
                 // Tạo MySQL DataSource
                 MysqlDataSource ds = new MysqlDataSource();
-                ds.setURL(
-                        "jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE +
-                                "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
-                );
+                String url = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE +
+                             "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+                ds.setURL(url);
+
+                // IN URL RA CONSOLE ĐỂ KIỂM TRA
+                System.out.println("Đang kết nối đến cơ sở dữ liệu tại: " + url);
 
                 ds.setUser(DB_USER);
                 ds.setPassword(DB_PASSWORD);

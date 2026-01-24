@@ -1,34 +1,68 @@
-package com.example.demoweb1.dao;
+// Re-saving file to remove BOM
+package com.example.project_ltw_25.admin.dao;
 
-import com.example.demoweb1.model.Order;
-import com.example.demoweb1.util.DBConnection;
+import com.example.project_ltw_25.admin.model.Order;
+import com.example.project_ltw_25.admin.model.OrderItem;
+import com.example.project_ltw_25.admin.model.OrderStatusHistory;
+import com.example.project_ltw_25.admin.util.DBConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OrderDAO {
 
+    public List<Order> getAllOrders(String sortBy) {
+        List<Order> orderList = new ArrayList<>();
+        String orderBy;
+        if ("oldest".equals(sortBy)) {
+            orderBy = "o.order_date ASC";
+        } else {
+            orderBy = "o.order_date DESC";
+        }
+        
+        String sql = "SELECT o.*, (SELECT h.status FROM order_status_history h WHERE h.order_id = o.id ORDER BY h.created_at DESC LIMIT 1) AS current_status FROM orders o ORDER BY " + orderBy;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Order order = new Order();
+                order.setId(rs.getInt("id"));
+                order.setUser_id(rs.getInt("user_id"));
+                order.setOrder_code(rs.getString("order_code"));
+                order.setOrder_date(rs.getTimestamp("order_date"));
+                order.setTotal_price(rs.getDouble("total_price"));
+                String status = rs.getString("current_status");
+                order.setStatus(status != null ? status : "Chờ xử lý");
+                order.setRecipient_name(rs.getString("recipient_name"));
+                order.setRecipient_phone(rs.getString("recipient_phone"));
+                order.setShipping_address(rs.getString("shipping_address"));
+                order.setNote(rs.getString("note"));
+                orderList.add(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return orderList;
+    }
+    
     public List<Order> getOrdersByCustomerId(int userId) {
         List<Order> orderList = new ArrayList<>();
-
-        // CÂU SQL MỚI:
-        // Lấy tất cả thông tin từ bảng orders (o)
-        // Và lấy field 'status' từ bảng order_status_history (h) bằng cách chọn dòng mới nhất (ORDER BY created_at DESC LIMIT 1)
-        String sql = """
-            SELECT 
-                o.*,
-                (SELECT h.status 
-                 FROM order_status_history h 
-                 WHERE h.order_id = o.id 
-                 ORDER BY h.created_at DESC 
-                 LIMIT 1) AS current_status
-            FROM orders o
-            WHERE o.user_id = ?
-            ORDER BY o.order_date DESC
-        """;
+        String sql =
+                "SELECT o.*, " +
+                        "(SELECT h.status " +
+                        "FROM order_status_history h " +
+                        "WHERE h.order_id = o.id " +
+                        "ORDER BY h.created_at DESC LIMIT 1) " +
+                        "AS current_status " +
+                        "FROM orders o " +
+                        "WHERE o.user_id = ? " +
+                        "ORDER BY o.order_date DESC";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -40,28 +74,15 @@ public class OrderDAO {
                 Order order = new Order();
                 order.setId(rs.getInt("id"));
                 order.setUser_id(rs.getInt("user_id"));
-
-                // Cập nhật lấy order_code (nếu bảng orders có cột này)
-                // Nếu bảng orders chưa có cột order_code thì bạn cần thêm vào DB hoặc bỏ dòng này
-                try {
-                    order.setOrder_code(rs.getString("order_code"));
-                } catch (Exception e) {
-                    // Bỏ qua nếu cột không tồn tại
-                }
-
+                order.setOrder_code(rs.getString("order_code"));
                 order.setOrder_date(rs.getTimestamp("order_date"));
                 order.setTotal_price(rs.getDouble("total_price"));
-
-                // QUAN TRỌNG: Lấy status từ alias 'current_status' chúng ta đã đặt trong câu SQL
                 String status = rs.getString("current_status");
-                // Nếu chưa có lịch sử nào, gán mặc định là "Chờ xử lý" hoặc giá trị tùy ý
                 order.setStatus(status != null ? status : "Chờ xử lý");
-
                 order.setRecipient_name(rs.getString("recipient_name"));
                 order.setRecipient_phone(rs.getString("recipient_phone"));
                 order.setShipping_address(rs.getString("shipping_address"));
                 order.setNote(rs.getString("note"));
-
                 orderList.add(order);
             }
         } catch (Exception e) {
@@ -69,4 +90,134 @@ public class OrderDAO {
         }
         return orderList;
     }
+
+    // ================== PHIÊN BẢN ĐƠN GIẢN ==================
+    public Order getOrderById(int orderId) {
+        Order order = null;
+        String sql = "SELECT * FROM orders WHERE id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                order = new Order();
+                order.setId(rs.getInt("id"));
+                order.setUser_id(rs.getInt("user_id"));
+                order.setOrder_code(rs.getString("order_code"));
+                order.setOrder_date(rs.getTimestamp("order_date"));
+                order.setTotal_price(rs.getDouble("total_price"));
+                order.setRecipient_name(rs.getString("recipient_name"));
+                order.setRecipient_phone(rs.getString("recipient_phone"));
+                order.setShipping_address(rs.getString("shipping_address"));
+                order.setNote(rs.getString("note"));
+                // Lấy cả payment_method_id để servlet xử lý
+                order.setPayment_method_id(rs.getInt("payment_method_id"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return order;
+    }
+
+    public List<OrderItem> getOrderItemsByOrderId(int orderId) {
+        List<OrderItem> orderItems = new ArrayList<>();
+        String sql = "SELECT p.name, oi.quantity, oi.price, oi.discount, (oi.quantity * oi.price * (1 - oi.discount/100)) as total " +
+                     "FROM order_items oi " +
+                     "LEFT JOIN products p ON oi.product_id = p.id " +
+                     "WHERE oi.order_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                OrderItem item = new OrderItem();
+                String productName = rs.getString("name");
+                item.setName(productName != null ? productName : "Sản phẩm không tồn tại");
+                item.setQuantity(rs.getInt("quantity"));
+                item.setPrice(rs.getDouble("price"));
+                item.setDiscount(rs.getDouble("discount"));
+                item.setTotal(rs.getDouble("total"));
+                orderItems.add(item);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return orderItems;
+    }
+
+    public List<OrderStatusHistory> getStatusHistoryByOrderId(int orderId) {
+        List<OrderStatusHistory> statusHistory = new ArrayList<>();
+        String sql = "SELECT * FROM order_status_history WHERE order_id = ? ORDER BY created_at DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                OrderStatusHistory history = new OrderStatusHistory();
+                history.setId(rs.getInt("id"));
+                history.setOrderId(rs.getInt("order_id"));
+                history.setStatus(rs.getString("status"));
+                history.setCreatedAt(rs.getTimestamp("created_at"));
+                statusHistory.add(history);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return statusHistory;
+    }
+    // THÊM HÀM NÀY VÀO CUỐI CLASS OrderDAO
+    public boolean updateOrderStatus(int orderId, String newStatus) {
+        String sql = "UPDATE orders SET status = ? WHERE id = ?";
+        String historySql = "INSERT INTO order_status_history (order_id, status, created_at) VALUES (?, ?, NOW())";
+
+        Connection conn = null;
+        PreparedStatement ps = null;
+        PreparedStatement psHistory = null;
+
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false); // Bắt đầu transaction
+
+            // 1. Cập nhật bảng orders
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, newStatus);
+            ps.setInt(2, orderId);
+            int rows = ps.executeUpdate();
+
+            if (rows > 0) {
+                // 2. Ghi lịch sử
+                try {
+                    psHistory = conn.prepareStatement(historySql);
+                    psHistory.setInt(1, orderId);
+                    psHistory.setString(2, newStatus);
+                    psHistory.executeUpdate();
+                } catch (Exception ex) {
+                    // Lờ đi lỗi lịch sử nếu bảng chưa tạo
+                    ex.printStackTrace();
+                }
+
+                conn.commit(); // Xác nhận thành công
+                return true;
+            } else {
+                conn.rollback();
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            try { if (conn != null) conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            return false;
+        } finally {
+            // Đóng kết nối thủ công vì JDBC thuần
+            try { if (ps != null) ps.close(); } catch (Exception e) {}
+            try { if (psHistory != null) psHistory.close(); } catch (Exception e) {}
+            try { if (conn != null) conn.close(); } catch (Exception e) {}
+        }
+    }
+
 }

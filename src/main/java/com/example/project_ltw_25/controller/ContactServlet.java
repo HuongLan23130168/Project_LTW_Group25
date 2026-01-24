@@ -23,17 +23,17 @@
 //
 //            ContactDAO.save(name, email, message);
 //
-            // quay lại contact.jsp + báo thành công
+// quay lại contact.jsp + báo thành công
 //            response.sendRedirect(
 //                    request.getContextPath() + "/frontend/contact.jsp?success=true"
 //            );
 //        }
 //    }
 
-package com.example.demoweb1.controller;
+package com.example.project_ltw_25.user.controller;
 
-import com.example.demoweb1.dao.ContactDAO;
-import com.example.demoweb1.model.Contact;
+import com.example.project_ltw_25.user.dao.ContactDAO;
+import com.example.project_ltw_25.user.model.Contact;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
@@ -64,9 +64,9 @@ public class ContactServlet extends HttpServlet {
 
 
 
-       // resp.sendRedirect("contact.jsp?success=true");
+        // resp.sendRedirect("contact.jsp?success=true");
 
-       //  quay lại contact.jsp + báo thành công
+        //  quay lại contact.jsp + báo thành công
         resp.sendRedirect(
                 req.getContextPath() + "/frontend/contact.jsp?success=true"
         );

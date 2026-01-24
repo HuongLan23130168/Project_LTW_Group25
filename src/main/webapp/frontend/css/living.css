@@ -33,19 +33,16 @@
     flex: 1;
 }
 
-/* === SIDEBAR === */
+/* === SIDEBAR CỐ ĐỊNH === */
 .sidebar {
-    width: 260px;
-    min-width: 260px;
-    max-width: 260px;
-    box-sizing: border-box;
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    width: 280px;
+    min-width: 280px;
     position: sticky;
     top: 20px;
-    transition: all 0.3s ease;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
 .sidebar h3 {
@@ -110,7 +107,7 @@
     gap: 25px;
 }
 
-/* === THẺ SẢN PHẨM === */
+/* === THẺ SẢN PHẨM (CLICKABLE) === */
 .product {
     position: relative;
     background: #fff;
@@ -205,6 +202,35 @@
     text-decoration: line-through;
 }
 
+/* === PHÂN TRANG GIỮA MÀN HÌNH === */
+#pagination {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.page-btn {
+    margin: 0 5px;
+    padding: 8px 14px;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+    transition: 0.2s;
+    font-weight: 500;
+    text-decoration: none;
+    color: #74512D;
+}
+
+.page-btn:hover {
+    background-color: #f2f2f2;
+}
+
+.page-btn.active {
+    background-color: #D6C0B3;
+    color: #fff;
+    border-color: #D6C0B3;
+}
+
 /* === SẮP XẾP SẢN PHẨM === */
 .sort {
     display: flex;
@@ -247,36 +273,6 @@
     padding: 5px;
     border-radius: 5px;
     border: 1px solid #aaa;
-}
-
-/* === PHÂN TRANG === */
-#pagination {
-    margin-top: 25px;
-    text-align: center;
-}
-
-.page-btn {
-    margin: 0 5px;
-    padding: 8px 14px;
-    border-radius: 15px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    cursor: pointer;
-    transition: 0.2s;
-    font-weight: 500;
-    color: #6F4E37;
-    text-decoration: none;
-
-}
-
-.page-btn:hover {
-    background-color: #f2f2f2;
-}
-
-.page-btn.active {
-    background-color: #D6C0B3;
-    color: #fff;
-    border-color: #D6C0B3;
 }
 
 /* === NÚT LÊN ĐẦU TRANG === */
