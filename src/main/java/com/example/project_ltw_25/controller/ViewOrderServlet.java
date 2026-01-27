@@ -41,38 +41,29 @@ public class ViewOrderServlet extends HttpServlet {
                 return;
             }
 
-            // Bước 2: Lấy thông tin khách hàng (nếu có)
             Customer customer = customerDAO.getCustomerById(order.getUser_id());
             if (customer != null) {
                 order.setCustomerName(customer.getFull_name());
                 order.setCustomerEmail(customer.getEmail());
                 order.setCustomerPhone(customer.getPhone());
             } else {
-                // Nếu không có customer, dùng thông tin người nhận
                 order.setCustomerName(order.getRecipient_name());
                 order.setCustomerEmail("Không có");
                 order.setCustomerPhone(order.getRecipient_phone());
             }
-            // Địa chỉ luôn là địa chỉ giao hàng
             order.setCustomerAddress(order.getShipping_address());
 
-            // Bước 3: Lấy tên phương thức thanh toán
             String paymentMethodName = paymentMethodDAO.getPaymentMethodNameById(order.getPayment_method_id());
             order.setPaymentMethod(paymentMethodName);
 
-            // Bước 4: Lấy danh sách sản phẩm
             List<OrderItem> orderItems = orderDAO.getOrderItemsByOrderId(orderId);
             
-            // Tính toán lại tổng tiền (nếu cần)
-            // Note: total_price từ DB đã là grandTotal, nhưng nếu muốn tính lại cho chắc:
             double calculatedTotal = 0;
             for(OrderItem item : orderItems) {
                 calculatedTotal += item.getTotal();
             }
-            // order.setGrandTotal(calculatedTotal + order.getShippingFee());
 
 
-            // Bước 5: Gửi tất cả dữ liệu sang JSP
             req.setAttribute("order", order);
             req.setAttribute("orderItems", orderItems);
 
@@ -83,3 +74,4 @@ public class ViewOrderServlet extends HttpServlet {
         }
     }
 }
+

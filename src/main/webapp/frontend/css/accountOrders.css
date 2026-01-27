@@ -94,7 +94,6 @@
     color: #27ae60;
 }
 
-/* === NÚT XÁC NHẬN ĐÃ NHẬN HÀNG === */
 .btn-confirm-received {
     background: #FF9800;
     color: white;
@@ -166,7 +165,7 @@
 }
 
 .order-tag {
-    background: #faf0e6; /* Linen */
+    background: #faf0e6;
     color: #6F4E37;
     padding: 3px 8px;
     border-radius: 4px;
@@ -223,4 +222,5 @@
     background: #c0392b;
     opacity: 0.9;
 }
+
 

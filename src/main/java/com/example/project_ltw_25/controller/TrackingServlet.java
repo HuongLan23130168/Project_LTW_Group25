@@ -24,14 +24,12 @@ public class TrackingServlet extends HttpServlet {
             if (order != null) {
                 List<OrderItem> items = orderDAO.getOrderItemsByOrderId(order.getId());
 
-                // 2. ĐẶT TÊN BIẾN ĐÚNG VỚI JSP (${order} và ${orderItems})
                 request.setAttribute("order", order);
                 request.setAttribute("orderItems", items);
             } else {
                 request.setAttribute("error", "Không tìm thấy đơn hàng: " + orderCode);
             }
         }
-        // 3. Forward về đúng file JSP
         request.getRequestDispatcher("/frontend/tracking.jsp").forward(request, response);
 
     }
@@ -40,4 +38,5 @@ public class TrackingServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     }
+
 }

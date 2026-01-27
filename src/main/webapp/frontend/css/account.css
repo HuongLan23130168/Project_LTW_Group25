@@ -1,14 +1,4 @@
-/* ===== RESET ===== */
-/* body {
-    font-family: "Segoe UI", sans-serif;
-    background-color: white;
-    margin: 0;
-    color: #6F4E37;
-}
 
-main {
-    flex: 1;
-} */
 
 .page {
     display: none;
@@ -25,7 +15,6 @@ input.editing {
     border-radius: 5px;
 }
 
-/* ===== LAYOUT ===== */
 .account-container {
     display: flex;
     min-height: 100vh;
@@ -40,7 +29,7 @@ input.editing {
     display: block;
 }
 
-/* ===== SIDEBAR ===== */
+
 .sidebar {
     width: 250px;
     background: #F8F4E1;
@@ -119,7 +108,7 @@ input.editing {
     margin-top: 90px;
 }
 
-/* ===== MAIN CONTENT ===== */
+
 .account-details {
     flex: 1;
     padding: 50px;
@@ -131,7 +120,7 @@ input.editing {
     height: fit-content;
 }
 
-/* Info card */
+
 .info-box {
     display: flex;
     justify-content: space-between;
@@ -238,7 +227,7 @@ main h4 {
     color: white;
 }
 
-/* ===== MODAL ===== */
+
 .modal {
     display: none;
     position: fixed;
@@ -333,7 +322,7 @@ main h4 {
     border: 2px solid #A79277;
 }
 
-/* Input khi edit inline */
+
 input.editing {
     border: 1px solid #ddd !important;
     padding: 10px 12px;
@@ -348,7 +337,7 @@ input.editing:focus {
 }
 
 
-/* ===== PAGE POLICY ===== */
+
 .policy-container {
     display: flex;
     background: #fff;
@@ -417,7 +406,7 @@ input.editing:focus {
 }
 
 
-/* ==== SUBMENU DROPDOWN ==== */
+
 .menu-account .has-submenu {
     position: relative;
 }
@@ -453,12 +442,6 @@ input.editing:focus {
 }
 
 
-/* =============================
-   STYLE MENU CHÍNH SÁCH
-============================= */
-
-
-/* Submenu mặc định */
 .menu-account .submenu li {
     color: #333;
     cursor: pointer;
@@ -470,8 +453,6 @@ input.editing:focus {
 }
 
 
-
-/* Khi hover hoặc được chọn (active) */
 .menu-account .submenu li:hover,
 .menu-account .submenu li.active {
     background-color: #FEFAEF !important;
@@ -479,7 +460,6 @@ input.editing:focus {
     font-weight: 300;
 }
 
-/* Nếu submenu có thẻ <a> bên trong */
 .menu-account .submenu li a {
     display: block;
     color: inherit;
@@ -487,25 +467,22 @@ input.editing:focus {
     width: 100%;
 }
 
-/* Đảm bảo màu chữ không bị CSS khác ghi đè */
 .menu-account .submenu li.active a,
 .menu-account .submenu li:hover a {
     color: #fff !important;
 }
 
-/* Khi cha (Chính sách) có con active -> giữ màu tiêu đề vàng */
 .menu-account .has-submenu.active>.menu-title,
 .menu-account .has-submenu.open>.menu-title {
     color: #ECB176 !important;
     font-weight: 700;
 }
 
-/* Hover lên chính sách */
+
 .menu-account .has-submenu>.menu-title:hover {
     color: #ECB176;
 }
 
-/* Chevron xoay khi mở */
 .menu-account .has-submenu .menu-title i {
     transition: transform 0.2s ease;
 }
@@ -515,12 +492,11 @@ input.editing:focus {
 }
 
 
-/* --- Class hỗ trợ ẩn hiện --- */
+
 .hidden {
     display: none !important;
 }
 
-/* --- Style cho Form Edit Profile --- */
 .form-row {
     margin-bottom: 15px;
 }
@@ -542,7 +518,6 @@ input.editing:focus {
     box-shadow: 0 0 5px rgba(167, 146, 119, 0.5);
 }
 
-/* --- Nút bấm Save/Cancel --- */
 .save-btn {
     background: #6F4E37;
     color: #fff; border: none;
@@ -562,7 +537,6 @@ input.editing:focus {
 .save-btn:hover { background: #5a3e2b; }
 .cancel-btn:hover { background: #F8F4E1; }
 
-/* --- Style Modal Address --- */
 .modal {
     display: none;
     position: fixed; z-index: 999;
@@ -577,19 +551,17 @@ input.editing:focus {
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
-/* Class ẩn */
 .hidden {
     display: none !important;
 }
 
-/* Modal Styling */
 .modal {
-    display: none; /* Ẩn mặc định */
+    display: none;
     position: fixed;
     z-index: 9999;
     left: 0; top: 0;
     width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.5); /* Nền tối mờ */
+    background-color: rgba(0,0,0,0.5); 
     justify-content: center;
     align-items: center;
 }
@@ -608,4 +580,5 @@ input.editing:focus {
 @keyframes slideDown {
     from { transform: translateY(-50px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
+
 }

@@ -91,7 +91,6 @@ public class OrderDAO {
         return orderList;
     }
 
-    // ================== PHIÊN BẢN ĐƠN GIẢN ==================
     public Order getOrderById(int orderId) {
         Order order = null;
         String sql = "SELECT * FROM orders WHERE id = ?";
@@ -112,7 +111,6 @@ public class OrderDAO {
                 order.setRecipient_phone(rs.getString("recipient_phone"));
                 order.setShipping_address(rs.getString("shipping_address"));
                 order.setNote(rs.getString("note"));
-                // Lấy cả payment_method_id để servlet xử lý
                 order.setPayment_method_id(rs.getInt("payment_method_id"));
             }
         } catch (SQLException e) {
@@ -171,7 +169,6 @@ public class OrderDAO {
         }
         return statusHistory;
     }
-    // THÊM HÀM NÀY VÀO CUỐI CLASS OrderDAO
     public boolean updateOrderStatus(int orderId, String newStatus) {
         String sql = "UPDATE orders SET status = ? WHERE id = ?";
         String historySql = "INSERT INTO order_status_history (order_id, status, created_at) VALUES (?, ?, NOW())";
@@ -184,25 +181,22 @@ public class OrderDAO {
             conn = DBConnection.getConnection();
             conn.setAutoCommit(false); // Bắt đầu transaction
 
-            // 1. Cập nhật bảng orders
             ps = conn.prepareStatement(sql);
             ps.setString(1, newStatus);
             ps.setInt(2, orderId);
             int rows = ps.executeUpdate();
 
             if (rows > 0) {
-                // 2. Ghi lịch sử
                 try {
                     psHistory = conn.prepareStatement(historySql);
                     psHistory.setInt(1, orderId);
                     psHistory.setString(2, newStatus);
                     psHistory.executeUpdate();
                 } catch (Exception ex) {
-                    // Lờ đi lỗi lịch sử nếu bảng chưa tạo
                     ex.printStackTrace();
                 }
 
-                conn.commit(); // Xác nhận thành công
+                conn.commit(); 
                 return true;
             } else {
                 conn.rollback();
@@ -213,7 +207,6 @@ public class OrderDAO {
             try { if (conn != null) conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
             return false;
         } finally {
-            // Đóng kết nối thủ công vì JDBC thuần
             try { if (ps != null) ps.close(); } catch (Exception e) {}
             try { if (psHistory != null) psHistory.close(); } catch (Exception e) {}
             try { if (conn != null) conn.close(); } catch (Exception e) {}
@@ -221,3 +214,4 @@ public class OrderDAO {
     }
 
 }
+

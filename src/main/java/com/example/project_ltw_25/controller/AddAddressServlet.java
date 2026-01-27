@@ -19,29 +19,25 @@ public class AddAddressServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
 
-        // --- SỬA QUAN TRỌNG: Đổi "user" thành "acc" để lấy đúng User đang đăng nhập ---
         User user = (User) session.getAttribute("acc");
 
         if (user != null) {
             String address = request.getParameter("address");
 
-            // Checkbox: nếu tick thì value != null => lấy 1, ngược lại 0
             int isDefault = request.getParameter("isDefault") != null ? 1 : 0;
 
             AddressDAO dao = new AddressDAO();
-            // Gọi hàm thêm địa chỉ vào bảng addresses
             boolean success = dao.addAddress(user.getId(), address, isDefault);
 
             if(success) {
-                // Redirect về trang account kèm thông báo thành công
-                // Dùng getContextPath() để đảm bảo đường dẫn đúng tuyệt đối
                 response.sendRedirect(request.getContextPath() + "/account?msg=addr_success");
             } else {
                 response.sendRedirect(request.getContextPath() + "/account?msg=error");
             }
         } else {
-            // Nếu mất session (chưa đăng nhập), chuyển hướng về trang login đúng đường dẫn
+            
             response.sendRedirect(request.getContextPath() + "/login.jsp");
         }
     }
+
 }

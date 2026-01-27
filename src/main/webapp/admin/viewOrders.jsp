@@ -20,7 +20,6 @@
 
 <main class="main-content">
 
-    <%-- TRƯỜNG HỢP KHÔNG TÌM THẤY ĐƠN HÀNG --%>
     <c:if test="${empty order}">
         <div class="orders-id empty-container">
             <i class="fa fa-search empty-icon"></i>
@@ -32,7 +31,6 @@
         </div>
     </c:if>
 
-    <%-- TRƯỜNG HỢP CÓ DỮ LIỆU ĐƠN HÀNG --%>
     <c:if test="${not empty order}">
         <div class="breadcrumb">
             <a href="${pageContext.request.contextPath}/admin/orders">Đơn hàng</a> &#47;
@@ -43,80 +41,6 @@
 
             <div class="left-card">
 
-<%--                <div class="orders-id">--%>
-<%--                    <a>--%>
-<%--                        <span>Mã đơn: <strong>#${order.order_code}</strong></span>--%>
-
-<%--                        <c:set var="lowerStatus" value="${fn:toLowerCase(order.status)}" />--%>
-<%--                        <c:choose>--%>
-<%--                            <c:when test="${fn:contains(lowerStatus, 'hoàn thành') or fn:contains(lowerStatus, 'đã giao') or fn:contains(lowerStatus, 'thành công')}">--%>
-<%--                                <span class="status status-completed">${order.status}</span>--%>
-<%--                            </c:when>--%>
-<%--                            <c:when test="${fn:contains(lowerStatus, 'hủy')}">--%>
-<%--                                <span class="status status-cancelled">${order.status}</span>--%>
-<%--                            </c:when>--%>
-<%--                            <c:when test="${fn:contains(lowerStatus, 'xử lý') or fn:contains(lowerStatus, 'chờ') or fn:contains(lowerStatus, 'đang giao')}">--%>
-<%--                                <span class="status status-pending">${order.status}</span>--%>
-<%--                            </c:when>--%>
-<%--                            <c:otherwise>--%>
-<%--                                <span class="status">${order.status}</span>--%>
-<%--                            </c:otherwise>--%>
-<%--                        </c:choose>--%>
-
-<%--                        <c:if test="${not empty order.order_date}">--%>
-<%--                            <span class="order-date-text">--%>
-<%--                                | <i class="far fa-calendar-alt"></i> <fmt:formatDate value="${order.order_date}" pattern="dd/MM/yyyy HH:mm"/>--%>
-<%--                            </span>--%>
-<%--                        </c:if>--%>
-<%--                    </a>--%>
-<%--                </div>--%>
-
-<%--                <div class="order-actions">--%>
-<%--                    <h3>Hành động</h3>--%>
-<%--                    <form action="${pageContext.request.contextPath}/admin/updateOrderStatus" method="post">--%>
-<%--                        <input type="hidden" name="orderId" value="${order.id}">--%>
-<%--                        <input type="hidden" name="currentStatus" value="${order.status}">--%>
-
-<%--                        <c:choose>--%>
-<%--                            &lt;%&ndash; CASE: Chờ xử lý &ndash;%&gt;--%>
-<%--                            <c:when test="${order.status == 'Chờ xử lý' || order.status == 'Chờ lấy hàng'}">--%>
-<%--                                <button type="submit" class="btn-action btn-ship"--%>
-<%--                                        onclick="return confirm('Xác nhận chuyển đơn hàng sang trạng thái ĐANG GIAO?');">--%>
-<%--                                    <i class="fa fa-truck"></i> Xác nhận giao hàng--%>
-<%--                                </button>--%>
-<%--                            </c:when>--%>
-
-<%--                            &lt;%&ndash; CASE: Đang giao &ndash;%&gt;--%>
-<%--                            <c:when test="${fn:contains(order.status, 'Đang giao') || fn:contains(order.status, 'Vận chuyển')}">--%>
-<%--                                <button type="submit" class="btn-action btn-complete"--%>
-<%--                                        onclick="return confirm('Xác nhận đơn hàng đã GIAO THÀNH CÔNG?');">--%>
-<%--                                    <i class="fa fa-check-circle"></i> Xác nhận hoàn thành--%>
-<%--                                </button>--%>
-<%--                            </c:when>--%>
-
-<%--                            &lt;%&ndash; CASE: Đã xong &ndash;%&gt;--%>
-<%--                            <c:when test="${fn:contains(order.status, 'Hoàn thành') || fn:contains(order.status, 'thành công')}">--%>
-<%--                                <div class="alert-box alert-success">--%>
-<%--                                    <i class="fa fa-check-double"></i> Đơn hàng đã hoàn tất--%>
-<%--                                </div>--%>
-<%--                            </c:when>--%>
-
-<%--                            &lt;%&ndash; CASE: Đã hủy &ndash;%&gt;--%>
-<%--                            <c:when test="${fn:contains(order.status, 'hủy') || fn:contains(order.status, 'Hủy')}">--%>
-<%--                                <div class="alert-box alert-cancel">--%>
-<%--                                    <i class="fa fa-times-circle"></i> Đơn hàng đã hủy--%>
-<%--                                </div>--%>
-<%--                            </c:when>--%>
-
-<%--                            &lt;%&ndash; DEFAULT &ndash;%&gt;--%>
-<%--                            <c:otherwise>--%>
-<%--                                <div class="alert-box alert-default">--%>
-<%--                                    <i class="fa fa-info-circle"></i> Không có hành động khả dụng--%>
-<%--                                </div>--%>
-<%--                            </c:otherwise>--%>
-<%--                        </c:choose>--%>
-<%--                    </form>--%>
-<%--                </div>--%>
 
     <div class="orders-id">
         <a>
@@ -124,27 +48,27 @@
 
             <c:set var="lowerStatus" value="${fn:toLowerCase(order.status)}" />
             <c:choose>
-                <%-- MÀU XANH LÁ: Đã giao (Khách đã xác nhận thành công) --%>
+               
                 <c:when test="${fn:contains(lowerStatus, 'đã giao') or fn:contains(lowerStatus, 'hoàn thành')}">
                     <span class="status status-completed">${order.status}</span>
                 </c:when>
 
-                <%-- MÀU CAM: Chờ xác nhận (Admin đã giao xong, đợi khách bấm) --%>
+                
                 <c:when test="${fn:contains(lowerStatus, 'chờ xác nhận')}">
                     <span class="status status-waiting">${order.status}</span>
                 </c:when>
 
-                <%-- MÀU XANH BIỂN: Đang giao (Đang đi trên đường) --%>
+              
                 <c:when test="${fn:contains(lowerStatus, 'đang giao') or fn:contains(lowerStatus, 'vận chuyển')}">
                     <span class="status status-shipping">${order.status}</span>
                 </c:when>
 
-                <%-- MÀU ĐỎ: Hủy --%>
+               
                 <c:when test="${fn:contains(lowerStatus, 'hủy')}">
                     <span class="status status-cancelled">${order.status}</span>
                 </c:when>
 
-                <%-- MẶC ĐỊNH: Chờ xử lý --%>
+               
                 <c:otherwise>
                     <span class="status status-pending">${order.status}</span>
                 </c:otherwise>
@@ -165,7 +89,7 @@
             <input type="hidden" name="currentStatus" value="${order.status}">
 
             <c:choose>
-                <%-- CASE 1: Chờ xử lý -> Nút chuyển sang ĐANG GIAO (Màu xanh biển) --%>
+                
                 <c:when test="${order.status == 'Chờ xử lý' || order.status == 'Chờ lấy hàng'}">
                     <button type="submit" class="btn-action btn-ship"
                             onclick="return confirm('Xác nhận giao đơn hàng này cho đơn vị vận chuyển?');">
@@ -173,7 +97,7 @@
                     </button>
                 </c:when>
 
-                <%-- CASE 2: Đang giao -> Nút chuyển sang CHỜ XÁC NHẬN (Báo hàng đã tới) --%>
+            
                 <c:when test="${fn:contains(order.status, 'Đang giao') || fn:contains(order.status, 'Vận chuyển')}">
                     <button type="submit" class="btn-action" style="background-color: #d35400;"
                             onclick="return confirm('Xác nhận hàng ĐÃ ĐẾN ĐỊA CHỈ KHÁCH (Chờ khách xác nhận)?');">
@@ -181,21 +105,21 @@
                     </button>
                 </c:when>
 
-                <%-- CASE 3: Chờ xác nhận -> Admin KHÔNG làm gì cả, đợi khách bấm --%>
+              
                 <c:when test="${order.status == 'Chờ xác nhận'}">
                     <div class="alert-box" style="background: #fdebd0; color: #d35400; border: 1px solid #fad7a0;">
                         <i class="fa fa-clock"></i> Đã giao hàng đến nơi. Đang chờ khách xác nhận.
                     </div>
                 </c:when>
 
-                <%-- CASE 4: Đã giao (Hoàn tất) --%>
+               
                 <c:when test="${fn:contains(order.status, 'Đã giao') || fn:contains(order.status, 'Hoàn thành')}">
                     <div class="alert-box alert-success">
                         <i class="fa fa-check-double"></i> Đơn hàng hoàn tất
                     </div>
                 </c:when>
 
-                <%-- CASE 5: Hủy --%>
+             
                 <c:when test="${fn:contains(order.status, 'hủy') || fn:contains(order.status, 'Hủy')}">
                     <div class="alert-box alert-cancel">
                         <i class="fa fa-times-circle"></i> Đơn hàng đã hủy
@@ -313,4 +237,5 @@
 
 <script src="${pageContext.request.contextPath}/admin/js/main.js"></script>
 </body>
+
 </html>
