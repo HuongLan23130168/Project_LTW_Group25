@@ -15,7 +15,6 @@ import java.util.Optional;
 public class ProductDao {
     private static final Jdbi jdbi = DBDAO.get();
 
-    // Row Mappers để đọc dữ liệu
     private static class ProductMapper implements RowMapper<Product> {
         @Override
         public Product map(ResultSet rs, StatementContext ctx) throws SQLException {

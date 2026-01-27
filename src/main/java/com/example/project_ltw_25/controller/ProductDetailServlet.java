@@ -29,21 +29,17 @@ public class ProductDetailServlet extends HttpServlet {
 
             // Kiểm tra sản phẩm có tồn tại không
             if (product != null) {
-                // Lấy sản phẩm liên quan
                 List<Product> related = productDAO.getRelatedProducts(product.getCategory_id(), id);
 
                 request.setAttribute("product", product);
                 request.setAttribute("relatedProducts", related);
 
-                // Gửi sang trang chi tiết
                 request.getRequestDispatcher("/frontend/detail.jsp").forward(request, response);
             } else {
-                // Không tìm thấy ID sản phẩm trong DB
                 System.out.println("DEBUG: Không tìm thấy sản phẩm ID = " + id);
                 response.sendRedirect(contextPath + "/home?error=not_found");
             }
         } catch (Exception e) {
-            // In lỗi ra console của Server (Tomcat) để biết chính xác lỗi gì
             e.printStackTrace();
             response.sendRedirect(contextPath + "/home?error=system_error");
         }
@@ -53,4 +49,5 @@ public class ProductDetailServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     }
+
 }

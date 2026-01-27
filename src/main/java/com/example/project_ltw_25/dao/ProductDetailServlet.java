@@ -53,6 +53,7 @@ public class ProductDetailServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Có thể xử lý logic thêm vào giỏ hàng ở đây nếu cần
+   
     }
 }
+

@@ -181,7 +181,7 @@
         if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Nếu chưa có thẻ img (trường hợp thêm mới), tạo mới. Nếu có rồi thì đổi src.
+                
                 let img = preview.querySelector('img');
                 if (!img) {
                     img = document.createElement('img');
@@ -205,4 +205,5 @@
     });
 </script>
 </body>
+
 </html>

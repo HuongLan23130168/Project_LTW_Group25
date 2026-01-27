@@ -35,7 +35,7 @@ body {
 .logo span {
   font-weight: bold;
   font-size: 20px;
-  /* color: #A79277; */
+  
 }
 .logo a{
     text-decoration: none;
@@ -52,13 +52,13 @@ body {
 .search-box i {
   position: absolute;
   left: 12px;
-  color: #74512D; /* màu icon */
+  color: #74512D; 
   font-size: 16px;
 }
 
 .search-box input {
   width: 450px;
-  padding: 8px 12px 8px 35px; /* chừa chỗ cho icon */
+  padding: 8px 12px 8px 35px; 
   border-radius: 20px;
   border: none;
   outline: none;
@@ -81,8 +81,6 @@ body {
 .menu a {
   transition: color 0.35s ease, transform 0.25s ease;
 }
-
-/* Hover mềm mượt hơn */
 .header-right a:hover,
 .menu a:hover {
   transform: translateY(-1px);
@@ -94,7 +92,6 @@ body {
   font-size: 14px;
 }
 
-/* trạng thái sau khi click */
 .header-right a.active {
   color: #ECB176;
   font-size: 14px;
@@ -135,7 +132,7 @@ body {
 }
 
 .circle:hover {
-  background-color: #ECB176; /* đổi sang cam đất khi hover */
+  background-color: #ECB176;
   transform: scale(1.05);
 }
 
@@ -173,22 +170,19 @@ body {
   height: 2px;
   background-color: #ECB176;
   transform: scaleX(0);
-  transform-origin: left;   /* quan trọng */
+  transform-origin: left;   
   transition: transform 0.3s ease;
 }
 
-/* Hover: underline chạy từ trái sang phải */
 .menu a:hover::after {
   transform: scaleX(1);
 }
 
-/* Active: underline giữ nguyên */
+
 .menu a.active::after {
   transform: scaleX(1);
 }
 
-
-/* Khi click (active) */
 .menu a.active {
   color: #A66A35;
 
@@ -242,8 +236,7 @@ body {
   transform: scaleX(0);
 }
 .dropdown-content a:hover {
-  /* background-color: #ECB176;
-  color: #fff; */
+
   text-decoration: underline;
 
  
@@ -252,7 +245,7 @@ body {
 
 
 
-/* Icon mũi tên */
+
 .dropdown i {
   font-size: 12px;
   margin-left: 4px;
@@ -262,7 +255,7 @@ body {
 .dropdown:hover i {
   transform: rotate(180deg);
 }
-/* Khi dropdown mở thì icon quay ngược */
 .dropdown.open i {
   transform: rotate(180deg);
 }
+

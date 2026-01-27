@@ -69,7 +69,7 @@ h2 {
         1px 1px 2px rgba(255, 255, 255, 1);
 }
 
-/* Hiệu ứng gạch cam dưới tiêu đề khi hover */
+
 h2::after {
     content: "";
     position: absolute;
@@ -105,7 +105,7 @@ p {
     overflow: hidden;
 }
 
-/* Ảnh nền phía sau */
+
 .intro-bg {
     position: absolute;
     inset: 0;
@@ -120,7 +120,7 @@ p {
     backdrop-filter: blur(1px);
 }
 
-/* Nội dung chữ */
+
 .intro-content {
     position: relative;
     z-index: 1;
@@ -161,7 +161,7 @@ p {
     margin: 25px auto 25px;
 }
 
-/* Ảnh phía dưới */
+
 .img-placeholder {
     margin: 60px auto;
     text-align: center;
@@ -179,10 +179,9 @@ p {
     position: relative;
     background: url("https://i.pinimg.com/1200x/52/98/de/5298de6c6aa80698e8fefd27c1b225a9.jpg") center/cover no-repeat;
     padding: 0 80px 100px;
-    /* tăng khoảng cách phía trên */
-    color: #fff;
+   color: #fff;
     margin-top: 40px;
-    /* đẩy toàn khối thấp xuống */
+    
     border-radius: 10px;
 }
 
@@ -442,5 +441,6 @@ p {
     margin-bottom: 15px;
     color: #F8F4E1;
     text-align: center;
+
 
 }

@@ -35,7 +35,7 @@ public class BannerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         
-        req.setCharacterEncoding("UTF-8"); // Đảm bảo đọc đúng tiếng Việt
+        req.setCharacterEncoding("UTF-8"); 
         String action = req.getParameter("action");
 
         if ("add".equals(action)) {
@@ -149,10 +149,10 @@ public class BannerServlet extends HttpServlet {
             BannerDAO bannerDAO = new BannerDAO();
             bannerDAO.deleteBanner(id);
         } catch (NumberFormatException e) {
-            // Xử lý nếu ID không phải là số
             e.printStackTrace();
         }
         
         resp.sendRedirect(req.getContextPath() + "/admin/banners");
     }
 }
+

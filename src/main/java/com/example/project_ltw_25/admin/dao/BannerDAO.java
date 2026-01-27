@@ -26,7 +26,6 @@ public class BannerDAO {
         );
     }
 
-    // Thêm
     public void addBanner(Banner banner) {
         jdbi.useTransaction(handle -> {
             handle.createUpdate("UPDATE banners SET display_order = display_order + 1 WHERE display_order >= :order")
@@ -40,7 +39,6 @@ public class BannerDAO {
         });
     }
 
-    // Cập nhật
     public void updateBanner(Banner banner) {
         jdbi.useTransaction(handle -> {
             Integer oldOrder = handle.createQuery("SELECT display_order FROM banners WHERE id = :id")
@@ -68,7 +66,6 @@ public class BannerDAO {
         });
     }
 
-    // Xóa
     public void deleteBanner(int id) {
         jdbi.useTransaction(handle -> {
             Integer orderToHide = handle.createQuery("SELECT display_order FROM banners WHERE id = :id")
@@ -89,7 +86,6 @@ public class BannerDAO {
         });
     }
 
-    // Khôi phục
     public void restoreBanner(int id) {
         jdbi.useTransaction(handle -> {
             Integer maxOrder = handle.createQuery("SELECT MAX(display_order) FROM banners WHERE is_active = true")
@@ -109,4 +105,5 @@ public class BannerDAO {
                         .list()
         );
     }
+
 }

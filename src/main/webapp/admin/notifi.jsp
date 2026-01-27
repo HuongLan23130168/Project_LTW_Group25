@@ -42,7 +42,7 @@
 
         <ul class="notifi-list">
             <c:forEach var="n" items="${notifications}">
-                <%-- 1. Xử lý Logic Redirect URL --%>
+              
                 <c:set var="redirectUrl" value=""/>
                 <c:if test="${n.type == 'order'}">
                     <%-- Đổi từ /view-order thành /viewOrder nếu đó là tên thực tế của servlet --%>
@@ -50,7 +50,7 @@
                 </c:if>
 
                 <c:if test="${n.type == 'product' || n.type == 'inventory'}">
-                    <%-- Kiểm tra xem tham số là 'id' hay 'productId' --%>
+                  
                     <c:set var="redirectUrl" value="/admin/editProduct?id=${n.entityId}"/>
                 </c:if>
                 <%--                <c:if test="${n.type == 'account'}">--%>
@@ -61,14 +61,14 @@
                     <c:set var="redirectUrl" value="#"/>
                 </c:if>
 
-                <%-- 2. Xử lý Logic CSS Class --%>
+                
                 <c:set var="statusClass" value="${n.status == 'unread' ? 'unread' : 'read'}"/>
                 <c:set var="typeClass" value="${(n.type == 'system') ? 'system' : 'user'}"/>
 
-                <%-- ITEM START --%>
+
                 <li class="notifi-item ${statusClass} ${typeClass}">
 
-                        <%-- Tạo URL an toàn cho việc đánh dấu đã đọc --%>
+                       
                     <c:url var="markReadUrl" value="/admin/mark-notification-read">
                         <c:param name="id" value="${n.id}"/>
                         <c:param name="redirectUrl" value="${redirectUrl}"/>
@@ -112,7 +112,6 @@
                         </div>
                     </a>
 
-                        <%-- Vùng Action: Nút Thùng Rác --%>
                     <div class="notifi-actions">
                         <a href="${pageContext.request.contextPath}/admin/delete-notification?id=${n.id}"
                            class="action-btn delete"
@@ -122,10 +121,10 @@
                         </a>
                     </div>
                 </li>
-                <%-- ITEM END --%>
+                
             </c:forEach>
 
-            <%-- Trạng thái trống --%>
+          
             <c:if test="${empty notifications}">
                 <li class="notifi-item"
                     style="justify-content: center; opacity: 1; border: 2px dashed #ccc; background: none; box-shadow: none;">
@@ -139,4 +138,5 @@
     </div>
 </div>
 </body>
+
 </html>

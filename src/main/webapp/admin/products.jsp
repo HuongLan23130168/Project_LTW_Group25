@@ -18,7 +18,7 @@
 <jsp:include page="/admin/header.jsp"/>
 <jsp:include page="/admin/sidebar.jsp"/>
 
-<!-- === PRODUCTS === -->
+
 <div class="main-content">
 
     <div class="page-header">
@@ -85,27 +85,26 @@
                         </div>
                     </td>
 
-                        <%-- Sửa lỗi 1: Sử dụng p.category_name --%>
                     <td><strong>${p.category_name}</strong></td>
 
                     <td style="color: #666;">${p.type_name}</td>
 
                     <td>
-                            <%-- Sửa lỗi 2: Sử dụng p.price và p.price_new --%>
+                           
                         <div class="price-group">
                             <c:choose>
                                 <c:when test="${p.discountPercent > 0}">
                                     <%-- Giá sau khi giảm --%>
-                                    <span class="price-new">
+                                    
                                         <fmt:formatNumber value="${p.price_new}" type="number" maxFractionDigits="0"/> đ
                                     </span>
-                                    <%-- Giá gốc --%>
+                                  
                                     <span class="price-old">
                                         <fmt:formatNumber value="${p.price}" type="number" maxFractionDigits="0"/> đ
                                     </span>
                                 </c:when>
                                 <c:otherwise>
-                                    <%-- Giá gốc khi không giảm giá --%>
+                                  
                                     <span class="price-new">
                                         <fmt:formatNumber value="${p.price}" type="number" maxFractionDigits="0"/> đ
                                     </span>
@@ -174,5 +173,6 @@
 <script src="${pageContext.request.contextPath}/admin/js/main.js"></script>
 <script src="${pageContext.request.contextPath}/admin/js/products.js"></script>
 </body>
+
 
 </html>
