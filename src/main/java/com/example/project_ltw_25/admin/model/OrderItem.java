@@ -13,6 +13,7 @@ public class OrderItem {
     private double total;
 
 
+
     public OrderItem() {
     }
 
@@ -102,7 +103,6 @@ public class OrderItem {
     }
 
     public double getTotal() {
-        // Nếu discount là phần trăm (ví dụ: 10 cho 10%)
         if (this.discount > 0) {
             return (this.price * this.quantity) * (1 - this.discount / 100);
         }
@@ -112,7 +112,6 @@ public class OrderItem {
     public void setTotal(double total) {
         this.total = total;
     }
-    // Thêm vào class OrderItem
     public double getUnitPrice() {
         return this.price;
     }
@@ -120,5 +119,6 @@ public class OrderItem {
     public void setUnitPrice(double unitPrice) {
         this.price = unitPrice;
     }
+
 
 }
