@@ -9,7 +9,7 @@ import java.util.Optional;
 public class CartDAO {
     private static final Jdbi jdbi = DBDAO.get();
 
-    // 1. Lấy danh sách giỏ hàng
+    // Lấy danh sách giỏ hàng
     public List<CartItem> getCartByUserId(int userId) {
         String sql = "SELECT " +
                 "cd.id AS detailId, " +
@@ -21,7 +21,6 @@ public class CartDAO {
                 "v.price, " +
                 "cd.quantity AS quantity, " +
                 "IFNULL(i.stock_quantity, 0) AS stock, " +
-                // PHẢI THÊM DÒNG NÀY ĐỂ HIỆN GIÁ GIẢM
                 "COALESCE(d2.discount_percent, d1.discount_percent, 0) AS discountPercent " +
                 "FROM cart_details cd " +
                 "JOIN product_variants v ON cd.variant_id = v.id " +
@@ -46,21 +45,20 @@ public class CartDAO {
 
     public String addToCart(int userId, int variantId, int quantityToAdd) {
         return jdbi.inTransaction(handle -> {
-            // 1. Kiểm tra sự tồn tại của dữ liệu kho thay vì mặc định bằng 0
+            // kt tồn tại của kho thay vì mặc định bằng 0
             Optional<Integer> stockOpt = handle.createQuery("SELECT stock_quantity FROM inventories WHERE variant_id = :vid")
                     .bind("vid", variantId)
                     .mapTo(Integer.class)
                     .findOne();
 
             if (stockOpt.isEmpty()) {
-                // Log này giúp bạn biết chính xác ID nào đang bị thiếu trong bảng inventories
                 System.out.println("Lỗi: variant_id " + variantId + " không tồn tại trong bảng inventories");
                 return "Sản phẩm này hiện chưa có thông tin kho hàng!";
             }
 
             int currentStock = stockOpt.get();
 
-            // 2. Lấy hoặc tạo giỏ hàng cho người dùng
+            // lấy/tạo giỏ hàng cho người dùng
             Integer cartId = handle.createQuery("SELECT id FROM carts WHERE user_id = :uid")
                     .bind("uid", userId)
                     .mapTo(Integer.class)
@@ -70,7 +68,7 @@ public class CartDAO {
                             .executeAndReturnGeneratedKeys("id")
                             .mapTo(Integer.class).one());
 
-            // 3. Kiểm tra số lượng hiện tại trong giỏ
+            // kt số lượng hiện tại
             Integer qtyInCart = handle.createQuery("SELECT quantity FROM cart_details WHERE cart_id = :cid AND variant_id = :vid")
                     .bind("cid", cartId)
                     .bind("vid", variantId)
@@ -78,12 +76,12 @@ public class CartDAO {
                     .findOne()
                     .orElse(0);
 
-            // 4. So sánh với tồn kho thực tế
+            // ss với tồn kho
             if ((qtyInCart + quantityToAdd) > currentStock) {
                 return "Rất tiếc, kho chỉ còn " + currentStock + " sản phẩm. Giỏ hàng đã có " + qtyInCart;
             }
 
-            // 5. Cập nhật hoặc Thêm mới
+            //cập nhật/thêm mới
             if (qtyInCart > 0) {
                 handle.createUpdate("UPDATE cart_details SET quantity = quantity + :q WHERE cart_id = :cid AND variant_id = :vid")
                         .bind("q", quantityToAdd).bind("cid", cartId).bind("vid", variantId).execute();
@@ -95,8 +93,7 @@ public class CartDAO {
         });
     }
 
-    // 3. Cập nhật số lượng (Dùng cho nút Tăng/Giảm)
-// Trả về String thông báo lỗi hoặc "Success"
+    // cập nhật số lượng
     public String updateQuantity(int userId, int variantId, int newQuantity) {
         return jdbi.inTransaction(handle -> {
             try {
@@ -106,22 +103,22 @@ public class CartDAO {
                     return "Success";
                 }
 
-                // A. Kiểm tra tồn kho
+                // kt tồn kho
                 Integer currentStock = handle.createQuery("SELECT stock_quantity FROM inventories WHERE variant_id = ?")
                         .bind(0, variantId)
                         .mapTo(Integer.class)
                         .findOne()
-                        .orElse(-1); // Trả về -1 nếu không tìm thấy dòng nào
+                        .orElse(-1);
 
                 if (currentStock == -1) return "Sản phẩm này chưa được nhập kho!";
                 if (currentStock == 0) return "Sản phẩm hiện đang hết hàng!";
 
-                // Nếu số lượng mới lớn hơn tồn kho -> Báo lỗi
+                // Nếu số lượng mới lớn hơn tồn kho -> lỗi
                 if (newQuantity > currentStock) {
                     return "Kho chỉ còn " + currentStock + " sản phẩm!";
                 }
 
-                // B. Lấy Cart ID của User
+                // lấy Cart ID của người dùng
                 String sqlFindCart = "SELECT id FROM carts WHERE user_id = ?";
                 Optional<Integer> cartIdOpt = handle.createQuery(sqlFindCart)
                         .bind(0, userId)
@@ -131,7 +128,7 @@ public class CartDAO {
                 if (cartIdOpt.isEmpty()) return "Giỏ hàng không tồn tại!";
                 int cartId = cartIdOpt.get();
 
-                // C. Cập nhật số lượng mới
+                // cập nhật số lượng mới
                 int rows = handle.createUpdate("UPDATE cart_details SET quantity = ? WHERE cart_id = ? AND variant_id = ?")
                         .bind(0, newQuantity)
                         .bind(1, cartId)
@@ -146,10 +143,9 @@ public class CartDAO {
         });
     }
 
-    // 4. Xóa sản phẩm khỏi giỏ
+    // xóa sản phẩm khỏi giỏ
     public boolean removeItem(int userId, int variantId) {
         return jdbi.withHandle(handle -> {
-            // Lấy Cart ID
             Optional<Integer> cartIdOpt = handle.createQuery("SELECT id FROM carts WHERE user_id = ?")
                     .bind(0, userId)
                     .mapTo(Integer.class)
@@ -157,7 +153,6 @@ public class CartDAO {
 
             if (cartIdOpt.isEmpty()) return false;
 
-            // Xóa dòng trong cart_details
             int rows = handle.createUpdate("DELETE FROM cart_details WHERE cart_id = ? AND variant_id = ?")
                     .bind(0, cartIdOpt.get())
                     .bind(1, variantId)
@@ -182,7 +177,6 @@ public class CartDAO {
 
     public void clearCart(int userId) {
         jdbi.useHandle(handle -> {
-            // Xóa tất cả chi tiết giỏ hàng dựa trên userId (thông qua bảng carts)
             handle.createUpdate("DELETE FROM cart_details WHERE cart_id = (SELECT id FROM carts WHERE user_id = :userId)")
                     .bind("userId", userId)
                     .execute();
