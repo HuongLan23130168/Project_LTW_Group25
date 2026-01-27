@@ -5,35 +5,30 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Product implements Serializable { // Giữ Serializable để dùng được với Session/Cart
+public class Product implements Serializable { 
     private static final long serialVersionUID = 1L;
 
-    // ===== TRƯỜNG TỪ DATABASE (Mã 1 & 2) =====
     private int id;
     private String product_code;
     private String product_name;
-    private int category_id;      // Dùng int cho đồng bộ DB
+    private int category_id;     
     private int product_type_id;
     private String description;
-    private Timestamp created_at; // Lấy từ mã 1 để biết hàng mới về
+    private Timestamp created_at;
 
-    // ===== TRƯỜNG HIỂN THỊ & QUAN HỆ (Mã 2) =====
     private String category_name;
     private String type_name;
-    private double price;         // Giá gốc
+    private double price;         
     private String image_url;
-    private int stock;            // Số lượng kho từ mã 1
-    private int totalSold;        // Tổng đã bán cho Dashboard
+    private int stock;           
+    private int totalSold;       
 
-    // ===== CÁC CỜ ĐÁNH DẤU (Lấy từ mã 1) =====
     private boolean newProduct;
     private boolean bestSeller;
 
-    // ===== QUAN HỆ PHỨC TẠP (Mã 2) =====
     private List<Product_variant> variants = new ArrayList<>();
     private List<Product_image> images = new ArrayList<>();
-    private Discount discount;    // Dùng Object Discount để quản lý chuyên sâu
-
+    private Discount discount;  
     public Product() {
     }
 
@@ -65,10 +60,9 @@ public class Product implements Serializable { // Giữ Serializable để dùng
         return this.price;
     }
 
-    // Lấy phần trăm giảm giá để hiển thị lên nhãn (Label)
     public int getDiscountDisplay() {
         if (discount != null && discount.isActive()) {
-            return discount.getDiscount_percent(); // Trả về số nguyên trực tiếp
+            return discount.getDiscount_percent(); 
         }
         return 0;
     }
@@ -80,7 +74,6 @@ public class Product implements Serializable { // Giữ Serializable để dùng
         return this.image_url;
     }
 
-    // Kiểm tra Sale dựa trên Discount Object (Đồng bộ với ListProductDao)
     public boolean isOnSale() {
         return discount != null && discount.isActive();
     }
@@ -229,7 +222,6 @@ public class Product implements Serializable { // Giữ Serializable để dùng
         this.discount = discount;
     }
 
-    // Thêm vào trong class Product.java
     public double getPrice_new() {
         return getFinalPrice();
     }
@@ -238,3 +230,4 @@ public class Product implements Serializable { // Giữ Serializable để dùng
         return getDiscountDisplay();
     }
 }
+
