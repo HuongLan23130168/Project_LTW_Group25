@@ -11,7 +11,7 @@ import java.util.List;
 public class ProductDAO {
     private static final Jdbi jdbi = DBDAO.get();
 
-    // 1. THÊM SẢN PHẨM (Transaction đảm bảo toàn vẹn dữ liệu)
+    // 1. THÊM SẢN PHẨM 
     public boolean addProduct(Product product, Product_variant variant, List<Product_image> images) {
         try {
             return jdbi.inTransaction(handle -> {
@@ -51,7 +51,7 @@ public class ProductDAO {
         }
     }
 
-    // 2. LẤY CHI TIẾT SẢN PHẨM (Cho trang Detail)
+    // 2. LẤY CHI TIẾT SẢN PHẨM 
     public Product getById(int id) {
         return jdbi.withHandle(handle -> {
             String sql = """
@@ -72,7 +72,7 @@ public class ProductDAO {
                     """;
 
             return handle.createQuery(sql)
-                    .bind("id", id) // JDBI sẽ tìm dấu :id trong chuỗi sql trên để gắn giá trị
+                    .bind("id", id) 
                     .map((rs, ctx) -> {
                         Product p = new Product();
                         p.setId(rs.getInt("id"));
@@ -81,16 +81,13 @@ public class ProductDAO {
                         p.setCategory_id(rs.getInt("category_id"));
                         p.setCategory_id(rs.getInt("product_type_id"));
                         p.setDescription(rs.getString("description"));
-
-                        // Lấy giá từ cột alias 'min_price' thay vì 'price'
                         p.setPrice(rs.getDouble("min_price"));
 
-                        // Trong ProductDAO.java, phần map kết quả SQL
                         if (rs.getBigDecimal("final_discount_percent") != null && rs.getBigDecimal("final_discount_percent").doubleValue() > 0) {
                             Discount disc = new Discount();
                             disc.setId(rs.getInt("d_id"));
                             disc.setDiscount_name(rs.getString("d_name"));
-                            disc.setDiscount_percent(rs.getInt("final_discount_percent")); // Dùng alias mới
+                            disc.setDiscount_percent(rs.getInt("final_discount_percent")); 
                             disc.setStart_date(rs.getTimestamp("d_start"));
                             disc.setEnd_date(rs.getTimestamp("d_end"));
                             p.setDiscount(disc);
@@ -99,7 +96,6 @@ public class ProductDAO {
                     })
                     .findOne()
                     .map(p -> {
-                        // Load Variants kèm Stock
                         p.setVariants(handle.createQuery("""
                                         SELECT pv.*, COALESCE(i.stock_quantity, 0) as stock 
                                         FROM product_variants pv 
@@ -108,7 +104,6 @@ public class ProductDAO {
                                         """)
                                 .bind("id", id).mapToBean(Product_variant.class).list());
 
-                        // Load Images
                         p.setImages(handle.createQuery("SELECT * FROM product_images WHERE product_id = :id")
                                 .bind("id", id).mapToBean(Product_image.class).list());
                         return p;
@@ -116,7 +111,7 @@ public class ProductDAO {
         });
     }
 
-    // 3. LẤY TẤT CẢ SẢN PHẨM (Kèm giá và ảnh đại diện)
+    // 3. LẤY TẤT CẢ SẢN PHẨM 
     public List<Product> getAll() {
         return jdbi.withHandle(handle -> {
             String sql = """
@@ -131,8 +126,7 @@ public class ProductDAO {
         });
     }
 
-    // 4. LẤY SẢN PHẨM THEO DANH MỤC (Đã tối ưu hóa N+1)
-    // Trong ProductDAO.java
+    // 4. LẤY SẢN PHẨM THEO DANH MỤC 
     public List<Product> getByCategory(int categoryId) {
         return jdbi.withHandle(handle -> {
             String sql = """
@@ -151,7 +145,7 @@ public class ProductDAO {
         });
     }
 
-    // 5. LẤY SẢN PHẨM TƯƠNG TỰ (Đã xóa bản trùng lặp)
+    // 5. LẤY SẢN PHẨM TƯƠNG TỰ 
     public List<Product> getRelatedProducts(int categoryId, int currentProductId) {
         return jdbi.withHandle(handle -> {
             String sql = """
@@ -170,7 +164,7 @@ public class ProductDAO {
         });
     }
 
-    // 6. LẤY THEO TYPE (Đã tối ưu SQL)
+    // 6. LẤY THEO TYPE 
     public List<Product> getByProductType(int typeId, int limit) {
         return jdbi.withHandle(handle -> {
             String sql = """
@@ -212,7 +206,6 @@ public class ProductDAO {
                         p.setId(rs.getInt("id"));
                         p.setProduct_name(rs.getString("product_name"));
                         p.setDescription(rs.getString("description"));
-                        // Quan trọng: Gán giá và ảnh từ cột Alias vào Product
                         p.setPrice(rs.getDouble("price"));
                         p.setImage_url(rs.getString("image_url"));
                         return p;
@@ -222,7 +215,6 @@ public class ProductDAO {
     }
 
     // 8. LẤY SẢN PHẨM BÁN CHẠY
-// 8. LẤY SẢN PHẨM BÁN CHẠY (Bản cập nhật sửa lỗi NULL ảnh)
     public List<Product> getBestSellerProducts(int limit) {
         return jdbi.withHandle(handle -> {
             String sql = """
@@ -257,23 +249,13 @@ public class ProductDAO {
                         p.setProduct_name(rs.getString("product_name"));
                         p.setDescription(rs.getString("description"));
 
-                        // Gán trực tiếp giá và ảnh vào thuộc tính Product
                         p.setPrice(rs.getDouble("price"));
                         p.setImage_url(rs.getString("image_url"));
 
-//                        int dPercent = rs.getInt("final_discount_percent");
-//                        if (dPercent > 0) {
-//                            Discount d = new Discount();
-//                            d.setDiscount_percent(dPercent);
-//                            // Kích hoạt flag active để JSP nhận diện có giảm giá
-//                            long now = System.currentTimeMillis();
-//                            d.setStart_date(new java.sql.Timestamp(now - 86400000));
-//                            d.setEnd_date(new java.sql.Timestamp(now + 86400000));
-//                            p.setDiscount(d);
-//                        }
                         return p;
                     })
                     .list();
         });
     }
+
 }
