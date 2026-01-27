@@ -28,10 +28,7 @@ public class AdminViewOrderServlet extends HttpServlet {
             int orderId = Integer.parseInt(orderIdParam);
             OrderDAO orderDAO = new OrderDAO();
             CustomerDAO customerDAO = new CustomerDAO();
-            // Tạm thời không dùng PaymentMethodDAO
-            // PaymentMethodDAO paymentMethodDAO = new PaymentMethodDAO();
 
-            // Bước 1: Lấy đối tượng Order cơ bản
             Order order = orderDAO.getOrderById(orderId);
 
             if (order == null) {
@@ -40,31 +37,25 @@ public class AdminViewOrderServlet extends HttpServlet {
                 return;
             }
 
-            // Bước 2: Lấy thông tin khách hàng (nếu có)
             User customer = customerDAO.getCustomerById(order.getUserId());
             if (customer != null) {
                 order.setCustomerName(customer.getFullName());
                 order.setCustomerEmail(customer.getEmail());
                 order.setCustomerPhone(customer.getPhone());
             } else {
-                // Nếu không có customer, dùng thông tin người nhận
                 order.setCustomerName(order.getRecipientName());
                 order.setCustomerEmail("Không có");
                 order.setCustomerPhone(order.getRecipientPhone());
             }
-            // Địa chỉ luôn là địa chỉ giao hàng
             order.setCustomerAddress(order.getShippingAddress());
 
-            // Bước 3: Tạm thời bỏ qua việc lấy tên phương thức thanh toán
-            // String paymentMethodName = paymentMethodDAO.getPaymentMethodNameById(order.getPayment_method_id());
-            order.setPaymentMethod("Không xác định"); // Gán giá trị mặc định
 
-            // Bước 4: Tạm thời không lấy danh sách sản phẩm để tránh lỗi
-            // List<OrderItem> orderItems = orderDAO.getOrderItemsByOrderId(orderId);
-            List<OrderItem> orderItems = Collections.emptyList(); // Tạo một danh sách rỗng
+            order.setPaymentMethod("Không xác định");
 
 
-            // Bước 5: Gửi tất cả dữ liệu sang JSP
+            List<OrderItem> orderItems = orderDAO.getOrderItemsByOrderId(orderId);
+
+
             request.setAttribute("order", order);
             request.setAttribute("orderItems", orderItems);
 

@@ -4,32 +4,28 @@ import com.example.project_ltw_25.user.model.Shipping;
 import java.sql.Timestamp;
 
 public class Order {
-    // --- 1. Các trường dữ liệu (Fields) ---
     private int id;
     private int userId;
-    private String orderCode;      // Mapping: order_code
-    private Timestamp orderDate;   // Mapping: order_date
-    private double totalPrice;     // Mapping: total_price
+    private String orderCode;
+    private Timestamp orderDate;
+    private double totalPrice;
     private String status;
-    private String recipientName;  // Mapping: recipient_name
-    private String recipientPhone; // Mapping: recipient_phone
-    private String shippingAddress;// Mapping: shipping_address
+    private String recipientName;
+    private String recipientPhone;
+    private String shippingAddress;
     private String note;
     private int paymentMethodId;
 
-    // Object lồng nhau
     private Shipping shipping;
 
-    // --- 2. Các trường DTO (Hiển thị thêm từ bảng Users/Payments/Logic tính toán) ---
-    private String customerName;   // full_name từ bảng users
+    private String customerName;
     private String customerEmail;
     private String customerPhone;
     private String customerAddress;
-    private String paymentMethod;  // Tên phương thức (COD/Chuyển khoản)
+    private String paymentMethod;
     private double shippingFee;
     private double grandTotal;
 
-    // --- 3. Constructors ---
     public Order() {
     }
 
@@ -59,7 +55,6 @@ public class Order {
         this.grandTotal = totalPrice + shippingFee;
     }
 
-    // --- 4. Getters & Setters (Chuẩn Java - CamelCase) ---
 
     public int getId() {
         return id;
@@ -210,7 +205,6 @@ public class Order {
         this.shippingFee = shippingFee;
     }
 
-    // Logic tính tổng tiền cuối cùng
     public double getGrandTotal() {
         return this.totalPrice + this.shippingFee;
     }
@@ -219,10 +213,6 @@ public class Order {
         this.grandTotal = grandTotal;
     }
 
-    // =========================================================================
-    // 5. CÁC PHƯƠNG THỨC TƯƠNG THÍCH (ALIAS) CHO JDBI/DATABASE (Snake_case)
-    // Giúp code chạy được cả khi dùng .setOrder_code() hoặc mapToBean
-    // =========================================================================
 
     public void setOrder_code(String orderCode) {
         this.orderCode = orderCode;

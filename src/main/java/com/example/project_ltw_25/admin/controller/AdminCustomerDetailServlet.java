@@ -29,23 +29,19 @@ public class AdminCustomerDetailServlet extends HttpServlet {
             User customer = customerDAO.getCustomerById(customerId);
 
             if (customer == null) {
-                // Better UX: Send back to list with an error message
                 request.setAttribute("error", "Không tìm thấy khách hàng với ID: " + customerId);
                 response.sendRedirect(request.getContextPath() + "/admin/customers?error=notfound");
                 return;
             }
 
-            // Fetch order history specifically for this user
             List<Order> orderList = orderDAO.getOrdersByCustomerId(customerId);
 
-            // Calculate business metrics for the UI
             double totalSpent = orderList.stream()
                     .mapToDouble(Order::getTotalPrice)
                     .sum();
 
             Order latestOrder = orderList.isEmpty() ? null : orderList.get(0);
 
-            // Set data for JSP
             request.setAttribute("customer", customer);
             request.setAttribute("orderList", orderList);
             request.setAttribute("totalSpent", totalSpent);

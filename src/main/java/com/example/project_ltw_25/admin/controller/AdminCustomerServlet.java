@@ -24,7 +24,6 @@ public class AdminCustomerServlet extends HttpServlet {
             CustomerDAO dao = new CustomerDAO();
             List<User> customerList = dao.getAllCustomers(sortBy, search);
 
-            // Gửi dữ liệu sang JSP
             request.setAttribute("customers", customerList);
             request.setAttribute("currentSort", sortBy);
             request.setAttribute("search", search);
@@ -32,7 +31,7 @@ public class AdminCustomerServlet extends HttpServlet {
 
             request.getRequestDispatcher("/admin/customers.jsp").forward(request, response);
         } catch (Exception e) {
-            e.printStackTrace(); // In lỗi ra console server để debug
+            e.printStackTrace();
             response.getWriter().println("Lỗi Server: " + e.getMessage());
         }
     }
