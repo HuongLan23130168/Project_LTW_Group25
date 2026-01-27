@@ -22,31 +22,17 @@
         Swal.fire({
             icon: 'success',
             title: 'Tuyệt vời!',
-            text: '${sessionScope.msg}',
+            text: '<c:out value="${sessionScope.msg}"/>',
             showConfirmButton: true,
             confirmButtonText: 'Xem giỏ hàng',
             showCancelButton: true,
             cancelButtonText: 'Tiếp tục mua sắm',
             confirmButtonColor: '#A79277',
         }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = '${pageContext.request.contextPath}/cart';
-            }
+            if (result.isConfirmed) window.location.href = '${pageContext.request.contextPath}/cart';
         });
     </script>
-    <% session.removeAttribute("msg"); %>
-</c:if>
-
-<c:if test="${not empty sessionScope.error}">
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Rất tiếc...',
-            text: '${sessionScope.error}',
-            confirmButtonColor: '#d33'
-        });
-    </script>
-    <% session.removeAttribute("error"); %>
+    <c:remove var="msg" scope="session"/>
 </c:if>
 
 <jsp:include page="/frontend/header.jsp"/>
@@ -54,6 +40,7 @@
 <c:choose>
     <c:when test="${not empty product}">
         <c:set var="defaultVariant" value="${product.variants[0]}"/>
+
         <div class="breadcrumb">
             <a href="${pageContext.request.contextPath}/home">Trang chủ</a> &#47;
             <a href="${pageContext.request.contextPath}/list-product">Sản phẩm</a> &#47;
@@ -62,12 +49,25 @@
 
         <section class="product-detail">
             <div class="left">
-                <img id="mainImage" src="${product.image_url}" alt="${product.product_name}" class="main-img">
+                <img id="mainImage" src="${defaultVariant.image_url}" alt="${product.product_name}" class="main-img">
                 <div class="thumbs">
-                    <%-- Sửa: Lấy ảnh từ product.images --%>
-                    <c:forEach var="img" items="${product.images}">
-                        <img src="${img.image_url}" onclick="changeImage(this.src, this)">
+                        <%-- 1. Lấy ảnh đại diện của từng màu (Unique Color Images) --%>
+                    <c:set var="addedImages" value=""/>
+                    <c:forEach var="v" items="${product.variants}">
+                        <c:if test="${not empty v.image_url && !addedImages.contains(v.image_url)}">
+                            <img src="${v.image_url}" onclick="changeImage(this.src, this)" class="thumb-item">
+                            <c:set var="addedImages" value="${addedImages}|${v.image_url}"/>
+                        </c:if>
                     </c:forEach>
+
+                        <%-- 2. Lấy thêm ảnh trong bộ sưu tập (nếu chưa có trong list trên) --%>
+                    <c:if test="${not empty product.images}">
+                        <c:forEach var="img" items="${product.images}">
+                            <c:if test="${!addedImages.contains(img.image_url)}">
+                                <img src="${img.image_url}" onclick="changeImage(this.src, this)" class="thumb-item">
+                            </c:if>
+                        </c:forEach>
+                    </c:if>
                 </div>
             </div>
 
@@ -75,24 +75,25 @@
                 <h1>${product.product_name}</h1>
 
                 <div class="price-wrapper">
-                    <span class="price-sale" id="price-display">
-                        <fmt:formatNumber value="${product.discountPercent > 0 ? product.price_new : product.price}" type="currency" currencySymbol=""/>₫
-                    </span>
-                    <span class="price-old" id="price-old-display" style="${product.discountPercent > 0 ? '' : 'display:none;'}">
-                        <fmt:formatNumber value="${product.price}" type="currency" currencySymbol=""/>₫
-                    </span>
-                    <span class="discount" id="discount-tag" style="${product.discountPercent > 0 ? '' : 'display:none;'}">
-                        -<fmt:formatNumber value="${product.discountPercent}" pattern="#.##"/>%
+                    <p class="price-sale" id="price-display"></p>
+                    <span id="discount-area" style="display:none; align-items: center; gap: 8px;">
+                        <p class="price-old" id="old-price-display"
+                           style="text-decoration: line-through; color: #999; margin: 0;"></p>
+                        <span class="discount-badge" id="discount-percent"></span>
                     </span>
                 </div>
 
+                <div id="stock-status" style="margin: 10px 0; font-size: 14px;"></div>
+
                 <div class="select-group">
-                    <label>Màu sắc: <span id="color-text" style="font-weight:normal">${defaultVariant.color}</span></label>
+                    <label>Màu sắc: <span id="color-text"
+                                          style="font-weight:normal">${defaultVariant.color}</span></label>
                     <div class="option-list" id="color-options"></div>
                 </div>
 
                 <div class="select-group">
-                    <label>Kích thước: <span id="size-text" style="font-weight:normal">${defaultVariant.size}</span></label>
+                    <label>Kích thước: <span id="size-text"
+                                             style="font-weight:normal">${defaultVariant.size}</span></label>
                     <div class="option-list" id="size-options"></div>
                 </div>
 
@@ -102,13 +103,14 @@
                     <button class="qty-btn plus" id="qty-increase">+</button>
                 </div>
 
-                <form id="cartForm" action="${pageContext.request.contextPath}/add-to-cart" method="post" style="display:none;">
-                    <input type="hidden" name="variantId" id="selected-variant-id" value="${defaultVariant.id}">
-                    <input type="hidden" name="quantity" id="form-quantity" value="1">
-                    <input type="hidden" name="redirectAction" id="redirectAction" value="add">
-                </form>
-
                 <div class="actions">
+                    <form id="cartForm" action="${pageContext.request.contextPath}/add-to-cart" method="post"
+                          style="display:none;">
+                        <input type="hidden" name="variantId" id="selected-variant-id" value="${defaultVariant.id}">
+                        <input type="hidden" name="quantity" id="form-quantity" value="1">
+                        <input type="hidden" name="redirectAction" id="redirectAction" value="add">
+                    </form>
+
                     <a href="javascript:void(0)" class="add-cart" onclick="submitCart('add')">
                         <i class="fa fa-cart-plus"></i> Thêm vào giỏ hàng
                     </a>
@@ -122,28 +124,26 @@
         <section class="detail-section">
             <h2>Mô tả chi tiết</h2>
             <div class="description">
-                ${product.description}
+                <div class="desc-text">${product.description}</div>
+
+                <div class="desc-gallery" style="margin: 20px 0;display: flex;flex-direction: row;gap: 15px;flex-wrap: wrap;justify-content: center;align-content: center;">
+                    <c:forEach var="img" items="${product.images}">
+                        <img src="${img.image_url}" alt="Ảnh chi tiết"
+                             style="width: 300px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    </c:forEach>
+                </div>
+
                 <hr>
                 <strong>Thông số kỹ thuật:</strong><br>
                 • Mã sản phẩm: ${product.product_code}<br>
                 • Chất liệu: <span id="info-material">${defaultVariant.material}</span><br>
                 • Kiểu dáng: <span id="info-style">${defaultVariant.style}</span><br>
-                • Xuất xứ: Việt Nam (Project Group 25)<br><br>
-                <hr>
-                <br>
-                <strong>Hình ảnh chi tiết:</strong><br><br>
-                <div class="detail-images">
-                    <c:forEach var="img" items="${product.images}">
-                        <img src="${img.image_url}" alt="Ảnh chi tiết">
-                    </c:forEach>
-                </div>
+                • Xuất xứ: <span id="info-origin">Việt Nam</span><br><br>
             </div>
         </section>
     </c:when>
     <c:otherwise>
-        <div style="text-align: center; padding: 100px;">
-            <h2>Sản phẩm không tồn tại</h2>
-        </div>
+        <div style="text-align: center; padding: 100px;"><h2>Sản phẩm không tồn tại</h2></div>
     </c:otherwise>
 </c:choose>
 
@@ -155,27 +155,14 @@
             <div class="slider" id="productSlider">
                 <c:forEach var="rel" items="${relatedProducts}">
                     <a href="${pageContext.request.contextPath}/detail-product?id=${rel.id}" class="product">
-                        <div class="img" style="background-image: url('${rel.image_url}')">
-                            <c:if test="${rel.discountPercent > 0}">
-                                <div class="discount">
-                                    <span>-<fmt:formatNumber value="${rel.discountPercent}" pattern="#.##"/>%</span>
-                                </div>
-                            </c:if>
-                        </div>
-                        <div class="product-info">
-                            <h4>${rel.product_name}</h4>
-                            <div class="price-box">
-                                <c:choose>
-                                    <c:when test="${rel.discountPercent > 0}">
-                                        <span class="price"><fmt:formatNumber value="${rel.price_new}" type="number"/>₫</span>
-                                        <span class="old-price"><fmt:formatNumber value="${rel.price}" type="number"/>₫</span>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span class="price"><fmt:formatNumber value="${rel.price}" type="number"/>₫</span>
-                                    </c:otherwise>
-                                </c:choose>
-                            </div>
-                        </div>
+                        <img src="${rel.image_url}" alt="${rel.product_name}" loading="lazy">
+                        <h4>${rel.product_name}</h4>
+                        <p class="price">
+                            <fmt:formatNumber value="${rel.price}"
+                                              type="number"
+                                              groupingUsed="true"
+                                              maxFractionDigits="0"/>₫
+                        </p>
                     </a>
                 </c:forEach>
             </div>
@@ -184,36 +171,38 @@
     </section>
 </c:if>
 
-<button id="backToTop" title="Lên đầu trang">
-    <i class="fa-solid fa-arrow-up"></i>
-</button>
+<button id="backToTop" title="Lên đầu trang"><i class="fa-solid fa-arrow-up"></i></button>
 
 <script>
-    const productDiscountPercent = ${product.discountPercent};
     const variantsData = [
-        <c:if test="${not empty product.variants}">
         <c:forEach var="v" items="${product.variants}" varStatus="loop">
         {
             "id": ${v.id},
-            "color": "${v.color}".trim(),
-            "size": "${v.size}".trim(),
-            "price": ${v.price},
+            "color": "${v.jsonSafeColor}",
+            "size": "${v.jsonSafeSize}",
             "material": "${v.material}",
-            "style": "${v.style}"
+            "style": "${v.style}",
+            "origin": "${v.origin}",
+            "price": ${v.price},
+            "finalPrice": ${product.discount != null && product.discount.isActive()
+            ? Math.round(v.price * (1 - product.discount.discount_percent.doubleValue() / 100))
+            : v.price},
+            "discountPercent": ${product.discount != null && product.discount.isActive()
+            ? product.discount.discount_percent
+            : 0},
+            "image_url": "${v.image_url}",
+            "stock": ${v.stock}
         }${!loop.last ? ',' : ''}
         </c:forEach>
-        </c:if>
     ];
-    let selectedColor = "${defaultVariant.color}".trim();
-    let selectedSize = "${defaultVariant.size}".trim();
+    let selectedColor = "${defaultVariant.jsonSafeColor}";
+    let selectedSize = "${defaultVariant.jsonSafeSize}";
 
-    function submitCart(type) {
-        const qty = document.getElementById('quantity').value;
-        document.getElementById('form-quantity').value = qty;
-        document.getElementById('redirectAction').value = type;
-        document.getElementById('cartForm').submit();
+    function formatVND(amount) {
+        return new Intl.NumberFormat('vi-VN').format(Math.round(amount)) + '₫';
     }
 </script>
+
 
 <jsp:include page="/frontend/footer.jsp"/>
 <script src="${pageContext.request.contextPath}/frontend/js/detail.js"></script>

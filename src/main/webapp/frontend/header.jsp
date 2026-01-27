@@ -1,65 +1,199 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Noble Loft Theory</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="css/header.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noble Loft Theory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/frontend/css/header.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-  <header class="header">
+<c:set var="roomsParam"
+       value="${empty paramValues.room ? '' : fn:join(paramValues.room, ',')}"/>
+
+<c:set var="catsParam"
+       value="${empty paramValues.category ? '' : fn:join(paramValues.category, ',')}"/>
+
+<header class="header">
+    <!-- HEADER TOP -->
     <div class="header-top">
-      <div class="logo">
-        <img src="https://i.postimg.cc/5t4yq9qJ/logo-ltw.jpg" alt="Logo">
-        <span><a href="index.jsp">Noble Loft Theory</a></span>
-      </div>
-      <div class="search-box">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" placeholder="Tìm kiếm">
-      </div>
-      <div class="header-right">
-        <a href="tracking.jsp">Tra cứu đơn hàng</a>
-        <a href="gioithieu.jsp">Giới thiệu</a>
-        <a href="contact.jsp">Liên hệ</a>
-        <div class="icons">
-            <a href="cart.jsp" class="circle"><i class="fa-solid fa-cart-shopping"></i></a>
-            <a href="login.jsp" class="circle"><i class="fa-solid fa-user"></i></a>
+        <!-- LOGO -->
+        <div class="logo">
+            <img src="https://i.postimg.cc/5t4yq9qJ/logo-ltw.jpg" alt="Logo">
+            <span>
+                <a href="${pageContext.request.contextPath}/home">
+                    Noble Loft Theory
+                </a>
+            </span>
         </div>
-      </div>
+        <!-- SEARCH -->
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Tìm kiếm">
+        </div>
+        <!-- HEADER RIGHT -->
+        <div class="header-right">
+            <a href="${pageContext.request.contextPath}/frontend/tracking.jsp"
+               class="${fn:contains(pageContext.request.requestURI, 'tracking.jsp') ? 'active' : ''}">
+                Tra cứu đơn hàng
+            </a>
+            <a href="${pageContext.request.contextPath}/frontend/gioithieu.jsp"
+               class="${fn:contains(pageContext.request.requestURI, 'gioithieu.jsp') ? 'active' : ''}">
+                Giới thiệu
+            </a>
+
+            <a href="${pageContext.request.contextPath}/frontend/contact.jsp"
+               class="contact ${fn:contains(pageContext.request.requestURI, 'contact.jsp') ? 'active' : ''}">
+                Liên hệ
+            </a>
+            <div class="icons">
+                <div class="cart-icon" style="position: relative;">
+                    <a href="${pageContext.request.contextPath}/cart" class="circle" title="Giỏ hàng">
+                        <i class="fa fa-shopping-cart"></i>
+                        <c:if test="${not empty sessionScope.totalQty && sessionScope.totalQty > 0}">
+                            <span class="badge" id="cart-badge">
+                                    ${sessionScope.totalQty}
+                            </span>
+                        </c:if>
+                    </a>
+                </div>
+                <div class="user-info account-dropdown">
+                    <c:choose>
+                        <%-- TRƯỜNG HỢP: ĐÃ ĐĂNG NHẬP --%>
+                        <c:when test="${not empty sessionScope.acc}">
+                            <div class="circle user-trigger">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+
+                            <div class="account-menu-box">
+                                <a href="${pageContext.request.contextPath}/account" class="account-item"
+                                   title="Tài khoản của tôi">
+                                    <i class="fa-solid fa-circle-user"></i>
+                                </a>
+
+                                <hr class="menu-divider">
+
+                                <a href="${pageContext.request.contextPath}/logout" class="account-item logout"
+                                   title="Đăng xuất">
+                                    <i class="fa-solid fa-right-from-bracket"></i>
+                                </a>
+                            </div>
+                        </c:when>
+
+                        <%-- TRƯỜNG HỢP: CHƯA ĐĂNG NHẬP --%>
+                        <c:otherwise>
+                            <a href="${pageContext.request.contextPath}/login" class="circle">
+                                <i class="fa-solid fa-user"></i>
+                            </a>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- MENU -->
     <nav class="menu">
-      <a href="index.jsp" class="menu-item active">Trang chủ</a>
-      <a href="living.jsp" class="menu-item">Phòng khách</a>
-      <a href="kitchen.jsp" class="menu-item">Phòng bếp</a>
-      <a href="bedroom.jsp" class="menu-item">Phòng ngủ</a>
-      <a href="office.jsp" class="menu-item">Phòng làm việc</a>
-      <a href="balcony.jsp" class="menu-item">Ban Công</a>
+        <a href="${pageContext.request.contextPath}/home"
+           class="${fn:contains(pageContext.request.requestURI, 'home') || pageContext.request.requestURI.endsWith('/') ? 'active' : ''}">
+            Trang chủ
+        </a>
 
-      <div class="dropdown">
-        <a href="decor.jsp">Decor <i class="fa-solid fa-chevron-down"></i></a>
-        <div class="dropdown-content">
-          <a href="decor.jsp">Cây</a>
-          <a href="decor.jsp">Hoa</a>
-          <a href="decor.jsp">Đèn</a>
-          <a href="decor.jsp">Tượng & Phụ kiện</a>
-          <a href="decor.jsp">Đồng hồ</a>
-          <a href="decor.jsp">Tranh</a>
-          <a href="decor.jsp">Gương</a>
-          <a href="decor.jsp">Nến & Tinh dầu</a>
-          <a href="decor.jsp">Bình & Lọ hoa</a>
-          <a href="decor.jsp">Chăn & Gối</a>
-          <a href="decor.jsp">Kệ & Giá đỡ mini</a>
-          <a href="decor.jsp">Bàn decor</a>
-          <a href="decor.jsp">Ghế decor</a>
+        <a href="${pageContext.request.contextPath}/list-product?room=1"
+           class="${fn:contains(roomsParam,'1') ? 'active' : ''}">
+            Phòng khách
+        </a>
+
+        <a href="${pageContext.request.contextPath}/list-product?room=2"
+           class="${fn:contains(roomsParam,'2')?'active':''}">
+            Phòng bếp
+        </a>
+        <a href="${pageContext.request.contextPath}/list-product?room=3"
+           class="${fn:contains(roomsParam,'3')?'active':''}">
+            Phòng ngủ
+        </a>
+        <a href="${pageContext.request.contextPath}/list-product?room=4"
+           class="${fn:contains(roomsParam,'4')?'active':''}">
+            Phòng làm việc
+        </a>
+        <a href="${pageContext.request.contextPath}/list-product?room=5"
+           class="${fn:contains(roomsParam,'5')?'active':''}">
+            Ban công
+        </a>
+
+        <!-- DECOR -->
+        <div class="dropdown ${not empty catsParam ? 'active' : ''}">
+            <a href="${pageContext.request.contextPath}/list-product">
+                Decor <i class="fa-solid fa-chevron-down"></i>
+            </a>
+
+            <div class="dropdown-content">
+                <a href="${pageContext.request.contextPath}/list-product?category=CAY"
+                   class="${fn:contains(catsParam,'CAY')?'active':''}">
+                    Cây
+                </a>
+                <a href="${pageContext.request.contextPath}/list-product?category=HOA"
+                   class="${fn:contains(catsParam,'HOA')?'active':''}">
+                    Hoa
+                </a>
+                <a href="${pageContext.request.contextPath}/list-product?category=DEN"
+                   class="${fn:contains(catsParam,'DEN')?'active':''}">
+                    Đèn
+                </a>
+                <a href="${pageContext.request.contextPath}/list-product?category=PHUKIEN"
+                   class="${fn:contains(catsParam,'PHUKIEN')?'active':''}">
+                    Phụ kiện
+                </a>
+                <a href="${pageContext.request.contextPath}/list-product?category=DONGHO"
+                   class="${fn:contains(catsParam,'DONGHO')?'active':''}">
+                    Đồng hồ
+                </a>
+                <a href="${pageContext.request.contextPath}/list-product?category=TRANH"
+                   class="${fn:contains(catsParam,'TRANH')?'active':''}">
+                    Tranh
+                </a>
+                <a href="${pageContext.request.contextPath}/list-product?category=GUONG"
+                   class="${fn:contains(catsParam,'GUONG')?'active':''}">
+                    Gương
+                </a>
+                <a href="${pageContext.request.contextPath}/list-product?category=NEN"
+                   class="${fn:contains(catsParam,'NEN')?'active':''}">
+                    Nến & Tinh dầu
+                </a>
+                <a href="${pageContext.request.contextPath}/list-product?category=BINH"
+                   class="${fn:contains(catsParam,'BINH')?'active':''}">
+                    Bình & Lọ hoa
+                </a>
+                <a href="${pageContext.request.contextPath}/list-product?category=CHAN"
+                   class="${fn:contains(catsParam,'CHAN')?'active':''}">
+                    Chăn
+                </a>
+                <a href="${pageContext.request.contextPath}/list-product?category=GOI"
+                   class="${fn:contains(catsParam,'GOI')?'active':''}">
+                    Gối
+                </a>
+                <a href="${pageContext.request.contextPath}/list-product?category=KE"
+                   class="${fn:contains(catsParam,'KE')?'active':''}">
+                    Kệ & Giá đỡ mini
+                </a>
+                <a href="${pageContext.request.contextPath}/list-product?category=BAN"
+                   class="${fn:contains(catsParam,'BAN')?'active':''}">
+                    Bàn decor
+                </a>
+                <a href="${pageContext.request.contextPath}/list-product?category=GHE"
+                   class="${fn:contains(catsParam,'GHE')?'active':''}">
+                    Ghế decor
+                </a>
+            </div>
         </div>
-      </div>
     </nav>
-  </header>
+</header>
 
-  <main class="main-content">
-  </main>
-  <script src="js/header.js"></script>
+<script src="${pageContext.request.contextPath}/frontend/js/header.js"></script>
 </body>
 </html>
