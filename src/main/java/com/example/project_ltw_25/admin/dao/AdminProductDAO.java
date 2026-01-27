@@ -1,6 +1,7 @@
 package com.example.project_ltw_25.admin.dao;
 
 import com.example.project_ltw_25.user.dao.DBDAO;
+import com.example.project_ltw_25.user.model.Discount;
 import com.example.project_ltw_25.user.model.Product;
 import com.example.project_ltw_25.user.model.Product_variant;
 import org.jdbi.v3.core.Jdbi;
@@ -19,37 +20,37 @@ public class AdminProductDAO {
     }
 
     public int getTotalProductCount() {
-        return jdbi.withHandle(h -> h.createQuery("SELECT COUNT(*) FROM products WHERE status = 1").mapTo(Integer.class).one());
+        return jdbi.withHandle(h -> h.createQuery("SELECT COUNT(*) FROM products WHERE is_active = 1").mapTo(Integer.class).one());
     }
 
     public List<Product> getProducts(int page, int pageSize) {
         int offset = (page - 1) * pageSize;
         String sql = """
-            SELECT
-                p.id, p.product_name, p.product_code, t.type_name,
-                (SELECT image_url FROM product_images WHERE product_id = p.id ORDER BY id LIMIT 1) AS image_url,
-                (SELECT GROUP_CONCAT(c.category_name SEPARATOR ', ') FROM categories c WHERE FIND_IN_SET(c.id, p.category_id) > 0) AS category_name,
-                (SELECT COALESCE(SUM(inv.stock_quantity), 0) FROM inventories inv JOIN product_variants pv ON inv.variant_id = pv.id WHERE pv.product_id = p.id) AS stock,
-                COALESCE((SELECT MIN(price) FROM product_variants WHERE product_id = p.id), 0.00) AS original_price,
-                EXISTS(SELECT 1 FROM new_products np WHERE np.product_id = p.id) as isNew,
-                EXISTS(SELECT 1 FROM best_sellers bs WHERE bs.product_id = p.id) as isBestSeller,
-                COALESCE((
-                    SELECT MAX(d.discount_percent)
-                    FROM discounts d
-                    WHERE
-                        NOW() BETWEEN d.start_date AND d.end_date
-                        AND (
-                            EXISTS (SELECT 1 FROM discount_product_types dpt WHERE dpt.discount_id = d.id AND dpt.product_type_id = p.product_type_id)
-                            OR
-                            EXISTS (SELECT 1 FROM discount_categories dc WHERE dc.discount_id = d.id AND FIND_IN_SET(dc.category_id, p.category_id))
-                        )
-                ), 0) AS discountPercent
-            FROM products p
-            LEFT JOIN product_types t ON p.product_type_id = t.id
-            WHERE p.status = 1
-            ORDER BY p.id DESC
-            LIMIT :limit OFFSET :offset
-        """;
+                    SELECT
+                        p.id, p.product_name, p.product_code, t.type_name,
+                        (SELECT image_url FROM product_images WHERE product_id = p.id ORDER BY id LIMIT 1) AS image_url,
+                        (SELECT GROUP_CONCAT(c.category_name SEPARATOR ', ') FROM categories c WHERE FIND_IN_SET(c.id, p.category_id) > 0) AS category_name,
+                        (SELECT COALESCE(SUM(inv.stock_quantity), 0) FROM inventories inv JOIN product_variants pv ON inv.variant_id = pv.id WHERE pv.product_id = p.id) AS stock,
+                        COALESCE((SELECT MIN(price) FROM product_variants WHERE product_id = p.id), 0.00) AS original_price,
+                        EXISTS(SELECT 1 FROM new_products np WHERE np.product_id = p.id) as isNew,
+                        EXISTS(SELECT 1 FROM best_sellers bs WHERE bs.product_id = p.id) as isBestSeller,
+                        COALESCE((
+                            SELECT MAX(d.discount_percent)
+                            FROM discounts d
+                            WHERE
+                                NOW() BETWEEN d.start_date AND d.end_date
+                                AND (
+                                    EXISTS (SELECT 1 FROM discount_product_types dpt WHERE dpt.discount_id = d.id AND dpt.product_type_id = p.product_type_id)
+                                    OR
+                                    EXISTS (SELECT 1 FROM discount_categories dc WHERE dc.discount_id = d.id AND FIND_IN_SET(dc.category_id, p.category_id))
+                                )
+                        ), 0) AS discountPercent
+                    FROM products p
+                    LEFT JOIN product_types t ON p.product_type_id = t.id
+                    WHERE p.is_active = 1
+                    ORDER BY p.id DESC
+                    LIMIT :limit OFFSET :offset
+                """;
         return jdbi.withHandle(h -> h.createQuery(sql)
                 .bind("limit", pageSize)
                 .bind("offset", offset)
@@ -62,33 +63,27 @@ public class AdminProductDAO {
                     p.setCategory_name(rs.getString("category_name"));
                     p.setStock(rs.getInt("stock"));
                     p.setImage_url(rs.getString("image_url"));
+                    p.setPrice(rs.getDouble("original_price"));
 
-                    BigDecimal originalPrice = rs.getBigDecimal("original_price");
-                    double discountPercent = rs.getDouble("discountPercent");
-                    
-                    p.setPrice(originalPrice.doubleValue());
-                    p.setDiscountPercent(discountPercent);
-
+                    int discountPercent = rs.getInt("discountPercent");
                     if (discountPercent > 0) {
-                        BigDecimal newPrice = originalPrice.subtract(originalPrice.multiply(BigDecimal.valueOf(discountPercent / 100.0)));
-                        p.setPrice_new(newPrice.doubleValue());
-                    } else {
-                        p.setPrice_new(originalPrice.doubleValue());
+                        Discount d = new Discount();
+                        d.setDiscount_percent(discountPercent);
+                        d.setStart_date(new java.sql.Timestamp(System.currentTimeMillis() - 86400000));
+                        d.setEnd_date(new java.sql.Timestamp(System.currentTimeMillis() + 86400000));
+                        p.setDiscount(d);
                     }
-
-                    p.setNewProduct(rs.getBoolean("isNew"));
-                    p.setBestSeller(rs.getBoolean("isBestSeller"));
-
                     return p;
                 }).list());
     }
 
     public List<Product> getAllProductsSimple() {
-        return jdbi.withHandle(h -> h.createQuery("SELECT id, product_name FROM products WHERE status = 1 ORDER BY product_name").mapToBean(Product.class).list());
+        return jdbi.withHandle(h -> h.createQuery("SELECT id, product_name FROM products WHERE is_active = 1 ORDER BY product_name").mapToBean(Product.class).list());
     }
 
     public Product getProductById(int id) {
-        Product product = jdbi.withHandle(h -> h.createQuery("SELECT * FROM products WHERE id = :id AND status = 1").bind("id", id).mapToBean(Product.class).findFirst().orElse(null));
+        // Đã sửa: is_active thay cho status
+        Product product = jdbi.withHandle(h -> h.createQuery("SELECT * FROM products WHERE id = :id AND is_active = 1").bind("id", id).mapToBean(Product.class).findFirst().orElse(null));
         if (product != null) {
             String imageUrl = jdbi.withHandle(h -> h.createQuery("SELECT image_url FROM product_images WHERE product_id = :id ORDER BY id LIMIT 1").bind("id", id).mapTo(String.class).findFirst().orElse(null));
             product.setImage_url(imageUrl);
@@ -112,21 +107,51 @@ public class AdminProductDAO {
     public boolean insertProductFull(Product p, List<Product_variant> variants, List<String> otherImages) {
         try {
             return jdbi.inTransaction(h -> {
-                String sqlProduct = "INSERT INTO products (product_code, product_name, product_type_id, category_id, description, created_at, status) VALUES (:product_code, :product_name, :product_type_id, :category_id, :description, NOW(), 1)";
-                int productId = h.createUpdate(sqlProduct).bindBean(p).executeAndReturnGeneratedKeys("id").mapTo(int.class).one();
+                // 1. Chèn sản phẩm chính
+                String sqlProduct = "INSERT INTO products (product_code, product_name, product_type_id, category_id, description, created_at, is_active) VALUES (:product_code, :product_name, :product_type_id, :category_id, :description, NOW(), 1)";
+                int productId = h.createUpdate(sqlProduct)
+                        .bindBean(p)
+                        .executeAndReturnGeneratedKeys("id")
+                        .mapTo(int.class)
+                        .one();
+                p.setId(productId);
+
+                // 2. Xử lý Tags (New/Best Seller)
                 handleTags(h, p, productId);
 
+                // 3. Chèn vào bảng product_images (Để làm Gallery xem chi tiết)
                 List<String> allImages = new ArrayList<>();
                 if (p.getImage_url() != null && !p.getImage_url().isEmpty()) allImages.add(p.getImage_url());
                 if (otherImages != null) allImages.addAll(otherImages);
+
                 for (String img : allImages) {
-                    h.createUpdate("INSERT INTO product_images(product_id, image_url) VALUES(:pid, :url)").bind("pid", productId).bind("url", img).execute();
+                    h.createUpdate("INSERT INTO product_images(product_id, image_url) VALUES(:pid, :url)")
+                            .bind("pid", productId)
+                            .bind("url", img)
+                            .execute();
                 }
 
+                // 4. Chèn biến thể - QUAN TRỌNG: Gán p.getImage_url() vào image_url của variant
                 if (variants != null) {
                     for (Product_variant v : variants) {
-                        int varId = h.createUpdate("INSERT INTO product_variants (product_id, color, size, material, price) VALUES (:pid, :color, :size, :material, :price)").bind("pid", productId).bindBean(v).executeAndReturnGeneratedKeys("id").mapTo(int.class).one();
-                        h.createUpdate("INSERT INTO inventories (variant_id, stock_quantity, last_updated) VALUES (:vid, :qty, NOW())").bind("vid", varId).bind("qty", v.getStock_quantity()).execute();
+                        // Thực hiện chèn variant và lấy ID vừa tạo
+                        int generatedVariantId = h.createUpdate("""
+                    INSERT INTO product_variants 
+                    (product_id, variant_code, color, size, material, price, image_url) 
+                    VALUES (:pid, :variant_code, :color, :size, :material, :price, :img)
+                """)
+                                .bind("pid", productId)
+                                .bindBean(v) // JDBI sẽ tự lấy v.getVariant_code() để bind vào :variant_code
+                                .bind("img", p.getImage_url())
+                                .executeAndReturnGeneratedKeys("id")
+                                .mapTo(int.class)
+                                .one();
+
+                        // Chèn tồn kho cho variant đó
+                        h.createUpdate("INSERT INTO inventories (variant_id, stock_quantity, last_updated) VALUES (:vid, :qty, NOW())")
+                                .bind("vid", generatedVariantId)
+                                .bind("qty", v.getStock())
+                                .execute();
                     }
                 }
                 return true;
@@ -154,12 +179,22 @@ public class AdminProductDAO {
 
                 for (Product_variant v : variants) {
                     if (v.getId() > 0) {
-                        h.createUpdate("UPDATE product_variants SET color=:color, size=:size, material=:material, price=:price WHERE id=:id").bindBean(v).execute();
-                        int updated = h.createUpdate("UPDATE inventories SET stock_quantity=:qty, last_updated=NOW() WHERE variant_id=:vid").bind("vid", v.getId()).bind("qty", v.getStock_quantity()).execute();
-                        if (updated == 0) h.createUpdate("INSERT INTO inventories (variant_id, stock_quantity, last_updated) VALUES (:vid, :qty, NOW())").bind("vid", v.getId()).bind("qty", v.getStock_quantity()).execute();
-                    } else {
-                        int newId = h.createUpdate("INSERT INTO product_variants (product_id, color, size, material, price) VALUES (:pid, :color, :size, :material, :price)").bind("pid", p.getId()).bindBean(v).executeAndReturnGeneratedKeys("id").mapTo(int.class).one();
-                        h.createUpdate("INSERT INTO inventories (variant_id, stock_quantity, last_updated) VALUES (:vid, :qty, NOW())").bind("vid", newId).bind("qty", v.getStock_quantity()).execute();
+                        h.createUpdate("""
+                                            UPDATE product_variants 
+                                            SET variant_code=:variant_code, color=:color, size=:size, 
+                                                material=:material, price=:price, image_url=:img 
+                                            WHERE id=:id
+                                        """)
+                                .bindBean(v)
+                                .bind("img", p.getImage_url()) // Cập nhật lại ảnh mặc định cho variant
+                                .execute();
+
+
+                        // 2. CẬP NHẬT TỒN KHO (Quan trọng: Admin sửa số lượng thì phải ghi đè vào inventories)
+                        h.createUpdate("UPDATE inventories SET stock_quantity = :qty, last_updated = NOW() WHERE variant_id = :vid")
+                                .bind("qty", v.getStock())
+                                .bind("vid", v.getId())
+                                .execute();
                     }
                 }
 
@@ -180,7 +215,8 @@ public class AdminProductDAO {
 
     public void softDeleteProduct(int productId) {
         try {
-            jdbi.useHandle(h -> h.createUpdate("UPDATE products SET status = 0 WHERE id = :id")
+            // Đã sửa: is_active thay cho status
+            jdbi.useHandle(h -> h.createUpdate("UPDATE products SET is_active = 0 WHERE id = :id")
                     .bind("id", productId)
                     .execute());
         } catch (Exception e) {
@@ -204,11 +240,27 @@ public class AdminProductDAO {
     }
 
     public List<Product_variant> getVariantsByProductId(int productId) {
-        String sql = "SELECT pv.*, COALESCE(inv.stock_quantity,0) AS stock_quantity FROM product_variants pv LEFT JOIN inventories inv ON pv.id = inv.variant_id WHERE pv.product_id = :pid";
+        String sql = "SELECT pv.*, COALESCE(inv.stock_quantity,0) AS stock FROM product_variants pv LEFT JOIN inventories inv ON pv.id = inv.variant_id WHERE pv.product_id = :pid";
         return jdbi.withHandle(h -> h.createQuery(sql).bind("pid", productId).mapToBean(Product_variant.class).list());
     }
 
     public List<String> getGalleryByProductId(int productId) {
         return jdbi.withHandle(h -> h.createQuery("SELECT image_url FROM product_images WHERE product_id=:pid ORDER BY id LIMIT 1, 100").bind("pid", productId).mapTo(String.class).list());
+    }
+
+    private void processImagesAndVariants(org.jdbi.v3.core.Handle h, Product p, List<Product_variant> variants, List<String> otherImages, int productId) {
+        List<String> allImages = new ArrayList<>();
+        if (p.getImage_url() != null && !p.getImage_url().isEmpty()) allImages.add(p.getImage_url());
+        if (otherImages != null) allImages.addAll(otherImages);
+        for (String img : allImages) {
+            h.createUpdate("INSERT INTO product_images(product_id, image_url) VALUES(:pid, :url)").bind("pid", productId).bind("url", img).execute();
+        }
+        if (variants != null) {
+            for (Product_variant v : variants) {
+                int varId = h.createUpdate("INSERT INTO product_variants (product_id, variant_code, color, size, material, price) VALUES (:pid, :variant_code, :color, :size, :material, :price)")
+                        .bind("pid", productId).bindBean(v).executeAndReturnGeneratedKeys("id").mapTo(int.class).one();
+                h.createUpdate("INSERT INTO inventories (variant_id, stock_quantity, last_updated) VALUES (:vid, :qty, NOW())").bind("vid", varId).bind("qty", v.getStock()).execute();
+            }
+        }
     }
 }
