@@ -24,7 +24,6 @@ public class ResetPasswordServlet extends HttpServlet {
 
         if (newPass != null && newPass.equals(confirmPass)) {
             UserDAO dao = new UserDAO();
-            // Truyền newPass thô vào, hàm updatePassword trong DAO sẽ tự băm
             String hashPassword = hashMD5(newPass);
             boolean success = dao.updatePassword(email, hashPassword);
 

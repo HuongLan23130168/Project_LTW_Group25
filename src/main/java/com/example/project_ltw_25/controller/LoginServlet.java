@@ -28,11 +28,11 @@ public class LoginServlet extends HttpServlet {
         User user = dao.login(email, hashedPass);
 
         if (user != null) {
-            // 1. Tạo mã duy nhất
+            // Tạo mã duy nhất
             String token = java.util.UUID.randomUUID().toString();
-            // 2. Lưu vào DB (hạn dùng 15 phút)
+            // Lưu vào DB (hạn dùng 15 phút)
             dao.updateToken(email, token);
-            // 3. Gửi Mail link xác thực
+            // Gửi Mail link xác thực
             new EmailService().sendMagicLink(email, token, request.getContextPath());
 
             request.setAttribute("successMessage", "Vui lòng kiểm tra Email để nhận link đăng nhập duy nhất!");
@@ -41,6 +41,8 @@ public class LoginServlet extends HttpServlet {
             request.setAttribute("errorMessage", "Email hoặc mật khẩu không chính xác!");
             request.getRequestDispatcher("/frontend/login.jsp").forward(request, response);
         }
+
+
     }
 
 }

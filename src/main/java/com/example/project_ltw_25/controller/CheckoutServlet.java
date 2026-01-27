@@ -32,11 +32,9 @@ public class CheckoutServlet extends HttpServlet {
 
         double grandTotal = items.stream().mapToDouble(CartItem::getTotalPrice).sum();
 
-        // Đẩy dữ liệu ra để trang pay.jsp dùng ${cartItems} và ${grandTotal}
         request.setAttribute("cartItems", items);
         request.setAttribute("grandTotal", grandTotal);
 
-        // Chuyển hướng sang trang JSP
         request.getRequestDispatcher("/frontend/pay.jsp").forward(request, response);
     }
 

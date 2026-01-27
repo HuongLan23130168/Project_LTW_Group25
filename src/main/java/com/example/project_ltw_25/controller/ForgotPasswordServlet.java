@@ -19,10 +19,7 @@ public class ForgotPasswordServlet extends HttpServlet {
         String email = request.getParameter("email");
         UserDAO dao = new UserDAO();
 
-        // Giả sử bạn viết thêm hàm checkEmail trong UserDAO
         if (dao.checkEmailExists(email)) {
-            // Trong thực tế: Gửi mail chứa link token ở đây.
-            // Hiện tại: Chuyển hướng sang trang nhập pass mới (kèm email qua session hoặc attr)
             HttpSession session = request.getSession();
             session.setAttribute("resetEmail", email);
 

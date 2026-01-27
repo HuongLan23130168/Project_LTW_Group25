@@ -28,11 +28,10 @@ public class AddToCartServlet extends HttpServlet {
             return;
         }
 
-        // Lấy giá trị dưới dạng String trước để kiểm tra
         String vIdRaw = request.getParameter("variantId");
         String qtyRaw = request.getParameter("quantity");
 
-        String redirectAction = request.getParameter("redirectAction"); // Lấy action từ form
+        String redirectAction = request.getParameter("redirectAction");
 
         try {
             if (vIdRaw != null && !vIdRaw.isEmpty()) {
@@ -43,10 +42,9 @@ public class AddToCartServlet extends HttpServlet {
                 String result = dao.addToCart(user.getId(), variantId, quantity);
 
                 if ("Success".equals(result)) {
-                    // Nếu khách chọn "Mua ngay", chuyển hướng thẳng tới trang giỏ hàng
                     if ("buy".equals(redirectAction)) {
                         response.sendRedirect(request.getContextPath() + "/cart");
-                        return; // Ngắt hàm tại đây
+                        return;
                     }
                     int newTotal = dao.getTotalQuantityByUserId(user.getId());
                     session.setAttribute("totalQty", newTotal);
@@ -60,7 +58,6 @@ public class AddToCartServlet extends HttpServlet {
             e.printStackTrace();
         }
 
-        // Nếu là "add" (Thêm vào giỏ), quay lại trang cũ để hiện SweetAlert
         String referer = request.getHeader("Referer");
         response.sendRedirect(referer != null ? referer : request.getContextPath() + "/home");
     }

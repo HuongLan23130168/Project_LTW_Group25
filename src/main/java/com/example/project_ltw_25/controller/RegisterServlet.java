@@ -1,6 +1,8 @@
 package com.example.project_ltw_25.user.controller;
 
+import com.example.project_ltw_25.admin.services.NotificationService;
 import com.example.project_ltw_25.user.dao.UserDAO;
+import com.example.project_ltw_25.user.model.User;
 import com.example.project_ltw_25.user.util.EncryptionUtils;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -15,7 +17,6 @@ public class RegisterServlet extends HttpServlet {
         response.sendRedirect("/frontend/login.jsp");
     }
 
-    // Sửa lại RegisterServlet.java
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
@@ -24,8 +25,6 @@ public class RegisterServlet extends HttpServlet {
         String password = request.getParameter("password");
         String confirmPass = request.getParameter("confirmPassword");
 
-        // ĐỔI TỪ errorMessage THÀNH registerError
-//      String emailRegex = "^[a-zA-Z0-9._%+-]+@(gmail|yahoo|outlook|edu)\\.com$";
         String emailRegex = "^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\\.)+(gmail|yahoo|outlook|edu|vn|com)$";
 
         if (email == null || !email.matches(emailRegex)) {
@@ -50,9 +49,9 @@ public class RegisterServlet extends HttpServlet {
         String hashedPass = EncryptionUtils.hashMD5(password);
         UserDAO dao = new UserDAO();
 
-        // LƯU Ý: Phải truyền hashPassword vào đây
         boolean isSuccess = dao.register(fullName, email, hashedPass);
         if (isSuccess) {
+
             request.setAttribute("successMessage", "Đăng ký thành công! Vui lòng đăng nhập");
             request.getRequestDispatcher("/frontend/login.jsp").forward(request, response);
         } else {
