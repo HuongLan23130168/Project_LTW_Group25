@@ -82,7 +82,6 @@ public class AdminProductDAO {
     }
 
     public Product getProductById(int id) {
-        // Đã sửa: is_active thay cho status
         Product product = jdbi.withHandle(h -> h.createQuery("SELECT * FROM products WHERE id = :id AND is_active = 1").bind("id", id).mapToBean(Product.class).findFirst().orElse(null));
         if (product != null) {
             String imageUrl = jdbi.withHandle(h -> h.createQuery("SELECT image_url FROM product_images WHERE product_id = :id ORDER BY id LIMIT 1").bind("id", id).mapTo(String.class).findFirst().orElse(null));
@@ -107,7 +106,6 @@ public class AdminProductDAO {
     public boolean insertProductFull(Product p, List<Product_variant> variants, List<String> otherImages) {
         try {
             return jdbi.inTransaction(h -> {
-                // 1. Chèn sản phẩm chính
                 String sqlProduct = "INSERT INTO products (product_code, product_name, product_type_id, category_id, description, created_at, is_active) VALUES (:product_code, :product_name, :product_type_id, :category_id, :description, NOW(), 1)";
                 int productId = h.createUpdate(sqlProduct)
                         .bindBean(p)
@@ -116,10 +114,8 @@ public class AdminProductDAO {
                         .one();
                 p.setId(productId);
 
-                // 2. Xử lý Tags (New/Best Seller)
                 handleTags(h, p, productId);
 
-                // 3. Chèn vào bảng product_images (Để làm Gallery xem chi tiết)
                 List<String> allImages = new ArrayList<>();
                 if (p.getImage_url() != null && !p.getImage_url().isEmpty()) allImages.add(p.getImage_url());
                 if (otherImages != null) allImages.addAll(otherImages);
@@ -131,23 +127,20 @@ public class AdminProductDAO {
                             .execute();
                 }
 
-                // 4. Chèn biến thể - QUAN TRỌNG: Gán p.getImage_url() vào image_url của variant
                 if (variants != null) {
                     for (Product_variant v : variants) {
-                        // Thực hiện chèn variant và lấy ID vừa tạo
                         int generatedVariantId = h.createUpdate("""
                     INSERT INTO product_variants 
                     (product_id, variant_code, color, size, material, price, image_url) 
                     VALUES (:pid, :variant_code, :color, :size, :material, :price, :img)
                 """)
                                 .bind("pid", productId)
-                                .bindBean(v) // JDBI sẽ tự lấy v.getVariant_code() để bind vào :variant_code
+                                .bindBean(v) 
                                 .bind("img", p.getImage_url())
                                 .executeAndReturnGeneratedKeys("id")
                                 .mapTo(int.class)
                                 .one();
 
-                        // Chèn tồn kho cho variant đó
                         h.createUpdate("INSERT INTO inventories (variant_id, stock_quantity, last_updated) VALUES (:vid, :qty, NOW())")
                                 .bind("vid", generatedVariantId)
                                 .bind("qty", v.getStock())
@@ -186,11 +179,10 @@ public class AdminProductDAO {
                                             WHERE id=:id
                                         """)
                                 .bindBean(v)
-                                .bind("img", p.getImage_url()) // Cập nhật lại ảnh mặc định cho variant
+                                .bind("img", p.getImage_url()) 
                                 .execute();
 
 
-                        // 2. CẬP NHẬT TỒN KHO (Quan trọng: Admin sửa số lượng thì phải ghi đè vào inventories)
                         h.createUpdate("UPDATE inventories SET stock_quantity = :qty, last_updated = NOW() WHERE variant_id = :vid")
                                 .bind("qty", v.getStock())
                                 .bind("vid", v.getId())
@@ -215,7 +207,6 @@ public class AdminProductDAO {
 
     public void softDeleteProduct(int productId) {
         try {
-            // Đã sửa: is_active thay cho status
             jdbi.useHandle(h -> h.createUpdate("UPDATE products SET is_active = 0 WHERE id = :id")
                     .bind("id", productId)
                     .execute());
@@ -264,3 +255,4 @@ public class AdminProductDAO {
         }
     }
 }
+
