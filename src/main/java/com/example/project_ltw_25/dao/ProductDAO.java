@@ -11,7 +11,7 @@ import java.util.List;
 public class ProductDAO {
     private static final Jdbi jdbi = DBDAO.get();
 
-    // 1. THÊM SẢN PHẨM 
+   
     public boolean addProduct(Product product, Product_variant variant, List<Product_image> images) {
         try {
             return jdbi.inTransaction(handle -> {
@@ -51,7 +51,7 @@ public class ProductDAO {
         }
     }
 
-    // 2. LẤY CHI TIẾT SẢN PHẨM 
+   
     public Product getById(int id) {
         return jdbi.withHandle(handle -> {
             String sql = """
@@ -111,7 +111,7 @@ public class ProductDAO {
         });
     }
 
-    // 3. LẤY TẤT CẢ SẢN PHẨM 
+   
     public List<Product> getAll() {
         return jdbi.withHandle(handle -> {
             String sql = """
@@ -126,7 +126,6 @@ public class ProductDAO {
         });
     }
 
-    // 4. LẤY SẢN PHẨM THEO DANH MỤC 
     public List<Product> getByCategory(int categoryId) {
         return jdbi.withHandle(handle -> {
             String sql = """
@@ -145,7 +144,7 @@ public class ProductDAO {
         });
     }
 
-    // 5. LẤY SẢN PHẨM TƯƠNG TỰ 
+
     public List<Product> getRelatedProducts(int categoryId, int currentProductId) {
         return jdbi.withHandle(handle -> {
             String sql = """
@@ -164,7 +163,7 @@ public class ProductDAO {
         });
     }
 
-    // 6. LẤY THEO TYPE 
+    
     public List<Product> getByProductType(int typeId, int limit) {
         return jdbi.withHandle(handle -> {
             String sql = """
@@ -185,7 +184,7 @@ public class ProductDAO {
         });
     }
 
-    // 7. LẤY SẢN PHẨM MỚI NHẤT
+   
     public List<Product> getNewestProducts(int limit) {
         return jdbi.withHandle(handle -> {
             String sql = """
@@ -214,7 +213,7 @@ public class ProductDAO {
         });
     }
 
-    // 8. LẤY SẢN PHẨM BÁN CHẠY
+   
     public List<Product> getBestSellerProducts(int limit) {
         return jdbi.withHandle(handle -> {
             String sql = """
@@ -259,3 +258,4 @@ public class ProductDAO {
     }
 
 }
+
