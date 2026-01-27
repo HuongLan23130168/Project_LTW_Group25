@@ -7,8 +7,6 @@
 
 </head>
 <body>
-
-<!-- HEADER -->
 <header class="header">
     <div class="header-left"></div>
 
@@ -56,3 +54,4 @@
 
 </body>
 </html>
+
