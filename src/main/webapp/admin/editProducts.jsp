@@ -52,11 +52,12 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Danh mục (Phòng)</label>
+                        <label>Danh mục (Phòng) <span class="required">*</span></label>
                         <div class="checkbox-grid">
                             <c:forEach var="cat" items="${allCategories}">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="category_id" value="${cat.id}" <c:if test="${fn:contains(currentCategoryIds, cat.id)}">checked</c:if>>
+                                    <input type="radio" name="category_id" value="${cat.id}"
+                                        ${product.category_id == cat.id ? 'checked' : ''} required>
                                         ${cat.category_name}
                                 </label>
                             </c:forEach>
@@ -105,7 +106,7 @@
                                 <input type="text" name="sizes" class="form-control" value="${v.size}" placeholder="Size...">
                                 <input type="text" name="materials" class="form-control" value="${v.material}" placeholder="Chất liệu...">
                                 <input type="number" name="prices" class="form-control" value="<fmt:formatNumber value='${v.price}' pattern='#' />" required min="0" placeholder="Giá...">
-                                <input type="number" name="stocks" class="form-control" value="${v.stock_quantity}" min="0" placeholder="Kho...">
+                                <input type="number" name="stocks" class="form-control" value="${v.stock}" min="0" placeholder="Kho...">
 
                                 <button type="button" class="btn-remove-row" onclick="removeVariantRow(this)" title="Xóa dòng">
                                     <i class="fas fa-trash-alt"></i>
@@ -165,5 +166,7 @@
 </div>
 
 <script src="${pageContext.request.contextPath}/admin/js/editProducts.js"></script>
+<script src="${pageContext.request.contextPath}/admin/js/main.js"></script>
+
 </body>
 </html>

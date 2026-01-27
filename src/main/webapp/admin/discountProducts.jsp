@@ -70,7 +70,7 @@
                     </td>
                     <td class="text-center">
                         <div class="action-buttons">
-                            <a href="${pageContext.request.contextPath}/admin/discounts?action=edit&id=${d.id}" class="btn-icon btn-edit-icon" title="Sửa">
+                            <a href="${pageContext.request.contextPath}/admin/discounts?action=edit&id=${d.id}" class="btn-icon btn-edit-icon">
                                 <i class="fas fa-edit"></i>
                             </a>
                             <form action="${pageContext.request.contextPath}/admin/discounts" method="POST" style="margin:0" onsubmit="return confirm('Bạn chắc chắn muốn xóa?');">
@@ -98,8 +98,9 @@
         <h2>${not empty discountToEdit ? 'Cập nhật' : 'Tạo mới'} Khuyến Mãi</h2>
 
         <form action="${pageContext.request.contextPath}/admin/discounts" method="POST" id="discountForm">
-            <input type="hidden" name="action" value="${not empty discountToEdit ? 'update' : 'insert'}"/>
-            <c:if test="${not empty discountToEdit}"><input type="hidden" name="id" value="${discountToEdit.id}"/></c:if>
+            <input type="hidden" name="action" id="formAction" value="${not empty discountToEdit.id ? 'update' : 'insert'}"/>
+
+            <input type="hidden" name="id" id="discountIdField" value="${discountToEdit.id > 0 ? discountToEdit.id : ''}"/>
 
             <div class="form-grid">
                 <div><label>Tên chương trình:</label><input type="text" name="discount_name" class="form-control" value="${discountToEdit.discount_name}" required/></div>
@@ -129,7 +130,14 @@
                 <label>Chọn Danh Mục:</label>
                 <div class="scroll-box">
                     <c:forEach var="c" items="${categories}">
-                        <label class="checkbox-item"><input type="checkbox" name="target_id_category" value="${c.id}" ${fn:contains(discountToEdit.appliedCategoryIds, c.id) ? 'checked' : ''}> ${c.category_name}</label>
+                        <c:set var="isSel" value="false" />
+                        <c:forEach var="selId" items="${discountToEdit.appliedCategoryIds}">
+                            <c:if test="${selId == c.id}"><c:set var="isSel" value="true" /></c:if>
+                        </c:forEach>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="target_id_category" value="${c.id}" ${isSel ? 'checked' : ''}>
+                                ${c.category_name}
+                        </label>
                     </c:forEach>
                 </div>
             </div>
@@ -138,7 +146,14 @@
                 <label>Chọn Loại Sản Phẩm:</label>
                 <div class="scroll-box">
                     <c:forEach var="t" items="${types}">
-                        <label class="checkbox-item"><input type="checkbox" name="target_id_type" value="${t.id}" ${fn:contains(discountToEdit.appliedProductTypeIds, t.id) ? 'checked' : ''}> ${t.type_name}</label>
+                        <c:set var="isSelType" value="false" />
+                        <c:forEach var="selTypeId" items="${discountToEdit.appliedProductTypeIds}">
+                            <c:if test="${selTypeId == t.id}"><c:set var="isSelType" value="true" /></c:if>
+                        </c:forEach>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="target_id_type" value="${t.id}" ${isSelType ? 'checked' : ''}>
+                                ${t.type_name}
+                        </label>
                     </c:forEach>
                 </div>
             </div>
@@ -157,37 +172,57 @@
 
 <script>
     function openModal(mode) {
+        const actionInput = document.getElementById('formAction');
+        const idField = document.getElementById('discountIdField');
+        const form = document.getElementById('discountForm');
+
         document.getElementById('discountModal').style.display = 'block';
-        if(mode === 'create') {
+
+        if (mode === 'create') {
+            // RESET HOÀN TOÀN DỮ LIỆU
+            form.reset();
+            actionInput.value = "insert";
+            idField.value = ""; // Đảm bảo ID trống hoàn toàn
+
+            // Ẩn các section phạm vi
+            document.getElementById("category-section").style.display = "none";
+            document.getElementById("type-section").style.display = "none";
+
             document.querySelector('#discountModal h2').innerText = "Tạo mới Khuyến Mãi";
-            document.querySelector('input[name="action"]').value = "insert";
-            // Clear form fields for create
-            document.getElementById('discountForm').reset();
-            document.querySelector('input[name="id"]')?.remove();
+        } else {
+            actionInput.value = "update";
+            document.querySelector('#discountModal h2').innerText = "Cập nhật Khuyến Mãi";
+            toggleScope(); // Hiển thị lại đúng section đang edit
         }
     }
+
     function closeModal() {
-        const modal = document.getElementById('discountModal');
-        modal.style.display = 'none';
-        // Remove the 'id' parameter from the URL
+        document.getElementById('discountModal').style.display = 'none';
+        // Xóa params trên URL để tránh khi F5 nó lại mở lại modal Edit
         const url = new URL(window.location);
         url.searchParams.delete('action');
         url.searchParams.delete('id');
         window.history.replaceState({}, '', url);
     }
+
     function toggleScope() {
         var scope = document.getElementById("scopeSelect").value;
         document.getElementById("category-section").style.display = (scope === "category") ? "block" : "none";
         document.getElementById("type-section").style.display = (scope === "type") ? "block" : "none";
     }
+
     document.addEventListener('DOMContentLoaded', function() {
         toggleScope();
         const urlParams = new URLSearchParams(window.location.search);
+        // Nếu URL có ?action=edit thì mới hiện modal (do Servlet forward sang)
         if (urlParams.get('action') === 'edit') {
-            document.getElementById('discountModal').style.display = 'block';
+            openModal('edit');
         }
     });
+
     window.onclick = function(e) { if(e.target == document.getElementById('discountModal')) closeModal(); }
 </script>
+<script src="${pageContext.request.contextPath}/admin/js/main.js"></script>
+
 </body>
 </html>

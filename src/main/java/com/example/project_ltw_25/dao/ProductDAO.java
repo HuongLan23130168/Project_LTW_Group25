@@ -1,165 +1,278 @@
 package com.example.project_ltw_25.user.dao;
 
+import com.example.project_ltw_25.user.model.Discount;
 import com.example.project_ltw_25.user.model.Product;
-import com.example.project_ltw_25.user.model.Product_image;
 import com.example.project_ltw_25.user.model.Product_variant;
+import com.example.project_ltw_25.user.model.Product_image;
 import org.jdbi.v3.core.Jdbi;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.OptionalDouble;
 
 public class ProductDAO {
     private static final Jdbi jdbi = DBDAO.get();
 
+    // 1. THÊM SẢN PHẨM (Transaction đảm bảo toàn vẹn dữ liệu)
+    public boolean addProduct(Product product, Product_variant variant, List<Product_image> images) {
+        try {
+            return jdbi.inTransaction(handle -> {
+                String productQuery = """
+                            INSERT INTO products (product_code, product_name, product_type_id, category_id, description) 
+                            VALUES (:product_code, :product_name, :product_type_id, :category_id, :description)
+                        """;
+                int productId = handle.createUpdate(productQuery)
+                        .bindBean(product)
+                        .executeAndReturnGeneratedKeys("id")
+                        .mapTo(Integer.class)
+                        .one();
+
+                String variantQuery = """
+                            INSERT INTO product_variants (product_id, style, color, size, material, price, image_url) 
+                            VALUES (:product_id, :style, :color, :size, :material, :price, :image_url)
+                        """;
+                handle.createUpdate(variantQuery)
+                        .bind("product_id", productId)
+                        .bindBean(variant)
+                        .execute();
+
+                if (images != null && !images.isEmpty()) {
+                    String imageQuery = "INSERT INTO product_images (product_id, image_url) VALUES (:product_id, :image_url)";
+                    for (Product_image image : images) {
+                        handle.createUpdate(imageQuery)
+                                .bind("product_id", productId)
+                                .bind("image_url", image.getImage_url())
+                                .execute();
+                    }
+                }
+                return true;
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // 2. LẤY CHI TIẾT SẢN PHẨM (Cho trang Detail)
     public Product getById(int id) {
         return jdbi.withHandle(handle -> {
-            String sqlProduct = """
-                SELECT
-                    p.*,
-                    t.type_name,
-                    (SELECT image_url FROM product_images WHERE product_id = p.id ORDER BY id LIMIT 1) AS image_url,
-                    (
-                        SELECT MAX(d.discount_percent)
-                        FROM discounts d
-                        WHERE
-                            (
-                                d.id IN (SELECT discount_id FROM discount_categories WHERE category_id = p.category_id) OR
-                                d.id IN (SELECT discount_id FROM discount_product_types WHERE product_type_id = p.product_type_id)
-                            )
-                            AND NOW() BETWEEN d.start_date AND d.end_date
-                    ) AS discount_percent
-                FROM products p
-                LEFT JOIN product_types t ON p.product_type_id = t.id
-                WHERE p.id = :id
-            """;
+            String sql = """
+                        SELECT p.*, 
+                               (SELECT MIN(price) FROM product_variants WHERE product_id = p.id) AS min_price,
+                               GREATEST(COALESCE(d1.discount_percent, 0), COALESCE(d2.discount_percent, 0)) AS final_discount_percent,
+                               IF(COALESCE(d1.discount_percent, 0) >= COALESCE(d2.discount_percent, 0), d1.id, d2.id) AS d_id,
+                               IF(COALESCE(d1.discount_percent, 0) >= COALESCE(d2.discount_percent, 0), d1.discount_name, d2.discount_name) AS d_name,
+                               IF(COALESCE(d1.discount_percent, 0) >= COALESCE(d2.discount_percent, 0), d1.start_date, d2.start_date) AS d_start,
+                               IF(COALESCE(d1.discount_percent, 0) >= COALESCE(d2.discount_percent, 0), d1.end_date, d2.end_date) AS d_end
+                        FROM products p
+                        LEFT JOIN discount_categories dc ON dc.category_id = p.category_id
+                        LEFT JOIN discounts d1 ON d1.id = dc.discount_id AND (NOW() BETWEEN d1.start_date AND d1.end_date)
+                        LEFT JOIN discount_product_types pdt ON pdt.product_type_id = p.product_type_id
+                        LEFT JOIN discounts d2 ON d2.id = pdt.discount_id AND (NOW() BETWEEN d2.start_date AND d2.end_date)
+                        WHERE p.id = :id  
+                        LIMIT 1
+                    """;
 
-            Optional<Product> productOpt = handle.createQuery(sqlProduct)
-                    .bind("id", id)
+            return handle.createQuery(sql)
+                    .bind("id", id) // JDBI sẽ tìm dấu :id trong chuỗi sql trên để gắn giá trị
                     .map((rs, ctx) -> {
                         Product p = new Product();
                         p.setId(rs.getInt("id"));
                         p.setProduct_name(rs.getString("product_name"));
                         p.setProduct_code(rs.getString("product_code"));
+                        p.setCategory_id(rs.getInt("category_id"));
+                        p.setCategory_id(rs.getInt("product_type_id"));
                         p.setDescription(rs.getString("description"));
-                        p.setImage_url(rs.getString("image_url"));
-                        p.setCategory_id(rs.getString("category_id"));
-                        // Lấy discount percent, nếu null thì trả về 0
-                        p.setDiscountPercent(rs.getObject("discount_percent") != null ? rs.getDouble("discount_percent") : 0.0);
 
-                        String tags = rs.getString("tags");
-                        if (tags != null) {
-                            String t = tags.toLowerCase();
-                            p.setNewProduct(t.contains("new"));
-                            p.setBestSeller(t.contains("best"));
+                        // Lấy giá từ cột alias 'min_price' thay vì 'price'
+                        p.setPrice(rs.getDouble("min_price"));
+
+                        // Trong ProductDAO.java, phần map kết quả SQL
+                        if (rs.getBigDecimal("final_discount_percent") != null && rs.getBigDecimal("final_discount_percent").doubleValue() > 0) {
+                            Discount disc = new Discount();
+                            disc.setId(rs.getInt("d_id"));
+                            disc.setDiscount_name(rs.getString("d_name"));
+                            disc.setDiscount_percent(rs.getInt("final_discount_percent")); // Dùng alias mới
+                            disc.setStart_date(rs.getTimestamp("d_start"));
+                            disc.setEnd_date(rs.getTimestamp("d_end"));
+                            p.setDiscount(disc);
                         }
                         return p;
-                    }).findFirst();
+                    })
+                    .findOne()
+                    .map(p -> {
+                        // Load Variants kèm Stock
+                        p.setVariants(handle.createQuery("""
+                                        SELECT pv.*, COALESCE(i.stock_quantity, 0) as stock 
+                                        FROM product_variants pv 
+                                        LEFT JOIN inventories i ON pv.id = i.variant_id 
+                                        WHERE pv.product_id = :id
+                                        """)
+                                .bind("id", id).mapToBean(Product_variant.class).list());
 
-            if (productOpt.isPresent()) {
-                Product product = productOpt.get();
-
-                List<Product_variant> variants = getVariantsByProductId(id);
-                product.setVariants(variants);
-
-                product.setImages(handle.createQuery("SELECT * FROM product_images WHERE product_id = :id")
-                        .bind("id", id).mapToBean(Product_image.class).list());
-
-                if (!variants.isEmpty()) {
-                    OptionalDouble minPriceOpt = variants.stream()
-                            .mapToDouble(v -> v.getPrice().doubleValue())
-                            .min();
-
-                    if (minPriceOpt.isPresent()) {
-                        double minPrice = minPriceOpt.getAsDouble();
-                        product.setPrice(minPrice);
-
-                        if (product.getDiscountPercent() > 0) {
-                            double newPrice = minPrice * (1 - (product.getDiscountPercent() / 100.0));
-                            product.setPrice_new(newPrice);
-                        } else {
-                            product.setPrice_new(minPrice);
-                        }
-                    }
-                }
-                return product;
-            }
-            return null;
+                        // Load Images
+                        p.setImages(handle.createQuery("SELECT * FROM product_images WHERE product_id = :id")
+                                .bind("id", id).mapToBean(Product_image.class).list());
+                        return p;
+                    }).orElse(null);
         });
     }
 
-    public List<Product> getRelatedProducts(String categoryId, int currentId) {
+    // 3. LẤY TẤT CẢ SẢN PHẨM (Kèm giá và ảnh đại diện)
+    public List<Product> getAll() {
         return jdbi.withHandle(handle -> {
             String sql = """
-                SELECT
-                    p.id, p.product_name,
-                    (SELECT image_url FROM product_images WHERE product_id = p.id LIMIT 1) AS image_url,
-                    (SELECT MIN(price) FROM product_variants WHERE product_id = p.id) as base_origin_price,
-                    p.tags,
-                    (
-                        SELECT MAX(d.discount_percent)
-                        FROM discounts d
-                        WHERE
-                            (
-                                d.id IN (SELECT discount_id FROM discount_categories WHERE category_id = p.category_id) OR
-                                d.id IN (SELECT discount_id FROM discount_product_types WHERE product_type_id = p.product_type_id)
-                            )
-                            AND NOW() BETWEEN d.start_date AND d.end_date
-                    ) AS discount_percent
-                FROM products p
-                WHERE p.category_id = :categoryId AND p.id != :currentId
-                ORDER BY RAND()
-                LIMIT 4
-            """;
+                        SELECT p.*, pv.price, pv.image_url 
+                        FROM products p
+                        LEFT JOIN product_variants pv ON p.id = pv.product_id
+                        GROUP BY p.id
+                    """;
+            return handle.createQuery(sql)
+                    .mapToBean(Product.class)
+                    .list();
+        });
+    }
 
+    // 4. LẤY SẢN PHẨM THEO DANH MỤC (Đã tối ưu hóa N+1)
+    // Trong ProductDAO.java
+    public List<Product> getByCategory(int categoryId) {
+        return jdbi.withHandle(handle -> {
+            String sql = """
+                        SELECT p.*, 
+                               MIN(pv.price) as price,  -- LUÔN lấy giá nhỏ nhất làm giá đại diện
+                               pv.image_url as image_url 
+                        FROM products p
+                        LEFT JOIN product_variants pv ON p.id = pv.product_id
+                        WHERE p.category_id = :categoryId
+                        GROUP BY p.id
+                    """;
             return handle.createQuery(sql)
                     .bind("categoryId", categoryId)
-                    .bind("currentId", currentId)
+                    .mapToBean(Product.class)
+                    .list();
+        });
+    }
+
+    // 5. LẤY SẢN PHẨM TƯƠNG TỰ (Đã xóa bản trùng lặp)
+    public List<Product> getRelatedProducts(int categoryId, int currentProductId) {
+        return jdbi.withHandle(handle -> {
+            String sql = """
+                    SELECT p.*, pv.price, pv.image_url 
+                    FROM products p 
+                    LEFT JOIN product_variants pv ON p.id = pv.product_id 
+                    WHERE p.category_id = :catId AND p.id != :currentId 
+                    GROUP BY p.id 
+                    LIMIT 8
+                    """;
+            return handle.createQuery(sql)
+                    .bind("catId", categoryId)
+                    .bind("currentId", currentProductId)
+                    .mapToBean(Product.class)
+                    .list();
+        });
+    }
+
+    // 6. LẤY THEO TYPE (Đã tối ưu SQL)
+    public List<Product> getByProductType(int typeId, int limit) {
+        return jdbi.withHandle(handle -> {
+            String sql = """
+                        SELECT p.*, 
+                               MAX(pv.price) as price, 
+                               MAX(pv.image_url) as image_url
+                        FROM products p 
+                        LEFT JOIN product_variants pv ON p.id = pv.product_id 
+                        WHERE p.product_type_id = :typeId 
+                        GROUP BY p.id 
+                        LIMIT :limit
+                    """;
+            return handle.createQuery(sql)
+                    .bind("typeId", typeId)
+                    .bind("limit", limit)
+                    .mapToBean(Product.class)
+                    .list();
+        });
+    }
+
+    // 7. LẤY SẢN PHẨM MỚI NHẤT
+    public List<Product> getNewestProducts(int limit) {
+        return jdbi.withHandle(handle -> {
+            String sql = """
+                        SELECT p.*, 
+                               MIN(pv.price) as price,  -- Lấy giá thấp nhất
+                               MAX(pv.image_url) as image_url
+                        FROM products p
+                        INNER JOIN new_products np ON p.id = np.product_id
+                        LEFT JOIN product_variants pv ON p.id = pv.product_id 
+                        GROUP BY p.id
+                        ORDER BY np.added_at DESC 
+                        LIMIT :limit
+                    """;
+            return handle.createQuery(sql)
+                    .bind("limit", limit)
                     .map((rs, ctx) -> {
                         Product p = new Product();
                         p.setId(rs.getInt("id"));
                         p.setProduct_name(rs.getString("product_name"));
+                        p.setDescription(rs.getString("description"));
+                        // Quan trọng: Gán giá và ảnh từ cột Alias vào Product
+                        p.setPrice(rs.getDouble("price"));
                         p.setImage_url(rs.getString("image_url"));
-
-                        double basePrice = rs.getDouble("base_origin_price");
-                        p.setPrice(basePrice);
-
-                        double discountPercent = rs.getObject("discount_percent") != null ? rs.getDouble("discount_percent") : 0.0;
-                        p.setDiscountPercent(discountPercent);
-
-                        if (discountPercent > 0) {
-                            double newPrice = basePrice * (1 - (discountPercent / 100.0));
-                            p.setPrice_new(newPrice);
-                        } else {
-                            p.setPrice_new(basePrice);
-                        }
-
-                        String tags = rs.getString("tags");
-                        if (tags != null) {
-                            String t = tags.toLowerCase();
-                            p.setNewProduct(t.contains("new"));
-                            p.setBestSeller(t.contains("best"));
-                        }
                         return p;
-                    }).list();
+                    })
+                    .list();
         });
     }
 
-    public List<Product_variant> getVariantsByProductId(int productId) {
+    // 8. LẤY SẢN PHẨM BÁN CHẠY
+// 8. LẤY SẢN PHẨM BÁN CHẠY (Bản cập nhật sửa lỗi NULL ảnh)
+    public List<Product> getBestSellerProducts(int limit) {
         return jdbi.withHandle(handle -> {
             String sql = """
-                SELECT
-                    pv.id, pv.variant_code, pv.product_id, pv.style,
-                    pv.color, pv.size, pv.material, pv.price,
-                    COALESCE(i.stock_quantity, 0) as stock_quantity
-                FROM product_variants pv
-                LEFT JOIN inventories i ON pv.id = i.variant_id
-                WHERE pv.product_id = :pid
-            """;
-
+            SELECT p.*, 
+                   -- PHẢI đặt tên alias là 'price' để khớp với Model Product
+                   (SELECT MIN(price) FROM product_variants WHERE product_id = p.id) as price,
+                   -- Lấy ảnh từ bảng product_images (vì bảng variants của bạn đang bị NULL)
+                   (SELECT image_url FROM product_images WHERE product_id = p.id ORDER BY id ASC LIMIT 1) as image_url,
+                   -- Logic tính giảm giá
+                   COALESCE((
+                        SELECT MAX(d.discount_percent)
+                        FROM discounts d
+                        WHERE NOW() BETWEEN d.start_date AND d.end_date
+                        AND (
+                            EXISTS (SELECT 1 FROM discount_product_types dpt WHERE dpt.discount_id = d.id AND dpt.product_type_id = p.product_type_id)
+                            OR
+                            EXISTS (SELECT 1 FROM discount_categories dc WHERE dc.discount_id = d.id AND dc.category_id = p.category_id)
+                        )
+                   ), 0) AS final_discount_percent
+            FROM products p
+            INNER JOIN best_sellers bs ON p.id = bs.product_id
+            WHERE p.is_active = 1
+            GROUP BY p.id
+            ORDER BY bs.sold_quantity DESC
+            LIMIT :limit
+        """;
             return handle.createQuery(sql)
-                    .bind("pid", productId)
-                    .mapToBean(Product_variant.class)
+                    .bind("limit", limit)
+                    .map((rs, ctx) -> {
+                        Product p = new Product();
+                        p.setId(rs.getInt("id"));
+                        p.setProduct_name(rs.getString("product_name"));
+                        p.setDescription(rs.getString("description"));
+
+                        // Gán trực tiếp giá và ảnh vào thuộc tính Product
+                        p.setPrice(rs.getDouble("price"));
+                        p.setImage_url(rs.getString("image_url"));
+
+//                        int dPercent = rs.getInt("final_discount_percent");
+//                        if (dPercent > 0) {
+//                            Discount d = new Discount();
+//                            d.setDiscount_percent(dPercent);
+//                            // Kích hoạt flag active để JSP nhận diện có giảm giá
+//                            long now = System.currentTimeMillis();
+//                            d.setStart_date(new java.sql.Timestamp(now - 86400000));
+//                            d.setEnd_date(new java.sql.Timestamp(now + 86400000));
+//                            p.setDiscount(d);
+//                        }
+                        return p;
+                    })
                     .list();
         });
     }

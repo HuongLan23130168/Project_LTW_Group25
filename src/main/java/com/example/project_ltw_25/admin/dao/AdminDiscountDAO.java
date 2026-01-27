@@ -28,7 +28,7 @@ public class AdminDiscountDAO {
                     d.setId(rs.getInt("id"));
                     d.setDiscount_code(rs.getString("discount_code"));
                     d.setDiscount_name(rs.getString("discount_name"));
-                    d.setDiscount_percent(rs.getDouble("discount_percent"));
+                    d.setDiscount_percent(rs.getInt("discount_percent"));
                     d.setStart_date(rs.getTimestamp("start_date"));
                     d.setEnd_date(rs.getTimestamp("end_date"));
                     d.setDescription(rs.getString("description"));
