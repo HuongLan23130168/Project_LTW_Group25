@@ -16,7 +16,7 @@
 <jsp:include page="/admin/header.jsp"/>
 <jsp:include page="/admin/sidebar.jsp"/>
 <main>
-    <!-- === DASHBOARD === -->
+ 
     <div class="main-content">
         <div class="center-box">
             <i class="fas fa-lock" style="font-size: 50px; color: #74512d;"></i>
@@ -28,5 +28,6 @@
 </main>
 <script src="js/main.js"></script>
 </body>
+
 
 </html>
