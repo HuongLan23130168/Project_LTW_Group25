@@ -1,11 +1,13 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quên mật khẩu</title>
-    <link rel="stylesheet" href="css/contentForm.css"/>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/contentForm.css" />
 </head>
 
 <body>
@@ -66,17 +68,34 @@
     <div class="content">
         <h2 class="form-title">Quên mật khẩu</h2>
 
-        <div class="form-holder">
-            <input type="email" id="emailForgot" class="input" placeholder="Nhập email để khôi phục" required/>
-        </div>
+        <form action="${pageContext.request.contextPath}/forgot-password" method="post">
+            <div class="form-holder">
+                <input type="email" name="email" class="input" placeholder="Nhập email của bạn" required />
+            </div>
 
-        <a href="newPass.jsp" class="submit-btn">Gửi liên kết đặt lại</a>
+            <button type="submit" class="submit-btn" style="border:none; width:100%; cursor:pointer;">
+                Gửi liên kết đặt lại
+            </button>
+        </form>
 
         <p class="switch-text">
-            <a href="login.jsp" class="switch-btn">&larr; Quay lại đăng nhập</a>
+            <a href="${pageContext.request.contextPath}/admin/login.jsp" class="switch-btn" style="text-decoration: none;">
+                &larr; Quay lại đăng nhập
+            </a>
         </p>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    <c:if test="${not empty errorMessage}">
+    Swal.fire({
+        icon: 'error',
+        title: '<span style="color: #74512D">Lỗi</span>',
+        text: '${errorMessage}',
+        confirmButtonColor: '#74512D'
+    });
+    </c:if>
+</script>
 
 </body>
 

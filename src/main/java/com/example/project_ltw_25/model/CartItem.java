@@ -123,7 +123,7 @@ public class CartItem {
         return price * (1 - discountPercent / 100);
     }
 
-    // Tính tổng tiền cho dòng này (Giá sau giảm * số lượng)
+    // Tính tổng tiền (Giá sau giảm * số lượng)
     public double getTotalPrice() {
         return getFinalPrice() * quantity;
     }

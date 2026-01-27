@@ -50,7 +50,7 @@ public class UserDAO {
         jdbi.useHandle(handle -> handle.createUpdate("UPDATE users SET token = NULL WHERE email = :email").bind("email", email).execute());
     }
 
-    // Kiểm tra email có tồn tại trong hệ thống hay không
+    // kt email có tồn tại trong hệ thống ko
     public boolean checkEmailExists(String email) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("SELECT COUNT(*) FROM users WHERE email = :email")
@@ -59,6 +59,7 @@ public class UserDAO {
                         .one() > 0
         );
     }
+
 
     public boolean updatePassword(String email, String hashedPass) {
         try {
@@ -104,6 +105,31 @@ public class UserDAO {
                         .bind("email", email)
                         .mapToBean(User.class)
                         .findFirst()
+                        .orElse(null)
+        );
+    }
+
+    public boolean updateUserInfo(int userId, String fullName, String phone) {
+        try {
+            return jdbi.withHandle(handle ->
+                    handle.createUpdate("UPDATE users SET full_name = :name, phone = :phone WHERE id = :id")
+                            .bind("name", fullName)
+                            .bind("phone", phone)
+                            .bind("id", userId)
+                            .execute() > 0
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public User getUserByEmail(String email) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("SELECT id, fullName, email, role FROM users WHERE email = :email")
+                        .bind("email", email)
+                        .mapToBean(User.class)
+                        .findOne()
                         .orElse(null)
         );
     }

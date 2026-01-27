@@ -199,14 +199,23 @@
                         <div class="price-cart">
                             <div class="price-box">
                                 <c:choose>
+                                    <%-- Nếu sản phẩm đang trong đợt giảm giá (isActive) --%>
                                     <c:when test="${not empty p.discount && p.discount.isActive()}">
-                                        <span class="price"><fmt:formatNumber value="${p.getFinalPrice()}"
-                                                                              type="number"/>₫</span>
-                                        <span class="old-price"><fmt:formatNumber value="${p.price}"
-                                                                                  type="number"/>₫</span>
+            <span class="price">
+                <%-- Hiển thị giá SAU GIẢM --%>
+                <fmt:formatNumber value="${p.getFinalPrice()}" type="number" groupingUsed="true" maxFractionDigits="0"/>₫
+            </span>
+                                        <span class="old-price">
+                <%-- Hiển thị giá GỐC --%>
+                <fmt:formatNumber value="${p.price}" type="number" groupingUsed="true" maxFractionDigits="0"/>₫
+            </span>
                                     </c:when>
+
+                                    <%-- Nếu không giảm giá --%>
                                     <c:otherwise>
-                                        <span class="price"><fmt:formatNumber value="${p.price}" type="number"/>₫</span>
+            <span class="price">
+                <fmt:formatNumber value="${p.price}" type="number" groupingUsed="true" maxFractionDigits="0"/>₫
+            </span>
                                     </c:otherwise>
                                 </c:choose>
                             </div>
@@ -222,9 +231,13 @@
                     <c:param name="page" value="${i}"/>
                     <c:param name="sort" value="${param.sort}"/>
                     <c:param name="priceRange" value="${param.priceRange}"/>
+
+                    <%-- Giữ lại các category đã chọn --%>
                     <c:forEach var="c" items="${paramValues.category}">
                         <c:param name="category" value="${c}"/>
                     </c:forEach>
+
+                    <%-- Giữ lại các room đã chọn --%>
                     <c:forEach var="r" items="${paramValues.room}">
                         <c:param name="room" value="${r}"/>
                     </c:forEach>

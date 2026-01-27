@@ -1,4 +1,3 @@
-/* ================== RESET & BASE ================== */
 * {
     margin: 0;
     padding: 0;
@@ -13,7 +12,7 @@ body {
     overflow-y: scroll;
 }
 
-/* ================== SIDEBAR ================== */
+/* SIDEBAR */
 .sidebar {
     width: 220px;
     background-color: #fee7dc1c;
@@ -29,7 +28,6 @@ body {
     z-index: 1000;
 }
 
-/* ===== LOGO ===== */
 .logo {
     text-align: center;
     margin: 10px 0 40px;
@@ -52,7 +50,7 @@ body {
     color: #5a3e2b;
 }
 
-/* ===== MENU ===== */
+/* MENU */
 .sidebar ul {
     list-style: none;
     padding: 0;
@@ -60,33 +58,39 @@ body {
 }
 
 .sidebar li {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .sidebar li a {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 15px;
+    gap: 12px;
+    padding: 12px 18px;
     color: #5A3E2B;
     text-decoration: none;
-    border-radius: 8px;
-    transition: all 0.25s ease;
+    border-radius: 10px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 14px;
 }
 
-.sidebar li a i {
-    width: 16px;
-    text-align: center;
-}
-
-.sidebar li a:hover,
-.sidebar li.active a {
-    background-color: #e7ccaf;
+.sidebar li a:hover {
+    background-color: #E7CCAF;
     color: #5C4033;
-    font-weight: 500;
+    transform: translateX(5px);
 }
 
-/* ================== HEADER ================== */
+.sidebar li a.active {
+    background-color: #6F4E37;
+    color: #FFFFFF !important;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(111, 78, 55, 0.2);
+}
+
+.sidebar li a.active i {
+    color: #FFFFFF;
+}
+
+/* HEADER */
 .header {
     position: fixed;
     top: 0;
@@ -126,7 +130,6 @@ body {
     color: #74512D;
 }
 
-/* ================== HEADER RIGHT ================== */
 .header-right {
     display: flex;
     align-items: center;
@@ -134,7 +137,6 @@ body {
     margin-right: 20px;
 }
 
-/* ================== ICON BUTTON ================== */
 .icon-button {
     width: 30px;
     height: 30px;
@@ -158,7 +160,6 @@ body {
     color: #F8F4E1;
 }
 
-/* ================== PROFILE DROPDOWN ================== */
 .profile-dropdown {
     position: relative;
 }
@@ -215,7 +216,6 @@ body {
     transform: translateY(0);
 }
 
-/* === NOTIFICATION BADGE ON ICON === */
 .notify-wrapper {
     position: relative;
     display: inline-block;
@@ -236,7 +236,6 @@ body {
     line-height: 1.2;
 }
 
-/* ================== MAIN CONTENT ================== */
 .main-content {
     margin-left: 220px;
     padding: 30px 40px 40px;

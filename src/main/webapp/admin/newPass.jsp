@@ -1,3 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -5,7 +7,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Mật khẩu mới</title>
-    <link rel="stylesheet" href="css/contentForm.css"/>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/contentForm.css"/>
 </head>
 
 <body>
@@ -64,21 +66,61 @@
 
 <div class="form-structor">
     <div class="content">
-        <h2 class="form-title">Mật khẩu mới</h2>
-
-        <div class="form-holder">
-            <input type="password" class="input" placeholder="Nhập mật khẩu mới" required/>
-            <input type="password" class="input" placeholder="Nhập lại mật khẩu mới" required/>
-        </div>
-
-        <a href="login.jsp" class="submit-btn">Xác nhận</a>
-
-        <p class="switch-text">
-            <a href="forgot.jsp" class="switch-btn">&larr; Quay lại đăng nhập</a>
-        </p>
+        <h2 class="form-title">Đặt lại mật khẩu</h2>
+        <form action="${pageContext.request.contextPath}/reset-password" method="post">
+            <div class="form-holder">
+                <input type="password" name="newPassword" class="input" placeholder="Mật khẩu mới" required/>
+                <input type="password" name="confirmPassword" class="input" placeholder="Xác nhận mật khẩu" required/>
+            </div>
+            <button type="submit" class="submit-btn" style="border:none; width:100%; cursor:pointer;">
+                Cập nhật mật khẩu
+            </button>
+            <p class="switch-text">
+                <a href="${pageContext.request.contextPath}/admin/login.jsp" class="switch-btn"
+                   style="text-decoration: none;">
+                    &larr; Quay lại đăng nhập
+                </a>
+            </p>
+        </form>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Thông báo lỗi từ Servlet (ví dụ: mật khẩu không khớp)
+    <c:if test="${not empty errorMessage}">
+    Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: '${errorMessage}',
+        confirmButtonColor: '#74512D'
+    });
+    </c:if>
 
+    // Kiểm tra Regex mật khẩu mạnh trước khi submit
+    document.querySelector("form").addEventListener("submit", function (e) {
+        const pass = this.querySelector('input[name="newPassword"]').value;
+        const confirm = this.querySelector('input[name="confirmPassword"]').value;
+        const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if (!regex.test(pass)) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Mật khẩu yếu',
+                html: 'Mật khẩu phải có ít nhất 8 ký tự, 1 chữ hoa, 1 số và 1 ký tự đặc biệt!',
+                confirmButtonColor: '#74512D'
+            });
+        } else if (pass !== confirm) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Không khớp',
+                text: 'Xác nhận mật khẩu phải giống mật khẩu mới!',
+                confirmButtonColor: '#74512D'
+            });
+        }
+    });
+</script>
 </body>
 
 </html>

@@ -2,7 +2,7 @@ console.clear();
 
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Code xử lý đóng mở bộ lọc
+  // mở bộ lọc
   const labels = document.querySelectorAll('.filter-label');
   labels.forEach(label => {
     label.addEventListener('click', function() {
@@ -19,7 +19,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
-// --- 10. BACK TO TOP ---
+document.querySelectorAll('.sidebar input').forEach(input => {
+  input.addEventListener('change', () => {
+    input.closest('form').submit();
+  });
+});
+
+// nút mũi tên
 const backToTopBtn = document.getElementById("backToTop");
 if(backToTopBtn) {
   window.onscroll = function() {

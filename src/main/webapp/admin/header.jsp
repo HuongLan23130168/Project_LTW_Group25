@@ -13,14 +13,6 @@
     <div class="header-left"></div>
 
     <div class="header-right">
-        <div class="notify-wrapper">
-            <a href="${pageContext.request.contextPath}/admin/notifi" class="icon-button">
-                <i class="fa-solid fa-bell"></i>
-                <c:if test="${not empty sessionScope.acc}">
-                    <span id="notifyCount" class="notify-badge">3</span>
-                </c:if>
-            </a>
-        </div>
 
         <div class="profile-dropdown">
             <button class="icon-button user-btn">

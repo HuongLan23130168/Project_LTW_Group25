@@ -1,6 +1,7 @@
 package com.example.project_ltw_25.admin.controller;
 
 import com.example.project_ltw_25.admin.dao.DashboardDAO;
+import com.example.project_ltw_25.admin.dao.NotificationDAO;
 import com.example.project_ltw_25.user.dao.UserDAO;
 import com.example.project_ltw_25.user.model.User;
 import com.google.gson.Gson;
@@ -18,11 +19,15 @@ public class AdminDashboardServlet extends HttpServlet {
 
     private final DashboardDAO dashboardDAO = new DashboardDAO();
     private final UserDAO userDAO = new UserDAO();
+    private final NotificationDAO notificationDAO = new NotificationDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
+
+        //header - notifi
+        request.setAttribute("unreadNotifyCount", notificationDAO.getUnreadNotificationCount());
 
         // Thống kê tổng quan (Cards)
         request.setAttribute("revenue", dashboardDAO.getTotalRevenue());

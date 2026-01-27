@@ -86,12 +86,11 @@
     color: #333;
     border-radius: 4px;
 }
-/* Đảm bảo tất cả nút qty-btn có cùng kích thước và canh lề */
 .qty-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 30px; /* Tăng kích thước để icon không bị lệch */
+    width: 30px;
     height: 30px;
     background-color: #eee;
     color: #333;
@@ -102,9 +101,8 @@
     cursor: pointer;
 }
 
-/* Style riêng cho nút bị vô hiệu hóa */
 .qty-btn.disabled {
-    pointer-events: none; /* Chặn click */
+    pointer-events: none;
     background-color: #f5f5f5;
     color: #ccc;
     border-color: #ddd;
@@ -175,7 +173,6 @@
     background-color: #ECB176;
     color: white;
 }
-/* === RESPONSIVE === */
 @media (max-width: 900px) {
     .cart-container {
         flex-direction: column;

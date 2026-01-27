@@ -19,7 +19,6 @@
 <jsp:include page="/admin/header.jsp"/>
 <jsp:include page="/admin/sidebar.jsp"/>
 
-<!-- === ACCOUNT === -->
 <div class="main-content account-page">
     <div class="profile-container">
         <h2>Tài khoản Admin</h2>
@@ -38,7 +37,7 @@
             </button>
         </div>
 
-        <!-- Personal Information -->
+        <!-- tài khoản -->
         <div class="card">
             <h4>Thông tin tài khoản</h4>
             <div class="row"><strong>Email:</strong> <span id="email">${sessionScope.acc.email}</span></div>
@@ -46,7 +45,7 @@
             <div class="row"><strong>Chức vụ:</strong> Administrator</div>
         </div>
 
-        <!-- Address -->
+        <!-- địa chỉ -->
         <div class="card">
             <h4>Địa chỉ</h4>
             <div class="row">
@@ -55,7 +54,7 @@
             </div>
         </div>
 
-        <!-- Form chỉnh sửa (ẩn mặc định) -->
+        <!-- form chỉnh sửa  -->
         <form id="editForm" class="card hidden" action="${pageContext.request.contextPath}/admin/update-account" method="POST">
             <label>Họ tên:</label>
             <input type="text" name="fullName" value="${sessionScope.acc.fullName}">

@@ -7,7 +7,6 @@
     min-height: 100vh;
 }
 
-/* ================== PROFILE CONTAINER ================== */
 .profile-container {
     background: #fff;
     border-radius: 16px;
@@ -26,7 +25,6 @@
     text-align: center;
 }
 
-/* ================== PROFILE HEADER ================== */
 .profile-header {
     display: flex;
     align-items: center;
@@ -72,7 +70,6 @@
     color: #74512D;
 }
 
-/* ================== BUTTONS ================== */
 .edit-btn,
 .save-btn {
     border: none;
@@ -121,7 +118,7 @@
     box-shadow: 0 0 6px rgba(111, 78, 55, 0.4);
 }
 
-/* ================== CARD ================== */
+/*  CARD  */
 .card {
     border: 1px solid #e5e5e5;
     border-radius: 12px;
@@ -147,7 +144,6 @@
     font-weight: 600;
 }
 
-/* ================== INPUT TRONG ACCOUNT ================== */
 .account-page input {
     width: 100%;
     padding: 8px;
@@ -166,7 +162,6 @@
     background-color: #fff;
 }
 
-/* ================== EDIT FORM TRANSITION ================== */
 .hidden {
     display: none;
 }
@@ -187,13 +182,11 @@
     padding: 20px;
 }
 
-/* ================== BTN GROUP ================== */
 .btn-group {
     display: flex;
     justify-content: flex-end;
 }
 
-/* ================== MEDIA QUERIES ================== */
 @media (max-width: 640px) {
     .profile-container {
         width: 90%;

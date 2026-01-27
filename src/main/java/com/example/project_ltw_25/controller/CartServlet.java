@@ -23,7 +23,6 @@ public class CartServlet extends HttpServlet {
         processRequest(request, response);
     }
 
-    // Gộp chung logic xử lý để tránh sai sót giữa GET và POST
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
@@ -43,7 +42,7 @@ public class CartServlet extends HttpServlet {
 
         try {
             if (action != null) {
-                // Nhánh Checkout: Xử lý trước vì không cần ID sản phẩm lẻ
+
                 if ("checkout".equals(action)) {
                     List<CartItem> list = dao.getCartByUserId(user.getId());
                     if (list == null || list.isEmpty()) {
@@ -58,7 +57,7 @@ public class CartServlet extends HttpServlet {
                     return;
                 }
 
-                // Các nhánh cần ID (Update/Delete)
+
                 if (idRaw != null && !idRaw.isEmpty()) {
                     int variantId = Integer.parseInt(idRaw);
                     if ("delete".equals(action)) {
@@ -72,7 +71,7 @@ public class CartServlet extends HttpServlet {
                 }
             }
 
-            // MẶC ĐỊNH: Hiển thị giỏ hàng
+            // mặc định hiện giỏ hàng
             List<CartItem> list = dao.getCartByUserId(user.getId());
             double grandTotal = 0;
             int totalQuantity = 0;
