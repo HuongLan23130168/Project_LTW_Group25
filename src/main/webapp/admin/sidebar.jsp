@@ -49,8 +49,8 @@
                     </a>
                 </li>
                 <li>
-                    <a href="${pageContext.request.contextPath}/admin/notifis"
-                       class="${uri.contains('notifis') ? 'active' : ''}">
+                    <a href="${pageContext.request.contextPath}/admin/notifications"
+                       class="${uri.contains('notifications') ? 'active' : ''}">
                         <i class="fas fa-bell"></i> Thông báo
                     </a>
                 </li>

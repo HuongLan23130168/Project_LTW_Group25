@@ -1,3 +1,7 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -5,7 +9,10 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Đăng ký / Đăng nhập</title>
-    <link rel="stylesheet" href="css/login.css"/>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/login.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
 </head>
 
 <body>
@@ -66,19 +73,17 @@
     <!-- FORM ĐĂNG KÝ -->
     <div class="signup">
         <h2 class="form-title">Đăng ký</h2>
+        <form action="${pageContext.request.contextPath}/register" method="post">
+            <div class="form-holder">
+                <input type="text" name="fullname" class="input" placeholder="Họ và tên" required/>
+                <input type="email" name="email" class="input" placeholder="Email" required/>
+                <input type="password" name="password" class="input" placeholder="Mật khẩu" required/>
+                <input type="password" name="confirmPassword" class="input" placeholder="Xác nhận mật khẩu" required/>
+            </div>
+            <button type="submit" class="submit-btn" style="border:none; width:100%; cursor:pointer;">Đăng ký</button>
+        </form>
+        <p class="switch-text">Đã có tài khoản? <span id="signin" class="switch-btn">Đăng nhập</span></p>
 
-        <div class="form-holder">
-            <input type="text" class="input" placeholder="Họ và tên" required/>
-            <input type="email" class="input" placeholder="Email" required/>
-            <input type="password" class="input" id="signupPassword" placeholder="Mật khẩu" required/>
-            <input type="password" class="input" id="confirmPassword" placeholder="Xác nhận mật khẩu" required/>
-        </div>
-
-        <a href="#" class="submit-btn">Đăng ký</a>
-
-        <p class="switch-text">Đã có tài khoản?
-            <span id="signin" class="switch-btn">Đăng nhập</span>
-        </p>
     </div>
 
     <!-- FORM ĐĂNG NHẬP -->
@@ -86,22 +91,69 @@
         <div class="center">
             <h2 class="form-title">Đăng nhập</h2>
 
-            <div class="form-holder">
-                <input type="email" class="input" placeholder="Email" required/>
-                <input type="password" class="input" id="signinPassword" placeholder="Mật khẩu" required/>
-            </div>
-
-            <a href="forgot.jsp" class="forgot-password">Quên mật khẩu?</a>
-            <a href="dashboard.jsp" class="submit-btn">Đăng nhập</a>
-
-            <p class="switch-text">Chưa có tài khoản?
-                <span id="signup" class="switch-btn">Đăng ký</span>
-            </p>
+            <form action="${pageContext.request.contextPath}/login" method="post">
+                <div class="form-holder">
+                    <input type="email" name="email" class="input" placeholder="Email" required/>
+                    <input type="password" name="password" class="input" placeholder="Mật khẩu" required/>
+                </div>
+                <a href="${pageContext.request.contextPath}/admin/forgot.jsp" class="forgot-password">Quên mật
+                    khẩu?</a>
+                <p class="switch-text">Chưa có tài khoản? <span id="signup-btn" class="switch-btn" >Đăng ký</span></p>
+                <button type="submit" class="submit-btn" style="border:none; width:100%; cursor:pointer;">Đăng nhập
+                </button>
+            </form>
         </div>
     </div>
 </div>
 
-<script src="js/login.js"></script>
-</body>
+<script src="${pageContext.request.contextPath}/admin/js/login.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
 
+    // === 1. XỬ LÝ LỖI ĐĂNG NHẬP ===
+    <c:if test="${not empty errorMessage}">
+    // Trượt form Signup lên để hiện form Signin
+    document.querySelector(".signup").classList.add("slide-up");
+    document.querySelector(".signin").classList.remove("slide-up");
+
+    Swal.fire({
+        icon: 'error',
+        title: '<span style="color: #74512D">Lỗi đăng nhập</span>',
+        text: '${errorMessage}',
+        confirmButtonColor: '#74512D',
+        showClass: { popup: 'animate__animated animate__shakeX' }
+    });
+    </c:if>
+
+    // === 2. XỬ LÝ LỖI ĐĂNG KÝ ===
+    <c:if test="${not empty registerError}">
+    // Đảm bảo đứng yên ở form Signup
+    document.querySelector(".signup").classList.remove("slide-up");
+    document.querySelector(".signin").classList.add("slide-up");
+
+    Swal.fire({
+        icon: 'error',
+        title: '<span style="color: #74512D">Lỗi đăng ký</span>',
+        text: '${registerError}',
+        confirmButtonColor: '#74512D',
+        showClass: { popup: 'animate__animated animate__shakeX' }
+    });
+    </c:if>
+
+    // === 3. XỬ LÝ THÀNH CÔNG (Đăng ký/Đăng xuất) ===
+    <c:if test="${not empty successMessage}">
+    Toast.fire({
+        icon: 'success',
+        title: '${successMessage}'
+    });
+    </c:if>
+</script>
+</body>
 </html>
