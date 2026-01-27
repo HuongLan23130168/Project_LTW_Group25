@@ -1,20 +1,24 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Thêm sản phẩm mới | Admin</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Noble Loft Theory - Add Products</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/style.css"/>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/addProducts.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
+
 <body>
 <jsp:include page="/admin/header.jsp"/>
 <jsp:include page="/admin/sidebar.jsp"/>
 
+<!-- === ADD PRODUCTS === -->
 <div class="main-content">
     <div class="breadcrumb">
         <a href="${pageContext.request.contextPath}/admin/products">Sản phẩm</a> / <span class="current">Thêm mới</span>
@@ -143,6 +147,9 @@
     </div>
 </div>
 
+<script src="${pageContext.request.contextPath}/admin/js/main.js"></script>
 <script src="${pageContext.request.contextPath}/admin/js/addProducts.js"></script>
+
 </body>
+
 </html>

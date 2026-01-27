@@ -1,158 +1,142 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Noble Loft Theory - Nofitications</title>
-    <link rel="stylesheet" href="css/style.css"/>
-    <link rel="stylesheet" href="css/notifi.css">
+    <meta charset="UTF-8">
+    <title>Quản lý Thông báo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/notifi.css">
 </head>
-
 <body>
-<!-- === SIDEBAR === -->
-<div class="sidebar" id="sidebar">
-    <div class="logo">
-        <a href="dashboard.jsp">Noble Loft Theory</a>
-    </div>
-    <ul>
-        <li>
-            <a href="dashboard.jsp"><i class="fas fa-chart-line"></i> Dashboard</a>
-        </li>
-        <li>
-            <a href="products.jsp"><i class="fas fa-box"></i> Sản phẩm</a>
-        </li>
-        <li>
-            <a href="orders.jsp"><i class="fas fa-cart-shopping"></i> Đơn hàng</a>
-        </li>
-        <li>
-            <a href="customers.jsp"><i class="fas fa-users"></i> Khách hàng</a>
-        </li>
-        <li class="active">
-            <a href="notifi.jsp"><i class="fas fa-bell"></i> Thông báo</a>
-        </li>
-        <li>
-            <a href="account.jsp"><i class="fas fa-gear"></i> Tài khoản</a>
-        </li>
-    </ul>
-</div>
+<jsp:include page="sidebar.jsp"/>
 
-<!-- === HEADER === -->
-<header class="header">
-    <div class="header-left">
-        <div class="search-container">
-            <i class="fa-solid fa-magnifying-glass" style="color: #74512d;"></i>
-            <input type="text" placeholder="Tìm kiếm" class="search-input"/>
-        </div>
-    </div>
+<div class="main-content">
+    <jsp:include page="header.jsp"/>
 
-    <div class="header-right">
-        <!-- Nút thông báo -->
-        <div class="notify-wrapper">
-            <a href="notifi.jsp" class="icon-button">
-                <i class="fa-solid fa-bell"></i>
-                <span id="notifyCount" class="notify-badge">3</span>
+    <div class="content" style="padding-top: 20px;">
+        <h2 class="page-title"><i class="fa-regular fa-bell"></i> Thông báo</h2>
+
+        <div class="notifi-controls">
+            <select class="filter-select" onchange="location.href='${pageContext.request.contextPath}/admin/notifications?filter=' + this.value">
+                <option value="all"     ${param.filter == 'all' ? 'selected' : ''}>Tất cả</option>
+                <option value="unread"  ${param.filter == 'unread' ? 'selected' : ''}>Chưa xem</option>
+                <option value="read"    ${param.filter == 'read' ? 'selected' : ''}>Đã xem</option>
+                <option value="order"   ${param.filter == 'order' ? 'selected' : ''}>Đơn hàng</option>
+                <option value="product" ${param.filter == 'product' ? 'selected' : ''}>Sản phẩm</option>
+                <option value="account" ${param.filter == 'account' ? 'selected' : ''}>Tài khoản</option>
+            </select>
+
+            <a href="${pageContext.request.contextPath}/admin/notifications?action=markAllRead" class="btn">
+                <i class="fa-solid fa-check-double"></i> Đã đọc tất cả
+            </a>
+
+            <a href="${pageContext.request.contextPath}/admin/notifications?action=deleteAll" class="btn danger"
+               onclick="return confirm('Bạn có chắc chắn muốn xóa toàn bộ thông báo?');">
+                <i class="fa-solid fa-trash-can"></i> Xóa tất cả
             </a>
         </div>
 
-        <!-- Hồ sơ người dùng -->
-        <div class="profile-dropdown">
-            <button class="icon-button user-btn">
-                <i class="fa-solid fa-user"></i>
-            </button>
+        <ul class="notifi-list">
+            <c:forEach var="n" items="${notifications}">
+                <%-- 1. Xử lý Logic Redirect URL --%>
+                <c:set var="redirectUrl" value=""/>
+                <c:if test="${n.type == 'order'}">
+                    <%-- Đổi từ /view-order thành /viewOrder nếu đó là tên thực tế của servlet --%>
+                    <c:set var="redirectUrl" value="/admin/viewOrder?orderId=${n.entityId}"/>
+                </c:if>
 
-            <div class="dropdown-menu">
-                <a href="account.jsp"><i class="fas fa-user"></i> Tài khoản</a>
-                <a href="index.jsp"><i class="fas fa-right-from-bracket"></i> Đăng xuất</a>
-            </div>
-        </div>
+                <c:if test="${n.type == 'product' || n.type == 'inventory'}">
+                    <%-- Kiểm tra xem tham số là 'id' hay 'productId' --%>
+                    <c:set var="redirectUrl" value="/admin/editProduct?id=${n.entityId}"/>
+                </c:if>
+                <%--                <c:if test="${n.type == 'account'}">--%>
+                <%--                    <c:set var="redirectUrl" value="${pageContext.request.contextPath}/admin/customers"/>--%>
+                <%--                </c:if>--%>
+
+                <c:if test="${n.type == 'system'}">
+                    <c:set var="redirectUrl" value="#"/>
+                </c:if>
+
+                <%-- 2. Xử lý Logic CSS Class --%>
+                <c:set var="statusClass" value="${n.status == 'unread' ? 'unread' : 'read'}"/>
+                <c:set var="typeClass" value="${(n.type == 'system') ? 'system' : 'user'}"/>
+
+                <%-- ITEM START --%>
+                <li class="notifi-item ${statusClass} ${typeClass}">
+
+                        <%-- Tạo URL an toàn cho việc đánh dấu đã đọc --%>
+                    <c:url var="markReadUrl" value="/admin/mark-notification-read">
+                        <c:param name="id" value="${n.id}"/>
+                        <c:param name="redirectUrl" value="${redirectUrl}"/>
+                    </c:url>
+
+                    <a href="${markReadUrl}" class="notifi-link-wrapper">
+
+                        <div class="notifi-icon">
+                            <c:choose>
+                                <c:when test="${n.type == 'order'}"><i class="fa-solid fa-cart-shopping"></i></c:when>
+                                <c:when test="${n.type == 'account'}"><i class="fa-solid fa-user-group"></i></c:when>
+                                <c:when test="${n.type == 'product'}"><i class="fa-solid fa-box-open"></i></c:when>
+                                <c:when test="${n.type == 'system'}"><i
+                                        class="fa-solid fa-triangle-exclamation"></i></c:when>
+                                <c:otherwise><i class="fa-regular fa-envelope"></i></c:otherwise>
+                            </c:choose>
+                        </div>
+
+                        <div class="notifi-text">
+                            <h4>
+                                    ${n.title}
+                                <c:if test="${n.status == 'unread'}">
+                                    <span class="notify-badge-inline">Mới</span>
+                                </c:if>
+                            </h4>
+                            <p>${n.content}</p>
+                            <div class="notifi-time">
+                                <i class="fa-regular fa-clock"></i>
+                                <fmt:formatDate value="${n.createdAt}" pattern="HH:mm - dd/MM/yyyy"/>
+                                &nbsp;|&nbsp;
+                                <span>
+                                    <c:choose>
+                                        <c:when test="${n.type == 'order'}">Đơn hàng</c:when>
+                                        <c:when test="${n.type == 'product'}">Sản phẩm</c:when>
+                                        <c:when test="${n.type == 'account'}">Tài khoản</c:when>
+                                        <c:when test="${n.type == 'system'}">Hệ thống</c:when>
+                                        <c:otherwise>Khác</c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+
+                        <%-- Vùng Action: Nút Thùng Rác --%>
+                    <div class="notifi-actions">
+                        <a href="${pageContext.request.contextPath}/admin/delete-notification?id=${n.id}"
+                           class="action-btn delete"
+                           title="Xóa thông báo này"
+                           onclick="return confirm('Bạn muốn xóa thông báo này?');">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </a>
+                    </div>
+                </li>
+                <%-- ITEM END --%>
+            </c:forEach>
+
+            <%-- Trạng thái trống --%>
+            <c:if test="${empty notifications}">
+                <li class="notifi-item"
+                    style="justify-content: center; opacity: 1; border: 2px dashed #ccc; background: none; box-shadow: none;">
+                    <div style="text-align: center; color: #999; padding: 30px;">
+                        <i class="fa-solid fa-inbox" style="font-size: 40px; margin-bottom: 15px; color: #dcdcdc;"></i>
+                        <p style="font-size: 15px;">Không tìm thấy thông báo nào.</p>
+                    </div>
+                </li>
+            </c:if>
+        </ul>
     </div>
-</header>
-<!-- === NOTIFICATIONS === -->
-<main class="main-content">
-    <h1 class="page-title"></i> Thông báo</h1>
-
-    <div class="notifi-controls">
-        <select id="filterSelect" class="filter-select">
-            <option value="all">Tất cả</option>
-            <option value="unread">Chưa đọc</option>
-            <option value="read">Đã đọc</option>
-            <option value="system">Hệ thống</option>
-            <option value="user">Khách hàng</option>
-        </select>
-        <button id="markAllBtn" class="btn"><i class="fa-solid fa-check-double"></i> Đánh dấu tất cả đã đọc</button>
-        <button id="clearBtn" class="btn danger"><i class="fa-solid fa-trash"></i> Xóa tất cả</button>
-    </div>
-
-    <ul id="notifiList" class="notifi-list">
-        <!-- TB1 -->
-        <li class="notifi-item unread user">
-            <div class="notifi-text">
-                <h4>Đơn hàng #1234 đã được xác nhận</h4>
-                <p>Khách hàng Nguyễn Thị Khách Hàng đã đặt mua 2 sản phẩm bàn gỗ.</p>
-                <div class="notifi-time">10 phút trước</div>
-            </div>
-            <div class="notifi-actions">
-                <button class="action-btn mark-read"><i class="fa-solid fa-check"></i></button>
-                <button class="action-btn delete"><i class="fa-solid fa-trash"></i></button>
-            </div>
-        </li>
-        <!-- TB2 -->
-        <li class="notifi-item unread system">
-            <div class="notifi-text">
-                <h4>Kho hàng sắp hết</h4>
-                <p>Sản phẩm Ghế Sofa Luxury chỉ còn 3 chiếc trong kho.</p>
-                <div class="notifi-time">1 giờ trước</div>
-            </div>
-            <div class="notifi-actions">
-                <button class="action-btn mark-read"><i class="fa-solid fa-check"></i></button>
-                <button class="action-btn delete"><i class="fa-solid fa-trash"></i></button>
-            </div>
-        </li>
-
-        <!-- TB3 -->
-        <li class="notifi-item read user">
-            <div class="notifi-text">
-                <h4>Người dùng mới đăng ký</h4>
-                <p>Công An Giao Thông vừa đăng ký tài khoản mới.</p>
-                <div class="notifi-time">2 giờ trước</div>
-            </div>
-            <div class="notifi-actions">
-                <button class="action-btn mark-read"><i class="fa-solid fa-check"></i></button>
-                <button class="action-btn delete"><i class="fa-solid fa-trash"></i></button>
-            </div>
-        </li>
-        <!-- TB4 -->
-        <li class="notifi-item read system">
-            <div class="notifi-text">
-                <h4>Cập nhật hệ thống</h4>
-                <p>Hệ thống đã được nâng cấp lên phiên bản mới nhất.</p>
-                <div class="notifi-time">1 ngày trước</div>
-            </div>
-            <div class="notifi-actions">
-                <button class="action-btn mark-read"><i class="fa-solid fa-check"></i></button>
-                <button class="action-btn delete"><i class="fa-solid fa-trash"></i></button>
-            </div>
-        </li>
-        <!-- TB5 -->
-        <li class="notifi-item unread user">
-            <div class="notifi-text">
-                <h4>Phản hồi từ khách hàng</h4>
-                <p>Khách hàng Lê Văn A đã gửi phản hồi về sản phẩm bàn ăn.</p>
-                <div class="notifi-time">3 ngày trước</div>
-            </div>
-            <div class="notifi-actions">
-                <button class="action-btn mark-read"><i class="fa-solid fa-check"></i></button>
-                <button class="action-btn delete"><i class="fa-solid fa-trash"></i></button>
-            </div>
-
-    </ul>
-</main>
-
-
-<script src="js/main.js"></script>
+</div>
 </body>
-
 </html>
