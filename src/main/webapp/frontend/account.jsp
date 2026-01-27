@@ -24,7 +24,7 @@
 <jsp:include page="/frontend/header.jsp"/>
 
 <nav class="breadcrumb" style="margin: 20px 40px 10px; color: #333;">
-    <a href="home.jsp" style="text-decoration: none; color: #000;">Trang chủ</a> &#47;
+    <a href="${pageContext.request.contextPath}/home" style="text-decoration: none; color: #000;">Trang chủ</a> &#47;
     <span class="current" style="color: #74512D; font-weight: 700;">Tài khoản</span>
 </nav>
 
@@ -43,19 +43,9 @@
                 Tài khoản của tôi
             </li>
 
-            <li data-target="#page-password">Đổi mật khẩu</li>
 
-            <li class="has-submenu">
-                <span class="menu-title">Chính sách <i class="fa-solid fa-chevron-down"></i></span>
-                <ul class="submenu">
-                    <li data-target="#policy-doitra">Chính sách đổi trả hoàn hàng</li>
-                    <li data-target="#policy-baomat">Chính sách bảo mật mật khẩu</li>
-                    <li data-target="#policy-muahang">Hướng dẫn mua hàng, sản phẩm</li>
-                    <li data-target="#policy-kiemhang">Chính sách kiểm hàng hóa vận chuyển</li>
-                    <li data-target="#policy-giaohang">Chính sách giao hàng tận nơi</li>
-                    <li data-target="#policy-thanhtoan">Hướng dẫn thanh toán đơn hàng</li>
-                </ul>
-            </li>
+
+
 
             <li class="${activePage == 'orders' ? 'active' : ''}" data-target="#page-orders">
                 Đơn mua
@@ -68,33 +58,170 @@
     <main class="account-details">
 
         <div id="page-profile" class="page ${activePage == null || activePage == 'profile' ? 'active' : ''}">
-            <div class="info-box">
+
+            <div class="info-box" id="profile-view">
                 <div class="info-left">
-                    <p><strong>Email:</strong> <span id="email">${user.email}</span></p>
-                    <p><strong>Họ và tên:</strong> <span id="fullName">${user.fullName}</span></p>
-                    <p><strong>Số điện thoại:</strong> <span id="phone">${user.phone}</span></p>
+                    <p><strong>Email:</strong> <span>${user.email}</span></p>
+                    <p><strong>Họ và tên:</strong> <span>${user.fullName}</span></p>
+                    <p><strong>Số điện thoại:</strong> <span>${user.phone}</span></p>
                 </div>
                 <div class="info-right">
                     <div class="circle-avatar">${user.fullName.charAt(0)}</div>
                 </div>
-                <button class="edit-btn" id="editProfile">Sửa</button>
+                <button class="edit-btn" onclick="toggleProfileEdit()">Sửa</button>
             </div>
 
-            <h4>Địa chỉ</h4>
-            <button class="add-btn">➕ Thêm địa chỉ</button>
+            <form action="update-profile" method="post" class="info-box hidden" id="profile-edit" style="display: block;">
+                <div class="info-left" style="width: 100%;">
+                    <h3 style="color: #6F4E37; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">
+                        Cập nhật thông tin
+                    </h3>
+
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display:block; font-weight:bold; margin-bottom:5px;">Email (Không thể sửa):</label>
+                        <input type="text" value="${user.email}" disabled
+                               style="width: 100%; padding: 8px; background: #eee; border: 1px solid #ccc; border-radius: 5px;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display:block; font-weight:bold; margin-bottom:5px;">Họ và tên:</label>
+                        <input type="text" name="fullName" value="${user.fullName}" required
+                               style="width: 100%; padding: 8px; border: 1px solid #A79277; border-radius: 5px;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display:block; font-weight:bold; margin-bottom:5px;">Số điện thoại:</label>
+                        <input type="text" name="phone" value="${user.phone}" required pattern="[0-9]{10,11}"
+                               style="width: 100%; padding: 8px; border: 1px solid #A79277; border-radius: 5px;">
+                    </div>
+
+                    <div style="text-align: right;">
+                        <button type="button" class="cancel-btn" onclick="toggleProfileEdit()"
+                                style="padding: 8px 15px; background: transparent; border: 1px solid #6F4E37; color: #6F4E37; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+                            Hủy
+                        </button>
+                        <button type="submit" class="save-btn"
+                                style="padding: 8px 15px; background: #6F4E37; border: none; color: #fff; border-radius: 5px; cursor: pointer;">
+                            Lưu thay đổi
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #EEE2D0;">
+
+            <h4 style="display: inline-block;">Sổ địa chỉ</h4>
+            <button class="add-btn" onclick="openAddressModal()">➕ Thêm địa chỉ mới</button>
+
             <div class="address-box">
                 <div class="address-list">
-                    <div class="address-row">
-                        <div class="address" id="addressText">
-                            ${user.address != null ? user.address : 'Chưa cập nhật địa chỉ'}
-                            <span class="default">(Mặc định)</span>
+                    <c:if test="${empty listAddresses}">
+                        <p style="color: #888; padding: 10px;">Bạn chưa lưu địa chỉ nào.</p>
+                    </c:if>
+
+                    <c:forEach var="addr" items="${listAddresses}">
+                        <div class="address-row" style="display: flex; justify-content: space-between; align-items: center; background: #FEFAEF; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #d8b99c;">
+                            <div class="address-content" style="flex-grow: 1;">
+                                    ${addr.address}
+                                <c:if test="${addr.is_default == 1}">
+                                    <span style="color: #A79277; font-weight: bold; font-size: 13px; margin-left: 5px;">(Mặc định)</span>
+                                </c:if>
+                            </div>
+
+                            <div class="address-actions" style="min-width: 100px; text-align: right;">
+                                <button onclick="openEditModal('${addr.id}', '${addr.address}', ${addr.is_default})"
+                                        style="background: #6F4E37; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">
+                                    Sửa
+                                </button>
+
+                                <a href="delete-address?id=${addr.id}" onclick="return confirm('Bạn có chắc muốn xóa địa chỉ này không?');"
+                                   style="background: #d9534f; color: #fff; text-decoration: none; padding: 5px 10px; border-radius: 4px; font-size: 13.33px;">
+                                    Xóa
+                                </a>
+                            </div>
                         </div>
-                        <button class="edit-btn edit-address-btn">Sửa</button>
+                    </c:forEach>
+                    <div id="modal-edit-address" class="modal">
+                        <div class="modal-content">
+                            <h3 style="color: #6F4E37; margin-top: 0;">Cập nhật địa chỉ</h3>
+                            <form action="update-address" method="post">
+                                <input type="hidden" id="edit-id" name="id">
+
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display:block; font-weight:bold; margin-bottom:5px; color: #6F4E37;">Địa chỉ chi tiết:</label>
+                                    <textarea id="edit-address" name="address" rows="3" required
+                                              style="width: 100%; padding: 10px; border: 1px solid #A79277; border-radius: 5px; font-family: inherit;"></textarea>
+                                </div>
+
+                                <div style="margin-bottom: 20px;">
+                                    <input type="checkbox" id="edit-isDefault" name="isDefault" value="1">
+                                    <label for="edit-isDefault" style="cursor: pointer; color: #333;">Đặt làm địa chỉ mặc định</label>
+                                </div>
+
+                                <div style="text-align: right;">
+                                    <button type="button" onclick="closeEditModal()"
+                                            style="padding: 8px 15px; background: #eee; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+                                        Hủy
+                                    </button>
+                                    <button type="submit"
+                                            style="padding: 8px 15px; background: #6F4E37; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                        Lưu thay đổi
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <div id="modal-address" class="modal">
+            <div class="modal-content">
+                <h3 style="color: #6F4E37; margin-top: 0;">Thêm địa chỉ mới</h3>
+                <form action="add-address" method="post">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; font-weight:bold; margin-bottom:5px; color: #6F4E37;">Địa chỉ chi tiết:</label>
+                        <textarea name="address" rows="3" required placeholder="Số nhà, Tên đường, Phường/Xã, Quận/Huyện..."
+                                  style="width: 100%; padding: 10px; border: 1px solid #A79277; border-radius: 5px; font-family: inherit;"></textarea>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <input type="checkbox" id="isDefault" name="isDefault" value="1">
+                        <label for="isDefault" style="cursor: pointer; color: #333;">Đặt làm địa chỉ mặc định</label>
+                    </div>
+
+                    <div style="text-align: right;">
+                        <button type="button" onclick="closeAddressModal()"
+                                style="padding: 8px 15px; background: #eee; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+                            Đóng
+                        </button>
+                        <button type="submit"
+                                style="padding: 8px 15px; background: #6F4E37; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            Lưu địa chỉ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="modal-address" class="modal">
+            <div class="modal-content">
+                <h3 style="color: #6F4E37;">Thêm địa chỉ mới</h3>
+                <form action="${pageContext.request.contextPath}/add-address" method="post">
+                    <label style="display:block; margin: 10px 0 5px; font-weight: bold;">Địa chỉ chi tiết:</label>
+                    <textarea name="address" rows="3" placeholder="Ví dụ: 123 Đường ABC, Phường X, Quận Y..." required style="width: 100%; padding: 10px; border: 1px solid #A79277; border-radius: 5px;"></textarea>
+
+                    <div style="margin-top: 10px;">
+                        <input type="checkbox" id="isDefault" name="isDefault" value="1">
+                        <label for="isDefault">Đặt làm địa chỉ mặc định</label>
+                    </div>
+
+                    <div class="modal-actions" style="margin-top: 20px; text-align: right;">
+                        <button type="button" class="cancel-btn" onclick="closeAddressModal()">Đóng</button>
+                        <button type="submit" class="save-btn">Lưu địa chỉ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
         <div id="page-password" class="page">
             <div class="form change">
                 <h2 class="form-title">Đổi mật khẩu</h2>
@@ -180,9 +307,9 @@
 
                             <div class="order-footer">
 
-<%--                                <c:if test="${o.status == 'Đã giao'}">--%>
-<%--                                    <button class="order-view-btn-huy" style="background: #28a745;">Mua lại</button>--%>
-<%--                                </c:if>--%>
+                                    <%--                                <c:if test="${o.status == 'Đã giao'}">--%>
+                                    <%--                                    <button class="order-view-btn-huy" style="background: #28a745;">Mua lại</button>--%>
+                                    <%--                                </c:if>--%>
 
 
                                 <c:if test="${o.status == 'Chờ xử lý'}">
@@ -221,6 +348,8 @@
 </div>
 
 <jsp:include page="/frontend/footer.jsp"/>
+<script src="${pageContext.request.contextPath}/frontend/js/account.js"></script>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
