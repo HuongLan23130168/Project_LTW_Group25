@@ -8,10 +8,8 @@ import org.jdbi.v3.core.statement.Query;
 import java.util.List;
 
 public class CustomerDAO {
-    // Kết nối CSDL thông qua DBDAO
     private final Jdbi jdbi = DBDAO.get();
 
-    // 1. Lấy danh sách khách hàng và sắp xếp
     public List<User> getAllCustomers(String sortBy, String search) {
         return jdbi.withHandle(handle -> {
             StringBuilder sql = new StringBuilder("SELECT id, full_name AS fullName, birth, gender, email, phone, address, role, created_at FROM users");
@@ -48,7 +46,6 @@ public class CustomerDAO {
         });
     }
 
-    // 2. Lấy thông tin chi tiết một khách hàng theo ID (PHƯƠNG THỨC BẠN ĐANG THIẾU)
     public User getCustomerById(int id) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("SELECT id, full_name AS fullName, birth, gender, email, phone, address, role, created_at FROM users WHERE id = :id")
@@ -59,7 +56,6 @@ public class CustomerDAO {
         );
     }
 
-    // 3. Xóa khách hàng (Optional - Thêm để dùng nếu cần)
     public void deleteCustomer(int id) {
         jdbi.useHandle(handle ->
                 handle.createUpdate("DELETE FROM users WHERE id = :id")

@@ -13,18 +13,13 @@ import java.util.List;
 public class OrderDAO {
     private final Jdbi jdbi = DBDAO.get();
 
-    // ==========================================
-    // 1. TẠO ĐƠN HÀNG (TRANSACTION)
-    // ==========================================
     public String createOrder(int userId, String name, String phone, String address, String note,
                               int paymentId, List<CartItem> items, double total,
                               String shippingType, double shippingFee) {
         try {
             return jdbi.inTransaction(handle -> {
-                // 1. Tạo Order Code
                 String orderCode = "NLT@" + (System.currentTimeMillis() % 100000);
 
-                // 2. Chèn vào bảng orders (Không có cột status)
                 int orderId = handle.createUpdate("INSERT INTO orders (order_code, user_id, recipient_name, recipient_phone, total_price, note, shipping_address, order_date) "
                                 + "VALUES (:code, :uid, :name, :phone, :total, :note, :addr, NOW())")
                         .bind("code", orderCode)
@@ -38,12 +33,10 @@ public class OrderDAO {
                         .mapTo(Integer.class)
                         .one();
 
-                // [MỚI] 2.1. Ghi trạng thái khởi tạo vào lịch sử ngay lập tức
                 handle.createUpdate("INSERT INTO order_status_history (order_id, status, created_at) VALUES (:oid, 'Chờ xử lý', NOW())")
                         .bind("oid", orderId)
                         .execute();
 
-                // 3. Batch insert chi tiết đơn hàng và Batch update trừ kho
                 var detailBatch = handle.prepareBatch("INSERT INTO order_details (order_id, variant_id, quantity, unit_price) VALUES (?, ?, ?, ?)");
                 var stockBatch = handle.prepareBatch("UPDATE inventories SET stock_quantity = stock_quantity - ? WHERE variant_id = ? AND stock_quantity >= ?");
 
@@ -55,21 +48,18 @@ public class OrderDAO {
                 detailBatch.execute();
                 int[] updateCounts = stockBatch.execute();
 
-                // Kiểm tra xem có sản phẩm nào bị thiếu kho không
                 for (int count : updateCounts) {
                     if (count == 0) {
                         throw new RuntimeException("Sản phẩm đã hết hàng hoặc không đủ số lượng trong kho!");
                     }
                 }
 
-                // 4. Chèn thông tin vận chuyển
                 handle.createUpdate("INSERT INTO shipping (order_id, shipping_type, shipping_fee, shipping_status) VALUES (:oid, :stype, :sfee, 'Chờ lấy hàng')")
                         .bind("oid", orderId)
                         .bind("stype", shippingType)
                         .bind("sfee", shippingFee)
                         .execute();
 
-                // 5. Chèn thông tin thanh toán
                 handle.createUpdate("INSERT INTO payments (order_id, payment_method, status) VALUES (:oid, :method, 'Chưa thanh toán')")
                         .bind("oid", orderId)
                         .bind("method", (paymentId == 1 ? "COD" : "Chuyển khoản"))
@@ -83,39 +73,36 @@ public class OrderDAO {
         }
     }
 
-    // ==========================================
-    // 2. LẤY CHI TIẾT ĐƠN HÀNG (THEO MÃ HOẶC ID)
-    // ==========================================
 
-    // Lấy theo Order Code (Chi tiết đầy đủ kèm User, Shipping, Payment)
-    // [ĐÃ SỬA]: Thêm sub-query lấy status từ lịch sử
     public Order getOrderByCode(String code) {
         String sql = """
-            SELECT o.*, 
-                   COALESCE(
-                       (SELECT status 
-                        FROM order_status_history h 
-                        WHERE h.order_id = o.id 
-                        ORDER BY h.created_at DESC 
-                        LIMIT 1), 
-                   'Chờ xử lý') AS status,
-                   u.email as customerEmail, 
-                   s.shipping_type, s.shipping_fee, s.shipping_status, s.tracking_number, 
-                   p.payment_method as paymentMethodName 
-            FROM orders o 
-            LEFT JOIN users u ON o.user_id = u.id 
-            LEFT JOIN shipping s ON o.id = s.order_id 
-            LEFT JOIN payments p ON o.id = p.order_id 
-            WHERE o.order_code = :code
-        """;
+                    SELECT o.*, 
+                           COALESCE(
+                               (SELECT status 
+                                FROM order_status_history h 
+                                WHERE h.order_id = o.id 
+                                ORDER BY h.created_at DESC 
+                                LIMIT 1), 
+                               'Chờ xử lý') AS status,
+                           u.email as customerEmail, 
+                           s.shipping_type, s.shipping_fee, s.shipping_status, s.tracking_number, 
+                           p.payment_method as paymentMethodName 
+                    FROM orders o 
+                    LEFT JOIN users u ON o.user_id = u.id 
+                    LEFT JOIN shipping s ON o.id = s.order_id 
+                    LEFT JOIN payments p ON o.id = p.order_id 
+                    WHERE o.order_code = :code
+                """;
 
         return jdbi.withHandle(handle ->
                 handle.createQuery(sql)
                         .bind("code", code)
                         .map((rs, ctx) -> {
                             Order order = new Order();
-                            // Set thông tin cơ bản
                             order.setId(rs.getInt("id"));
+
+                            order.setUserId(rs.getInt("user_id"));
+
                             order.setOrderCode(rs.getString("order_code"));
                             order.setOrderDate(rs.getTimestamp("order_date"));
                             order.setTotalPrice(rs.getDouble("total_price"));
@@ -124,14 +111,9 @@ public class OrderDAO {
                             order.setCustomerEmail(rs.getString("customerEmail"));
                             order.setShippingAddress(rs.getString("shipping_address"));
                             order.setNote(rs.getString("note"));
-
-                            // [MỚI] Set Status lấy từ sub-query
                             order.setStatus(rs.getString("status"));
-
-                            // Hình thức thanh toán
                             order.setPaymentMethod(rs.getString("paymentMethodName"));
 
-                            // Thông tin vận chuyển
                             Shipping ship = new Shipping();
                             ship.setShippingType(rs.getString("shipping_type"));
                             ship.setShippingFee(rs.getInt("shipping_fee"));
@@ -145,7 +127,6 @@ public class OrderDAO {
         );
     }
 
-    // Lấy theo ID (Dùng cho Admin view chi tiết)
     public Order getOrderById(int orderId) {
         String sql = "SELECT o.id, " +
                 "o.user_id AS userId, " +
@@ -175,16 +156,11 @@ public class OrderDAO {
         );
     }
 
-    // ==========================================
-    // 3. DANH SÁCH ĐƠN HÀNG (ADMIN & USER)
-    // ==========================================
 
-    // Lấy tất cả đơn hàng (Chỉ sắp xếp)
     public List<Order> getAllOrders(String sortBy) {
         return getAllOrders(sortBy, null);
     }
 
-    // Lấy tất cả đơn hàng (Sắp xếp + Tìm kiếm)
     public List<Order> getAllOrders(String sortBy, String search) {
         String orderBy = "oldest".equals(sortBy) ? "o.order_date ASC" : "o.order_date DESC";
 
@@ -215,7 +191,6 @@ public class OrderDAO {
         });
     }
 
-    // Lấy danh sách đơn hàng của một User cụ thể (Lịch sử mua hàng chi tiết)
     public List<Order> getOrdersByCustomerId(int userId) {
         String sql = "SELECT o.*, (SELECT h.status FROM order_status_history h WHERE h.order_id = o.id ORDER BY h.created_at DESC LIMIT 1) AS status " +
                 "FROM orders o WHERE o.user_id = :userId ORDER BY o.order_date DESC";
@@ -228,7 +203,6 @@ public class OrderDAO {
         );
     }
 
-    // Hàm Hủy đơn: Chỉ Insert vào history
     public void cancelOrder(int orderId) {
         Jdbi jdbi = DBDAO.get();
         jdbi.useHandle(handle -> {
@@ -239,22 +213,21 @@ public class OrderDAO {
         });
     }
 
-    // Lấy danh sách đơn hàng theo UserId (Dùng sub-query lấy status mới nhất)
     public List<Order> getOrdersByUserId(int userId) {
         Jdbi jdbi = DBDAO.get();
         String sql = """
-        SELECT o.*, 
-               COALESCE(
-                   (SELECT status 
-                    FROM order_status_history h 
-                    WHERE h.order_id = o.id 
-                    ORDER BY h.created_at DESC 
-                    LIMIT 1), 
-                   'Chờ xử lý') AS status
-        FROM orders o
-        WHERE o.user_id = :userId
-        ORDER BY o.order_date DESC
-    """;
+                    SELECT o.*, 
+                           COALESCE(
+                               (SELECT status 
+                                FROM order_status_history h 
+                                WHERE h.order_id = o.id 
+                                ORDER BY h.created_at DESC 
+                                LIMIT 1), 
+                               'Chờ xử lý') AS status
+                    FROM orders o
+                    WHERE o.user_id = :userId
+                    ORDER BY o.order_date DESC
+                """;
 
         return jdbi.withHandle(handle ->
                 handle.createQuery(sql)
@@ -264,7 +237,6 @@ public class OrderDAO {
         );
     }
 
-    // Lấy danh sách đơn hàng cho Client (UserOrder view)
     public List<UserOrder> getMyOrders(int userId) {
         String sql = "SELECT " +
                 "o.id, " +
@@ -294,9 +266,7 @@ public class OrderDAO {
         );
     }
 
-    // ==========================================
-    // 4. LẤY SẢN PHẨM TRONG ĐƠN (ITEMS)
-    // ==========================================
+
     public List<OrderItem> getOrderItemsByOrderId(int orderId) {
         String sql = "SELECT od.variant_id AS variantId, pv.variant_code AS variantCode, p.product_name AS name, " +
                 "od.quantity AS quantity, " +
@@ -328,19 +298,16 @@ public class OrderDAO {
     public boolean updateOrderStatus(int orderId, String newStatus, String newShippingStatus) {
         try {
             return jdbi.inTransaction(handle -> {
-                // 1. Ghi nhận lịch sử trạng thái (Order Status History)
                 handle.createUpdate("INSERT INTO order_status_history (order_id, status, created_at) VALUES (:id, :status, NOW())")
                         .bind("id", orderId)
                         .bind("status", newStatus)
                         .execute();
 
-                // 2. Cập nhật trạng thái vận chuyển trong bảng shipping (Để trang Tracking hiển thị đúng)
                 int rowCount = handle.createUpdate("UPDATE shipping SET shipping_status = :shipStatus WHERE order_id = :id")
                         .bind("shipStatus", newShippingStatus)
                         .bind("id", orderId)
                         .execute();
 
-                // Trả về true nếu không có lỗi
                 return true;
             });
         } catch (Exception e) {
