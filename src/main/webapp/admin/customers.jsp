@@ -16,21 +16,21 @@
 
 
     <style>
-        /* CSS cho thanh tìm kiếm (Giống bên Orders) */
+       
         .filter-container form {
             display: flex;
             gap: 10px;
             align-items: center;
         }
 
-        /* Wrapper chứa icon và input */
+       
         .search-wrapper {
             position: relative;
             display: flex;
             align-items: center;
         }
 
-        /* Icon kính lúp nằm đè lên input */
+        
         .search-icon {
             position: absolute;
             left: 10px;
@@ -39,9 +39,9 @@
             pointer-events: none;
         }
 
-        /* Input nhập liệu */
+       
         .search-customer-input {
-            padding: 8px 12px 8px 35px; /* Padding trái 35px để chừa chỗ cho icon */
+            padding: 8px 12px 8px 35px; 
             border: 1px solid #ccc;
             border-radius: 8px;
             font-size: 14px;
@@ -54,7 +54,7 @@
             border-color: #bca77d;
         }
 
-        /* Nút tìm kiếm */
+      
         .btn-search {
             background-color: #bca77d;
             color: white;
@@ -74,7 +74,7 @@
             background-color: #a68a63;
         }
 
-        /* Select box sort */
+       
         .filter-select {
             padding: 8px 12px;
             border: 1px solid #ccc;
@@ -149,5 +149,6 @@
 
 <script src="${pageContext.request.contextPath}/admin/js/main.js"></script>
 </body>
+
 
 </html>
