@@ -179,12 +179,12 @@
         document.getElementById('discountModal').style.display = 'block';
 
         if (mode === 'create') {
-            // RESET HOÀN TOÀN DỮ LIỆU
+           
             form.reset();
             actionInput.value = "insert";
             idField.value = ""; // Đảm bảo ID trống hoàn toàn
 
-            // Ẩn các section phạm vi
+         
             document.getElementById("category-section").style.display = "none";
             document.getElementById("type-section").style.display = "none";
 
@@ -198,7 +198,7 @@
 
     function closeModal() {
         document.getElementById('discountModal').style.display = 'none';
-        // Xóa params trên URL để tránh khi F5 nó lại mở lại modal Edit
+       
         const url = new URL(window.location);
         url.searchParams.delete('action');
         url.searchParams.delete('id');
@@ -225,4 +225,5 @@
 <script src="${pageContext.request.contextPath}/admin/js/main.js"></script>
 
 </body>
+
 </html>
